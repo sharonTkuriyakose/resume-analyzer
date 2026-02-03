@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+:root {
+  --accent-glow: rgba(99, 102, 241, 0.12);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #fcfcfd;
+  /* Topographic Grid & Mesh Glow to fill all gaps */
+  background-image: 
+    radial-gradient(circle at 2px 2px, #eef2f6 1px, transparent 0),
+    radial-gradient(at 0% 0%, var(--accent-glow) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.08) 0px, transparent 50%);
+  background-size: 40px 40px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}

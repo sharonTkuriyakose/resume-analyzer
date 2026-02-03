@@ -1,0 +1,12 @@
+{
+  "industries": {
+    "MERN Stack Development": ["React", "Node.js", "Express", "MongoDB", "JavaScript", "Redux", "Tailwind CSS"],
+    "UI/UX Design": ["Figma", "Adobe XD", "User Research", "Wireframing", "Prototyping", "Haptics"],
+    "Cloud Networking": ["OCI", "TCP/IP", "DNS", "VPN", "Firewalls", "Load Balancers"],
+    "IT Automation": ["UiPath", "Email Automation", "Data Tables", "OCR", "Workflow"]
+  },
+  "resources": {
+    "React": { "doc": "https://react.dev", "yt": "https://youtube.com/results?search_query=react" },
+    "Figma": { "doc": "https://figma.com/help", "yt": "https://youtube.com/results?search_query=figma" }
+  }
+}
