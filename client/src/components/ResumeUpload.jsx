@@ -8,6 +8,10 @@ const ResumeUpload = ({ onResult }) => {
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
 
+  // ✅ DYNAMIC API URL CONFIGURATION
+  // This detects your Vercel "VITE_API_URL" or falls back to localhost for your computer
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   const handleAreaClick = () => {
     // Triggers the hidden file input
     fileInputRef.current.click();
@@ -28,17 +32,20 @@ const ResumeUpload = ({ onResult }) => {
     if (!file) return;
 
     setLoading(true);
+    setError(''); // Clear previous errors
     const formData = new FormData();
     formData.append('resume', file);
 
     try {
-      // Connects to your Node.js backend to identify skill gaps
-      const response = await axios.post('http://localhost:5000/api/analyze', formData, {
+      // ✅ UPDATED: Now uses the dynamic API_URL variable instead of hardcoded localhost
+      const response = await axios.post(`${API_URL}/api/analyze`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       onResult(response.data);
     } catch (err) {
-      setError('Connection failed. Ensure your backend server is running on port 5000.');
+      // ✅ UPDATED: Shows a more helpful error message on your mobile device
+      setError(`Connection failed. Attempted to reach: ${API_URL}. Ensure your backend server is live.`);
+      console.error("Connection error details:", err);
     } finally {
       setLoading(false);
     }
@@ -67,7 +74,7 @@ const ResumeUpload = ({ onResult }) => {
         {file ? (
           <>
             <FileText className="w-12 h-12 text-indigo-600 mb-4 animate-in zoom-in" />
-            <span className="text-slate-900 font-bold text-lg">{file.name}</span>
+            <span className="text-slate-900 font-bold text-lg text-center break-all px-4">{file.name}</span>
             <button 
               onClick={(e) => { e.stopPropagation(); setFile(null); }}
               className="mt-2 text-xs text-red-500 hover:text-red-700 font-medium"
@@ -78,7 +85,7 @@ const ResumeUpload = ({ onResult }) => {
         ) : (
           <>
             <Upload className="w-12 h-12 text-slate-500 group-hover:text-indigo-300 transition-colors mb-4" />
-            <span className="text-slate-700 font-semibold text-lg">Click to select resume</span>
+            <span className="text-slate-700 font-semibold text-lg text-center">Click to select resume</span>
             <span className="text-slate-400 text-sm mt-1">PDF files only (Max 5MB)</span>
           </>
         )}
@@ -86,8 +93,8 @@ const ResumeUpload = ({ onResult }) => {
 
       {error && (
         <div className="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded-xl text-xs font-semibold border border-red-100">
-          <XCircle className="w-4 h-4" />
-          {error}
+          <XCircle className="w-4 h-4 shrink-0" />
+          <p className="flex-1">{error}</p>
         </div>
       )}
 
@@ -95,7 +102,7 @@ const ResumeUpload = ({ onResult }) => {
       <button
         onClick={handleUpload}
         disabled={!file || loading}
-        className="w-full bg-white text-black font-bold py-4 rounded-xl  shadow-slate-200 flex items-center justify-center gap-2"
+        className="w-full bg-white text-black font-bold py-4 rounded-xl shadow-lg shadow-slate-200 flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-95 transition-all disabled:opacity-50"
       >
         {loading ? (
           <>
