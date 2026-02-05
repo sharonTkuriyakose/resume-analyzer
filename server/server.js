@@ -12,7 +12,8 @@ app.use(express.json());
 const upload = multer({ storage: multer.memoryStorage() });
 
 // 🛠️ INITIALIZE GROQ
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEYi });
+// ✅ FIXED: Removed the extra 'i' from process.env.GROQ_API_KEY
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 app.post('/api/analyze', upload.single('resume'), async (req, res) => {
     try {
@@ -22,40 +23,51 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
         const pdfData = await pdf(req.file.buffer);
         const resumeText = pdfData.text;
 
-        // 2. STRICTOR AI INSTRUCTIONS
+        // 2. STRENGTHENED AI PROMPT
+        // This ensures even simple resumes (like Alexander's) get a fair score and domain.
         const completion = await groq.chat.completions.create({
             messages: [
                 {
                     role: "system",
-                    content: "You are a professional recruitment engine. You MUST return a valid JSON object with EXACTLY these keys: score, domain, foundSkills, missingSkills, roadmap."
+                    content: `You are a world-class Recruitment AI. Analyze the resume text provided.
+                    1. Identify the professional domain. If it's not technical, use "General Professional" or "Entry Level".
+                    2. Calculate an Industry Readiness score (0-100). Even basic skills should earn a baseline score of 30-40.
+                    3. The 'roadmap' MUST be an array of objects, each with a 'skill' and 'description' key.
+                    4. ALWAYS return a valid JSON object with these exact keys: score, domain, foundSkills, missingSkills, roadmap.`
                 },
                 {
                     role: "user",
-                    content: `Analyze this resume text and benchmark it against global industry standards.
-                              The 'roadmap' key MUST be an array of objects.
-                              
-                              Resume Text: ${resumeText}`
+                    content: `Analyze this resume and provide a detailed benchmark.
+                    
+                    Resume Text: ${resumeText}`
                 }
             ],
             model: "llama-3.3-70b-versatile",
-            response_format: { type: "json_object" } // Forces JSON structure
+            response_format: { type: "json_object" }
         });
 
-        // 3. PARSE RESPONSE
+        // 3. PARSE & PROCESS RESPONSE
         const analysis = JSON.parse(completion.choices[0].message.content);
 
-        // 🛡️ 4. DEFENSIVE CODING (The Fix)
-        // If 'roadmap' is missing, it uses an empty array [] so .map() won't crash.
+        // 🛡️ 4. ROBUST MAPPING
+        // Ensures the UI doesn't crash if the AI returns null for any field
         const safeRoadmap = analysis.roadmap || [];
+        
+        analysis.roadmap = safeRoadmap.map(item => {
+            const skillName = item.skill || "Professional Development";
+            return {
+                ...item,
+                skill: skillName,
+                link: `https://google.com/search?q=official+documentation+for+${encodeURIComponent(skillName)}`,
+                youtubeLink: `https://www.youtube.com/results?search_query=${encodeURIComponent(skillName)}+tutorial`
+            };
+        });
 
-        analysis.roadmap = safeRoadmap.map(item => ({
-            ...item,
-            // Ensure skill exists before encoding
-            link: `https://google.com/search?q=official+documentation+for+${encodeURIComponent(item.skill || 'skill')}`,
-            youtubeLink: `https://www.youtube.com/results?search_query=${encodeURIComponent(item.skill || 'skill')}+tutorial`
-        }));
+        // Final safety checks for UI display
+        analysis.domain = analysis.domain || "General Professional";
+        analysis.score = analysis.score || 35;
 
-        console.log(`✅ Success: Analyzed a ${analysis.domain || 'Unknown'} profile.`);
+        console.log(`✅ Success: Analyzed a ${analysis.domain} profile for sharonTkuriyakose project.`);
         res.json(analysis);
 
     } catch (error) {
@@ -67,5 +79,5 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
     }
 });
 
-const PORT = 5000;
-app.listen(PORT, () => console.log(`🚀 Groq AI Server active on http://localhost:${PORT}`));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 AI Server active on port ${PORT}`));
