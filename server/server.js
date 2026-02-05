@@ -6,7 +6,15 @@ const pdf = require('pdf-parse-fork');
 const Groq = require("groq-sdk");
 
 const app = express();
-app.use(cors());
+
+// ✅ MODIFICATION 1: OPEN CORS POLICY
+// This ensures that your phone can communicate with the server without being blocked
+app.use(cors({
+    origin: '*', 
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -15,14 +23,21 @@ const upload = multer({ storage: multer.memoryStorage() });
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 app.post('/api/analyze', upload.single('resume'), async (req, res) => {
+    // ✅ MODIFICATION 2: INCOMING REQUEST LOGGING
+    // Check your Render logs; if you don't see this text, the phone isn't reaching the server.
+    console.log("📥 Received analysis request from:", req.headers['user-agent']);
+
     try {
-        if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+        if (!req.file) {
+            console.warn("⚠️ No file provided in request");
+            return res.status(400).json({ message: "No file uploaded" });
+        }
 
         // 1. EXTRACT TEXT
         const pdfData = await pdf(req.file.buffer);
         const resumeText = pdfData.text;
 
-        // 2. ADVANCED AI PROMPTING FOR SPECIFIC DOMAINS
+        // 2. ADVANCED AI PROMPTING
         const completion = await groq.chat.completions.create({
             messages: [
                 {
@@ -33,7 +48,7 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                        - If skills include Patient Care or Medical terminology -> Use "Registered Nurse".
                        - If skills include Business or Management -> Use "Business Administrator".
                        - DO NOT use generic terms like "Technical", "Medical", or "Unclassified".
-                    2. BENCHMARKING: Calculate an Industry Readiness score (0-100). Even basic entries should earn a 30-40 baseline.
+                    2. BENCHMARKING: Calculate an Industry Readiness score (0-100).
                     3. ROADMAP: Return an array of objects, each with a 'skill' and 'description' key.
                     4. OUTPUT: Always return a valid JSON object with exactly these keys: score, domain, foundSkills, missingSkills, roadmap.`
                 },
@@ -64,15 +79,15 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
             };
         });
 
-        // Final safety checks for UI display
         analysis.domain = analysis.domain || "General Professional";
         analysis.score = analysis.score || 35;
 
-        console.log(`✅ Success: Analyzed a ${analysis.domain} profile for sharonTkuriyakose project.`);
+        console.log(`✅ Success: Analyzed a ${analysis.domain} profile for sharonTkuriyakose.`);
         res.json(analysis);
 
     } catch (error) {
-        console.error("Groq Analysis Error:", error.message);
+        // ✅ MODIFICATION 3: DETAILED ERROR LOGGING
+        console.error("❌ Groq Analysis Error:", error.message);
         res.status(500).json({ 
             message: "The AI engine encountered an error.", 
             details: error.message 
@@ -81,4 +96,7 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 AI Server active on port ${PORT}`));     
+app.listen(PORT, () => {
+    console.log(`🚀 AI Server active on port ${PORT}`);
+    console.log(`📡 CORS set to allow all origins for mobile testing`);
+});
