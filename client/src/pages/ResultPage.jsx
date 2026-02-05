@@ -9,7 +9,7 @@ const ResultPage = ({ data }) => {
   if (!data) return <div className="h-screen flex items-center justify-center text-slate-400 bg-[#0A0C10]">No Analysis Found.</div>;
 
   return (
-    <div className="min-h-screen w-full bg-[#0A0C10] text-slate-200 font-sans selection:bg-indigo-500/30 overflow-x-hidden pt-12">
+    <div className="min-h-screen w-full bg-[#0A0C10] text-slate-200 font-sans selection:bg-indigo-500/30 overflow-x-hidden pt-8 md:pt-12">
       {/* GLOBAL CSS RESET */}
       <style dangerouslySetInnerHTML={{ __html: `
         html, body, #root { 
@@ -24,131 +24,131 @@ const ResultPage = ({ data }) => {
         ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 10px; }
       `}} />
 
-      <div className="max-w-[1750px] mx-auto px-12 space-y-12">
+      <div className="max-w-[1750px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8 md:space-y-12">
         
-        {/* 1. TOP SYSTEM STATUS (Replaces Nav for consistency) */}
-        <div className="flex justify-between items-center pb-10 border-b border-white/5">
-            <div className="flex items-center gap-4 text-slate-500 font-black text-xl uppercase tracking-[0.4em]">
-                <Activity className="w-5 h-5 text-indigo-500" /> Analysis Neural Link Active
+        {/* 1. TOP SYSTEM STATUS - Responsive Stack */}
+        <div className="flex flex-col sm:flex-row justify-between items-center pb-6 md:pb-10 border-b border-white/5 gap-4">
+            <div className="flex items-center gap-4 text-slate-500 font-black text-sm md:text-xl uppercase tracking-[0.2em] md:tracking-[0.4em] text-center sm:text-left">
+                <Activity className="w-5 h-5 text-indigo-500 shrink-0" /> Analysis Neural Link Active
             </div>
-            <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm uppercase tracking-widest">
+            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs md:text-sm uppercase tracking-widest">
                     <CheckCircle2 className="w-4 h-4" /> Report Validated
                 </div>
-                <div className="px-6 py-2.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-sm font-black uppercase tracking-[0.2em] text-white">
-                    v2.0 Analysis Result
+                <div className="px-4 md:px-6 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-[10px] md:text-sm font-black uppercase tracking-[0.1em] md:tracking-[0.2em] text-white">
+                    v2.0 Result
                 </div>
             </div>
         </div>
 
-        <main className="w-full grid grid-cols-12 gap-12 py-12">
+        <main className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 py-6 md:py-12">
           
-          {/* LEFT PILLAR: THE CORE SCORE */}
-          <section className="col-span-12 lg:col-span-4 space-y-12">
-            <div className="relative group p-14 rounded-[3.5rem] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 flex flex-col items-center">
-              {/* Dynamic Background Glow */}
-              <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 blur-[90px] rounded-full" />
+          {/* LEFT PILLAR: THE CORE SCORE (Stacks on Mobile) */}
+          <section className="col-span-1 lg:col-span-4 space-y-8 md:space-y-12">
+            <div className="relative group p-8 md:p-14 rounded-[2rem] md:rounded-[3.5rem] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 flex flex-col items-center">
+              <div className="absolute top-0 right-0 w-32 md:w-48 h-32 md:h-48 bg-indigo-500/10 blur-[60px] md:blur-[90px] rounded-full" />
               
-              <div className="flex items-center gap-3 mb-14">
+              <div className="flex items-center gap-3 mb-8 md:mb-14">
                   <Award className="w-5 h-5 text-indigo-400" />
-                  <h2 className="text-sm font-black uppercase tracking-[0.4em] text-slate-500">Industry Readiness</h2>
+                  <h2 className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-slate-500">Industry Readiness</h2>
               </div>
               
-              <div className="relative w-80 h-80 flex items-center justify-center">
-                <svg className="w-full h-full transform -rotate-90">
+              {/* Responsive SVG Circle */}
+              <div className="relative w-56 h-56 md:w-80 md:h-80 flex items-center justify-center">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 320 320">
                   <circle cx="160" cy="160" r="145" stroke="currentColor" strokeWidth="16" fill="transparent" className="text-white/5" />
                   <circle cx="160" cy="160" r="145" stroke="currentColor" strokeWidth="16" fill="transparent" 
                     strokeDasharray={911} strokeDashoffset={911 - (911 * data.score) / 100}
-                    strokeLinecap="round" className="text-indigo-500 drop-shadow-[0_0_25px_rgba(99,102,241,0.6)]" 
+                    strokeLinecap="round" className="text-indigo-500 drop-shadow-[0_0_15px_rgba(99,102,241,0.6)]" 
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center">
-                  <span className="text-9xl font-black tracking-tighter text-white leading-none">{data.score}%</span>
-                  <span className="text-sm font-bold text-indigo-400 mt-6 tracking-widest uppercase">Global Rank</span>
+                  <span className="text-6xl md:text-9xl font-black tracking-tighter text-white leading-none">{data.score}%</span>
+                  <span className="text-[10px] md:text-sm font-bold text-indigo-400 mt-2 md:mt-6 tracking-widest uppercase">Global Rank</span>
                 </div>
               </div>
 
-              <div className="mt-14 w-full p-8 rounded-3xl bg-white/5 border border-white/5 text-center shadow-xl">
-                  <span className="text-xs font-black uppercase text-slate-500 block mb-3 tracking-widest">Detected Domain</span>
-                  <span className="text-3xl font-bold text-white tracking-tight">{data.domain || 'Unclassified'}</span>
+              <div className="mt-8 md:mt-14 w-full p-6 md:p-8 rounded-2xl md:rounded-3xl bg-white/5 border border-white/5 text-center shadow-xl">
+                  <span className="text-[10px] font-black uppercase text-slate-500 block mb-2 tracking-widest">Detected Domain</span>
+                  <span className="text-xl md:text-3xl font-bold text-white tracking-tight break-words">{data.domain || 'Unclassified'}</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-8">
-              <div className="p-10 rounded-[2.5rem] bg-white/5 border border-white/10 hover:border-emerald-500/30 transition-colors">
-                <Trophy className="w-8 h-8 text-emerald-400 mb-5" />
-                <div className="text-5xl font-black text-white">{data.foundSkills?.length || 0}</div>
-                <div className="text-xs font-bold uppercase text-slate-500 tracking-widest mt-2">Strengths</div>
+            <div className="grid grid-cols-2 gap-4 md:gap-8">
+              <div className="p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] bg-white/5 border border-white/10">
+                <Trophy className="w-6 h-6 md:w-8 md:h-8 text-emerald-400 mb-3 md:mb-5" />
+                <div className="text-3xl md:text-5xl font-black text-white">{data.foundSkills?.length || 0}</div>
+                <div className="text-[10px] font-bold uppercase text-slate-500 tracking-widest mt-1">Strengths</div>
               </div>
-              <div className="p-10 rounded-[2.5rem] bg-white/5 border border-white/10 hover:border-amber-500/30 transition-colors">
-                <Target className="w-8 h-8 text-amber-400 mb-5" />
-                <div className="text-5xl font-black text-white">{data.missingSkills?.length || 0}</div>
-                <div className="text-xs font-bold uppercase text-slate-500 tracking-widest mt-2">Gap items</div>
+              <div className="p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] bg-white/5 border border-white/10">
+                <Target className="w-6 h-6 md:w-8 md:h-8 text-amber-400 mb-3 md:mb-5" />
+                <div className="text-3xl md:text-5xl font-black text-white">{data.missingSkills?.length || 0}</div>
+                <div className="text-[10px] font-bold uppercase text-slate-500 tracking-widest mt-1">Gap items</div>
               </div>
             </div>
           </section>
 
           {/* RIGHT PILLAR: COMPETENCIES & ACTIONS */}
-          <section className="col-span-12 lg:col-span-8 space-y-12">
+          <section className="col-span-1 lg:col-span-8 space-y-8 md:space-y-12">
             
-            <div className="p-14 rounded-[3.5rem] bg-white/[0.02] border border-white/10">
-              <div className="flex items-center gap-4 mb-12 text-indigo-400">
+            <div className="p-6 md:p-14 rounded-[2rem] md:rounded-[3.5rem] bg-white/[0.02] border border-white/10">
+              <div className="flex items-center gap-4 mb-8 md:mb-12 text-indigo-400">
                 <LayoutGrid className="w-6 h-6" />
-                <h3 className="font-black uppercase tracking-widest text-sm">Skill Matrix Analysis</h3>
+                <h3 className="font-black uppercase tracking-widest text-xs md:text-sm">Skill Matrix Analysis</h3>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-14">
-                <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14">
+                <div className="space-y-6 md:space-y-8">
                   <div className="flex items-center gap-3">
                       <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                      <span className="text-xs font-black text-slate-500 uppercase tracking-widest">Validated Expertise</span>
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Validated Expertise</span>
                   </div>
-                  <div className="flex flex-wrap gap-3.5">
+                  <div className="flex flex-wrap gap-2 md:gap-3.5">
                     {data.foundSkills?.map((skill, i) => (
-                      <span key={i} className="px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-bold rounded-xl shadow-sm hover:bg-emerald-500/20 transition-all">{skill}</span>
+                      <span key={i} className="px-4 md:px-6 py-2 md:py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs md:text-sm font-bold rounded-lg md:rounded-xl">{skill}</span>
                     ))}
                   </div>
                 </div>
-                <div className="space-y-8">
+                <div className="space-y-6 md:space-y-8">
                   <div className="flex items-center gap-3">
                       <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                      <span className="text-xs font-black text-slate-500 uppercase tracking-widest">Requirement Gaps</span>
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Requirement Gaps</span>
                   </div>
-                  <div className="flex flex-wrap gap-3.5">
+                  <div className="flex flex-wrap gap-2 md:gap-3.5">
                     {data.missingSkills?.map((skill, i) => (
-                      <span key={i} className="px-6 py-3 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-bold rounded-xl shadow-sm hover:bg-amber-500/20 transition-all">{skill}</span>
+                      <span key={i} className="px-4 md:px-6 py-2 md:py-3 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs md:text-sm font-bold rounded-lg md:rounded-xl">{skill}</span>
                     ))}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-14 rounded-[3.5rem] bg-white/[0.02] border border-white/10 shadow-2xl">
-               <div className="flex items-center gap-4 mb-12 text-indigo-400">
+            <div className="p-6 md:p-14 rounded-[2rem] md:rounded-[3.5rem] bg-white/[0.02] border border-white/10 shadow-2xl">
+                <div className="flex items-center gap-4 mb-8 md:mb-12 text-indigo-400">
                   <BookOpen className="w-6 h-6" />
-                  <h3 className="font-black uppercase tracking-widest text-sm">Strategic Upskilling Roadmap</h3>
+                  <h3 className="font-black uppercase tracking-widest text-xs md:text-sm">Strategic Upskilling Roadmap</h3>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   {data.roadmap?.map((item, i) => (
-                    <div key={i} className="group p-10 bg-white/5 hover:bg-white/[0.08] border border-white/5 hover:border-indigo-500/30 rounded-[2.5rem] transition-all duration-500 flex items-center justify-between">
-                      <div className="flex items-center gap-10">
-                        <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-black text-2xl">
+                    <div key={i} className="group p-6 md:p-10 bg-white/5 hover:bg-white/[0.08] border border-white/5 hover:border-indigo-500/30 rounded-[1.5rem] md:rounded-[2.5rem] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                      <div className="flex items-center gap-6 md:gap-10 w-full">
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-black text-xl md:text-2xl shrink-0">
                           {i + 1}
                         </div>
-                        <div>
-                          <h4 className="font-black text-white text-2xl mb-2 tracking-tight">{item.skill}</h4>
-                          <p className="text-base text-slate-400 font-medium leading-relaxed max-w-lg">{item.task}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-black text-white text-lg md:text-2xl mb-1 md:mb-2 tracking-tight truncate">{item.skill}</h4>
+                          <p className="text-xs md:text-base text-slate-400 font-medium leading-relaxed line-clamp-2 md:line-clamp-none">{item.task}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-6">
-                        <a href={item.link} target="_blank" rel="noreferrer" title="Documentation" className="p-5 bg-white/5 hover:bg-white/10 rounded-2xl transition-all">
-                          <ExternalLink className="w-6 h-6 text-slate-400" />
+                      <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
+                        <a href={item.link} target="_blank" rel="noreferrer" className="flex-1 sm:flex-none p-3 md:p-5 bg-white/5 hover:bg-white/10 rounded-xl md:rounded-2xl transition-all flex justify-center">
+                          <ExternalLink className="w-5 h-5 md:w-6 md:h-6 text-slate-400" />
                         </a>
-                        <a href={item.youtubeLink} target="_blank" rel="noreferrer" title="YouTube Course" className="p-5 bg-red-500/10 hover:bg-red-500/20 rounded-2xl transition-all">
-                          <Youtube className="w-6 h-6 text-red-500" />
+                        <a href={item.youtubeLink} target="_blank" rel="noreferrer" className="flex-1 sm:flex-none p-3 md:p-5 bg-red-500/10 hover:bg-red-500/20 rounded-xl md:rounded-2xl transition-all flex justify-center">
+                          <Youtube className="w-5 h-5 md:w-6 md:h-6 text-red-500" />
                         </a>
-                        <ChevronRight className="w-7 h-7 text-slate-800 group-hover:text-indigo-500 transition-colors ml-6" />
+                        <ChevronRight className="hidden sm:block w-7 h-7 text-slate-800 group-hover:text-indigo-500 transition-colors ml-4" />
                       </div>
                     </div>
                   ))}
