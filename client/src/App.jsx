@@ -23,7 +23,7 @@ function App() {
           </div>
           
           <span className="font-black text-lg md:text-2xl tracking-tighter text-white uppercase whitespace-nowrap">
-            Resume <span className="text-indigo-500">Analyzer</span>
+            Resume Analyzer
           </span>
         </div>
 

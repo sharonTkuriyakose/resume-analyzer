@@ -60,7 +60,7 @@ const UploadPage = ({ onAnalysisComplete }) => {
 
             <h1 className="text-5xl sm:text-7xl lg:text-9xl font-black text-white leading-tight lg:leading-[0.9] tracking-tighter">
               Elevate Your <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-500">Professional Path.</span>
+              Professional Path.
             </h1>
 
             <div className="space-y-6 md:space-y-8">
