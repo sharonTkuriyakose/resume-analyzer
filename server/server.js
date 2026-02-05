@@ -12,7 +12,6 @@ app.use(express.json());
 const upload = multer({ storage: multer.memoryStorage() });
 
 // 🛠️ INITIALIZE GROQ
-// ✅ FIXED: Removed the extra 'i' from process.env.GROQ_API_KEY
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 app.post('/api/analyze', upload.single('resume'), async (req, res) => {
@@ -23,21 +22,24 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
         const pdfData = await pdf(req.file.buffer);
         const resumeText = pdfData.text;
 
-        // 2. STRENGTHENED AI PROMPT
-        // This ensures even simple resumes (like Alexander's) get a fair score and domain.
+        // 2. ADVANCED AI PROMPTING FOR SPECIFIC DOMAINS
         const completion = await groq.chat.completions.create({
             messages: [
                 {
                     role: "system",
                     content: `You are a world-class Recruitment AI. Analyze the resume text provided.
-                    1. Identify the professional domain. If it's not technical, use "General Professional" or "Entry Level".
-                    2. Calculate an Industry Readiness score (0-100). Even basic skills should earn a baseline score of 30-40.
-                    3. The 'roadmap' MUST be an array of objects, each with a 'skill' and 'description' key.
-                    4. ALWAYS return a valid JSON object with these exact keys: score, domain, foundSkills, missingSkills, roadmap.`
+                    1. IDENTIFY SPECIFIC JOB TITLE: Map the profile to a precise professional role.
+                       - If skills include C++, Node, or React -> Use "Software Engineer".
+                       - If skills include Patient Care or Medical terminology -> Use "Registered Nurse".
+                       - If skills include Business or Management -> Use "Business Administrator".
+                       - DO NOT use generic terms like "Technical", "Medical", or "Unclassified".
+                    2. BENCHMARKING: Calculate an Industry Readiness score (0-100). Even basic entries should earn a 30-40 baseline.
+                    3. ROADMAP: Return an array of objects, each with a 'skill' and 'description' key.
+                    4. OUTPUT: Always return a valid JSON object with exactly these keys: score, domain, foundSkills, missingSkills, roadmap.`
                 },
                 {
                     role: "user",
-                    content: `Analyze this resume and provide a detailed benchmark.
+                    content: `Analyze this resume and provide a professional job title for the 'domain' field.
                     
                     Resume Text: ${resumeText}`
                 }
@@ -49,8 +51,7 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
         // 3. PARSE & PROCESS RESPONSE
         const analysis = JSON.parse(completion.choices[0].message.content);
 
-        // 🛡️ 4. ROBUST MAPPING
-        // Ensures the UI doesn't crash if the AI returns null for any field
+        // 🛡️ 4. ROBUST MAPPING & LINK GENERATION
         const safeRoadmap = analysis.roadmap || [];
         
         analysis.roadmap = safeRoadmap.map(item => {
@@ -80,4 +81,4 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 AI Server active on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 AI Server active on port ${PORT}`));     
