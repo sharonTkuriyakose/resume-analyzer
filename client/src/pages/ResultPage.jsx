@@ -1,16 +1,36 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { 
   Trophy, Target, Zap, BookOpen, ExternalLink, 
   Youtube, ChevronRight, LayoutGrid, Award, ShieldCheck,
-  Activity, CheckCircle2
+  Activity, CheckCircle2, Download
 } from 'lucide-react';
 
 const ResultPage = ({ data }) => {
+  const reportRef = useRef();
+
   if (!data) return <div className="h-screen flex items-center justify-center text-slate-400 bg-[#0A0C10]">No Analysis Found.</div>;
+
+  const handleDownloadPDF = async () => {
+    const element = reportRef.current;
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#0A0C10',
+    });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`Resume_Analysis_${data.domain || 'Report'}.pdf`);
+  };
 
   return (
     <div className="min-h-screen w-full bg-[#0A0C10] text-slate-200 font-sans selection:bg-indigo-500/30 overflow-x-hidden pt-8 md:pt-12">
-      {/* GLOBAL CSS RESET */}
       <style dangerouslySetInnerHTML={{ __html: `
         html, body, #root { 
           margin: 0 !important; 
@@ -24,26 +44,31 @@ const ResultPage = ({ data }) => {
         ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 10px; }
       `}} />
 
-      <div className="max-w-[1750px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8 md:space-y-12">
+      <div ref={reportRef} className="max-w-[1750px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8 md:space-y-12 bg-[#0A0C10]">
         
-        {/* 1. TOP SYSTEM STATUS - Responsive Stack */}
+        {/* 1. TOP SYSTEM STATUS */}
         <div className="flex flex-col sm:flex-row justify-between items-center pb-6 md:pb-10 border-b border-white/5 gap-4">
             <div className="flex items-center gap-4 text-slate-500 font-black text-sm md:text-xl uppercase tracking-[0.2em] md:tracking-[0.4em] text-center sm:text-left">
                 <Activity className="w-5 h-5 text-indigo-500 shrink-0" /> Analysis Neural Link Active
             </div>
+            
+            {/* ACTION BUTTONS */}
             <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
+                <button 
+                  onClick={handleDownloadPDF}
+                  className="flex items-center gap-2 px-4 md:px-6 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-[10px] md:text-sm font-black uppercase tracking-[0.1em] text-white hover:bg-indigo-500/20 transition-all"
+                >
+                    <Download className="w-4 h-4" /> Export PDF
+                </button>
                 <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs md:text-sm uppercase tracking-widest">
-                    <CheckCircle2 className="w-4 h-4" /> Report Validated
-                </div>
-                <div className="px-4 md:px-6 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-[10px] md:text-sm font-black uppercase tracking-[0.1em] md:tracking-[0.2em] text-white">
-                    v2.0 Result
+                    <CheckCircle2 className="w-4 h-4" /> Validated
                 </div>
             </div>
         </div>
 
         <main className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 py-6 md:py-12">
           
-          {/* LEFT PILLAR: THE CORE SCORE (Stacks on Mobile) */}
+          {/* LEFT PILLAR: CORE SCORE */}
           <section className="col-span-1 lg:col-span-4 space-y-8 md:space-y-12">
             <div className="relative group p-8 md:p-14 rounded-[2rem] md:rounded-[3.5rem] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 flex flex-col items-center">
               <div className="absolute top-0 right-0 w-32 md:w-48 h-32 md:h-48 bg-indigo-500/10 blur-[60px] md:blur-[90px] rounded-full" />
@@ -53,7 +78,6 @@ const ResultPage = ({ data }) => {
                   <h2 className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-slate-500">Industry Readiness</h2>
               </div>
               
-              {/* Responsive SVG Circle */}
               <div className="relative w-56 h-56 md:w-80 md:h-80 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 320 320">
                   <circle cx="160" cy="160" r="145" stroke="currentColor" strokeWidth="16" fill="transparent" className="text-white/5" />
@@ -88,9 +112,8 @@ const ResultPage = ({ data }) => {
             </div>
           </section>
 
-          {/* RIGHT PILLAR: COMPETENCIES & ACTIONS */}
+          {/* RIGHT PILLAR: SKILL MATRIX & ROADMAP */}
           <section className="col-span-1 lg:col-span-8 space-y-8 md:space-y-12">
-            
             <div className="p-6 md:p-14 rounded-[2rem] md:rounded-[3.5rem] bg-white/[0.02] border border-white/10">
               <div className="flex items-center gap-4 mb-8 md:mb-12 text-indigo-400">
                 <LayoutGrid className="w-6 h-6" />

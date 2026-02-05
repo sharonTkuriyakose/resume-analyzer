@@ -14,9 +14,12 @@ const UploadPage = ({ onAnalysisComplete }) => {
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150&h=150"
   ];
 
+  // ✅ DYNAMIC API CONFIGURATION
+  // This ensures your phone connects to Render while your PC can still use Localhost
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   return (
     <div className="min-h-screen w-full bg-[#0A0C10] text-slate-200 font-sans selection:bg-indigo-500/30 overflow-x-hidden pt-8 md:pt-12">
-      {/* GLOBAL CSS RESET */}
       <style dangerouslySetInnerHTML={{ __html: `
         html, body, #root { 
           margin: 0 !important; 
@@ -29,7 +32,6 @@ const UploadPage = ({ onAnalysisComplete }) => {
 
       <div className="max-w-[1700px] mx-auto px-6 md:px-12 space-y-24 md:space-y-48">
         
-        {/* 1. TOP SYSTEM STATUS - Responsive Flex */}
         <div className="flex flex-col sm:flex-row justify-between items-center pb-6 md:pb-8 border-b border-white/5 gap-4">
             <div className="flex items-center gap-4 text-white font-black text-sm md:text-xl uppercase tracking-[0.2em] md:tracking-[0.4em] text-center">
                 <Activity className="w-5 h-5 text-indigo-500" /> System Neural Link Active
@@ -44,7 +46,6 @@ const UploadPage = ({ onAnalysisComplete }) => {
             </div>
         </div>
 
-        {/* 2. HERO SECTION - Stacked on Mobile */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
           <div className="lg:col-span-7 space-y-8 md:space-y-14 text-center lg:text-left">
             <div className="inline-flex items-center gap-3 px-4 md:px-6 py-2 md:py-3 bg-indigo-500/10 border border-indigo-500/20 rounded-full shadow-lg">
@@ -77,7 +78,6 @@ const UploadPage = ({ onAnalysisComplete }) => {
                 </div>
             </div>
 
-            {/* Proof of Concept Avatars */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 md:gap-12 pt-6 md:pt-10">
               <div className="flex -space-x-4 md:-space-x-6">
                 {PEOPLE.map((url, i) => (
@@ -96,19 +96,21 @@ const UploadPage = ({ onAnalysisComplete }) => {
             </div>
           </div>
 
-          {/* UPLOAD CARD - Responsive Padding */}
           <div className="lg:col-span-5 relative">
             <div className="absolute -inset-12 md:-inset-24 bg-indigo-600/10 blur-[80px] md:blur-[140px] rounded-full -z-10 animate-pulse"></div>
             <div className="bg-white/[0.03] backdrop-blur-3xl p-8 sm:p-12 md:p-16 rounded-[2.5rem] md:rounded-[4.5rem] border border-white/10 shadow-2xl relative">
               <div className="absolute top-8 right-8 md:top-12 md:right-16">
                  <div className="bg-emerald-500 w-3 h-3 md:w-4 md:h-4 rounded-full animate-ping" />
               </div>
-              <ResumeUpload onResult={onAnalysisComplete} />
+              {/* ✅ Passing the Dynamic URL to the Upload Component */}
+              <ResumeUpload 
+                onResult={onAnalysisComplete} 
+                apiUrl={API_BASE_URL} 
+              />
             </div>
           </div>
         </section>
 
-        {/* 3. FEATURE BENTO GRID */}
         <section className="space-y-12 md:space-y-24">
           <div className="flex flex-col items-center text-center space-y-4 md:space-y-8">
             <div className="px-6 md:px-8 py-2 md:py-3 bg-white/5 border border-white/10 text-slate-400 rounded-xl md:rounded-2xl text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.4em]">
@@ -149,7 +151,6 @@ const UploadPage = ({ onAnalysisComplete }) => {
           </div>
         </section>
 
-        {/* 4. SYSTEM STATS - Responsive Grid */}
         <section className="bg-white/[0.03] border border-white/5 rounded-[3rem] md:rounded-[6rem] p-10 sm:p-16 md:p-28 text-white grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-20 text-center relative overflow-hidden shadow-2xl mb-12 md:mb-24">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
           {[
@@ -167,7 +168,6 @@ const UploadPage = ({ onAnalysisComplete }) => {
             </div>
           ))}
         </section>
-
       </div>
     </div>
   );
