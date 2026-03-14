@@ -36,4 +36,4 @@ Action: The system generates a roadmap with dynamic search queries and YouTube t
 Visualization: The React frontend renders the data into an animated, high-contrast dashboard.
 
 👤 Author:
-Sharon T Kuriyakose Full-Stack Developer & MERN Enthusiast.
+Sharon T Kuriyakose Full-Stack Developer 
