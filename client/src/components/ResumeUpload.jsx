@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
-import { Upload, FileText, Loader2, XCircle } from 'lucide-react';
+import { Upload, FileText, Loader2, XCircle, CheckCircle2 } from 'lucide-react';
 
-// ✅ Added apiUrl to the props to receive the link from UploadPage
 const ResumeUpload = ({ onResult, apiUrl }) => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -34,14 +33,11 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
     formData.append('resume', file);
 
     try {
-      // ✅ UPDATED: Now strictly uses the apiUrl passed from the parent UploadPage
-      // This ensures consistency across your entire MERN stack
       const response = await axios.post(`${apiUrl}/api/analyze`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       onResult(response.data);
     } catch (err) {
-      // ✅ UPDATED: Detailed error reporting for mobile debugging
       setError(`Connection failed. Target: ${apiUrl}. Check if your Render backend is active.`);
       console.error("Connection error details:", err);
     } finally {
@@ -59,55 +55,70 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
         className="hidden"
       />
 
+      {/* DRAG & DROP AREA - Monochrome Slate & White */}
       <div 
         onClick={handleAreaClick}
-        className={`group relative border-2 border-dashed rounded-2xl p-12 flex flex-col items-center justify-center transition-all cursor-pointer
+        className={`group relative border-2 border-dashed rounded-3xl p-10 md:p-14 flex flex-col items-center justify-center transition-all cursor-pointer
           ${file 
-            ? 'border-indigo-400 bg-indigo-50/30' 
-            : 'border-slate-200 bg-slate-50/50 hover:border-indigo-300 hover:bg-slate-50'
+            ? 'border-white bg-white/5' 
+            : 'border-white/10 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.04]'
           }`}
       >
         {file ? (
           <>
-            <FileText className="w-12 h-12 text-indigo-600 mb-4 animate-in zoom-in" />
-            <span className="text-slate-900 font-bold text-lg text-center break-all px-4">{file.name}</span>
+            <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-4">
+               <FileText className="w-8 h-8 text-white animate-in zoom-in" />
+            </div>
+            <span className="text-white font-black text-lg text-center break-all px-4 tracking-tight uppercase">{file.name}</span>
             <button 
               onClick={(e) => { e.stopPropagation(); setFile(null); }}
-              className="mt-2 text-xs text-red-500 hover:text-red-700 font-medium"
+              className="mt-4 text-[10px] text-slate-500 hover:text-white font-black uppercase tracking-widest transition-colors"
             >
               Remove file
             </button>
           </>
         ) : (
           <>
-            <Upload className="w-12 h-12 text-slate-500 group-hover:text-indigo-300 transition-colors mb-4" />
-            <span className="text-slate-700 font-semibold text-lg text-center">Click to select resume</span>
-            <span className="text-slate-400 text-sm mt-1">PDF files only (Max 5MB)</span>
+            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+               <Upload className="w-8 h-8 text-slate-500 group-hover:text-white transition-colors" />
+            </div>
+            <span className="text-white font-black text-lg text-center uppercase tracking-tight">Select Resume</span>
+            <span className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-2">PDF Only • Max 5MB</span>
           </>
         )}
       </div>
 
+      {/* ERROR MESSAGE - Refined White/Red */}
       {error && (
-        <div className="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded-xl text-xs font-semibold border border-red-100">
+        <div className="flex items-center gap-3 text-red-400 bg-red-500/10 p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-red-500/20">
           <XCircle className="w-4 h-4 shrink-0" />
-          <p className="flex-1">{error}</p>
+          <p className="flex-1 leading-relaxed">{error}</p>
         </div>
       )}
 
+      {/* ANALYZE BUTTON - Pure White on Dark */}
       <button
         onClick={handleUpload}
         disabled={!file || loading}
-        className="w-full bg-white text-black font-bold py-4 rounded-xl shadow-lg shadow-slate-200 flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-95 transition-all disabled:opacity-50"
+        className="w-full bg-white text-black font-black py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all disabled:opacity-30 uppercase tracking-[0.2em] text-xs"
       >
         {loading ? (
           <>
             <Loader2 className="animate-spin w-5 h-5" />
-            Analyzing Professional Gaps...
+            Neural Scanning Active...
           </>
         ) : (
-          'Run Skill Gap Analysis'
+          <>
+            Run Skill Gap Analysis
+          </>
         )}
       </button>
+
+      {/* SYSTEM TRUST BADGE */}
+      <div className="flex items-center justify-center gap-2 text-slate-600">
+          <CheckCircle2 className="w-3 h-3" />
+          <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">Encrypted Cloud Processing</span>
+      </div>
     </div>
   );
 };
