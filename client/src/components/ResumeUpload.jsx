@@ -36,10 +36,20 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
       const response = await axios.post(`${apiUrl}/api/analyze`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+      
+      // If the request is successful, pass the data to the parent component
       onResult(response.data);
+
     } catch (err) {
-      setError(`Connection failed. Target: ${apiUrl}. Check if your Render backend is active.`);
-      console.error("Connection error details:", err);
+      // ✅ MODIFIED ERROR HANDLING: Catching the "INVALID_RESUME" message from Groq
+      if (err.response && err.response.data && err.response.data.message) {
+        // This will show: "The uploaded file does not appear to be a valid professional resume."
+        setError(err.response.data.message); 
+      } else {
+        // Fallback for connection issues
+        setError(`Neural Link Interrupted. Target: ${apiUrl}. Check your Render backend status.`);
+      }
+      console.error("Analysis error details:", err);
     } finally {
       setLoading(false);
     }
@@ -67,7 +77,7 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
         {file ? (
           <>
             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-4">
-               <FileText className="w-8 h-8 text-white animate-in zoom-in" />
+                <FileText className="w-8 h-8 text-white animate-in zoom-in" />
             </div>
             <span className="text-white font-black text-lg text-center break-all px-4 tracking-tight uppercase">{file.name}</span>
             <button 
@@ -80,7 +90,7 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
         ) : (
           <>
             <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-               <Upload className="w-8 h-8 text-slate-500 group-hover:text-white transition-colors" />
+                <Upload className="w-8 h-8 text-slate-500 group-hover:text-white transition-colors" />
             </div>
             <span className="text-white font-black text-lg text-center uppercase tracking-tight">Select Resume</span>
             <span className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-2">PDF Only • Max 5MB</span>
@@ -88,15 +98,15 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
         )}
       </div>
 
-      {/* ERROR MESSAGE - Refined White/Red */}
+      {/* ERROR MESSAGE - Dynamically shows AI validation errors */}
       {error && (
-        <div className="flex items-center gap-3 text-red-400 bg-red-500/10 p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-red-500/20">
+        <div className="flex items-center gap-3 text-red-400 bg-red-500/10 p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-red-500/20 animate-in fade-in slide-in-from-top-2">
           <XCircle className="w-4 h-4 shrink-0" />
           <p className="flex-1 leading-relaxed">{error}</p>
         </div>
       )}
 
-      {/* ANALYZE BUTTON - Pure White on Dark */}
+      {/* ANALYZE BUTTON */}
       <button
         onClick={handleUpload}
         disabled={!file || loading}
