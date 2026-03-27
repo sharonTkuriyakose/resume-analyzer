@@ -1,42 +1,111 @@
+/* --- UNIVERSAL NEURAL LAB STYLING --- */
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Base Body Reset */
+body {
+  margin: 0;
+  background-color: #0A0C10 !important;
+  color: #f1f5f9;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden; /* Prevents horizontal scroll on mobile */
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Custom Selection Highlight */
+::selection {
+  background: rgba(79, 70, 229, 0.4);
+  color: #fff;
+}
+
+/* --- ANIMATIONS --- */
+
+.animate-in {
+  animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.1); }
+  100% { opacity: 0.2; transform: scale(1); }
+}
+
+/* --- CARD GLASSMORPHISM --- */
+
+.card-bg {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.4s ease;
+}
+
+/* --- RESPONSIVE MOBILE FIXES --- */
+
+@media (max-width: 768px) {
+  #root {
+    padding: 0;
   }
-  to {
-    transform: rotate(360deg);
+
+  /* Force vertical stacking for mobile buttons/actions */
+  .mobile-stack {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  /* Ensure text doesn't overflow in small cards */
+  h1, h2, h3, h4 {
+    word-break: break-word;
+    letter-spacing: normal !important;
+  }
+
+  .card-bg {
+    border-radius: 1.5rem !important;
+    padding: 1.5rem !important;
+  }
+
+  /* Fix for the SVG Readiness Score on mobile */
+  svg {
+    max-width: 100%;
+    height: auto;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* --- SCROLLBAR --- */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0C10;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2D3748;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4F46E5;
+}
+
+/* --- PRINT OPTIMIZATION --- */
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white !important; color: black !important; }
+  .card-bg { 
+    background: transparent !important; 
+    border: 1px solid #ddd !important;
+    color: black !important;
+    box-shadow: none !important;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }
