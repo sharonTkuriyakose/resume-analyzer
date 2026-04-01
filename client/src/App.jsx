@@ -7,14 +7,22 @@ function App() {
   const [analysisData, setAnalysisData] = useState(null);
 
   // ✅ SMART API CONFIGURATION
+  // Automatically switches between local server and Render based on where the app is running
   const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  
   const API_URL = isLocal 
     ? 'http://localhost:5000' 
-    : 'https://sharon-resume-analyzer.onrender.com';
+    : 'https://resume-analyzer-na6o.onrender.com'; // Updated to match your current Render URL
+
+  // ✅ DEBUG LOGGING
+  useEffect(() => {
+    console.log(`🌐 System Environment: ${isLocal ? 'LOCAL_DEVELOPMENT' : 'PRODUCTION'}`);
+    console.log(`📡 Targeting Backend: ${API_URL}`);
+  }, [isLocal, API_URL]);
 
   // ✅ HANDLING ANALYSIS COMPLETION
   const handleAnalysisComplete = (data) => {
-    console.log(`🚀 Neural Link Established at: ${API_URL}`);
+    console.log(`🚀 Neural Link Established. Analysis Received.`);
     setAnalysisData(data); 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -27,7 +35,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col bg-[#0A0C10] text-slate-200 selection:bg-indigo-500/30 overflow-x-hidden">
       
-      {/* 1. RESPONSIVE NAVIGATION BAR (FIXED OVERLAP) */}
+      {/* 1. RESPONSIVE NAVIGATION BAR */}
       <nav className="sticky top-0 z-50 w-full bg-[#0A0C10]/80 backdrop-blur-2xl border-b border-white/5 py-4 md:py-6 px-4 md:px-12 flex justify-between items-center transition-all duration-300">
         
         {/* Logo & Title Container */}
@@ -61,6 +69,7 @@ function App() {
 
       {/* 2. MAIN APPLICATION STAGE */}
       <main className="flex-grow flex flex-col relative w-full">
+        {/* Background Ambient Glow */}
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[800px] bg-indigo-500/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
 
         <div className="w-full transition-all duration-700">
@@ -81,10 +90,10 @@ function App() {
           </div>
           <div className="flex flex-col items-center gap-1">
             <p className="text-[8px] md:text-[10px] text-slate-600 uppercase tracking-widest">
-              Engineered by **Sharon T Kuriyakose**
+              Engineered by Sharon T Kuriyakose
             </p>
             <p className="text-[7px] md:text-[8px] text-slate-700 uppercase tracking-widest">
-              Universal Career Intelligence Suite | Batch 2023-2027
+              Universal Career Intelligence Suite 
             </p>
           </div>
         </div>
