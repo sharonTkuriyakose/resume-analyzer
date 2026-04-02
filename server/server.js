@@ -39,37 +39,33 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                 .replace(/\s+/g, ' ')
                 .trim();
             
+            // Hard gate: Instant rejection for extremely short/empty files
             if (resumeText.length < 150) {
-                return res.status(422).json({ message: "Document content is too sparse to be a valid resume." });
+                return res.status(422).json({ 
+                    message: "DOCUMENT CONTENT TOO SPARSE. Please upload a valid professional resume." 
+                });
             }
         } catch (pdfErr) {
             return res.status(400).json({ message: "ERROR READING PDF STRUCTURE." });
         }
 
-        // B. AI CALL (Mandatory 3-Project Lab + Skill Mapping)
-        console.log("🤖 Generating Triple-Project Strategic Lab...");
+        // B. AI CALL (Strict Validation + Strategic Analysis)
+        console.log("🤖 Authenticating Document Structure...");
         const completion = await groq.chat.completions.create({
             messages: [
                 { 
                     role: "system", 
-                    content: `You are a Senior Career Architect. 
+                    content: `You are a Strict ATS Authenticator and Career Architect. 
                     
                     STEP 1: VALIDATE DOCUMENT
-                    Check if text contains Resume markers (Contact, Experience, Education). If not, set "isValidResume" to false.
+                    - Scan text for: Contact Details, Work History, Education, and Skills.
+                    - If the text is a textbook, article, receipt, or random notes, set "isValidResume" to false.
+                    - ONLY if "isValidResume" is true, proceed to Step 2.
 
-                    STEP 2: REALISTIC SCORING ALGORITHM
-                    - Start with Base Score: 85.
-                    - Add/Deduct based on Found vs. Missing Skills. Use a unique integer.
-
-                    STEP 3: MANDATORY 3-PROJECT LAB
-                    - IDENTIFY "keywordsMissing" (Strategy Gaps). 
-                    - 'projectList' (Stage 4): You MUST provide EXACTLY 3 unique project simulations. 
-                    - Each of the 3 projects MUST target different subsets of the 'keywordsMissing'.
-                    - FORBIDDEN: Do not repeat the same project title. Do not use skills from 'foundSkills'.
-                    - Each project MUST have exactly 3 strategic 'points'.
-                    
-                    STEP 4: CURRICULUM
-                    - 'phasedCurriculum' (Stages 1-3): Titled specifically after missing skills.
+                    STEP 2: STRATEGIC ANALYSIS
+                    - 'score': Dynamic integer based on skill density vs. gaps (Base 85).
+                    - 'phasedCurriculum': 3 stages built ONLY to bridge the 'keywordsMissing'.
+                    - 'projectList': EXACTLY 3 unique project simulations targeting missing skills.
                     
                     REQUIRED JSON STRUCTURE:
                     {
@@ -81,15 +77,15 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                       "keywordsDetected": [],
                       "keywordsMissing": [],
                       "phasedCurriculum": [
-                        { "id": 1, "title": "LEARN_[GAP_SKILL]", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
-                        { "id": 2, "title": "MASTER_[GAP_SKILL]", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
-                        { "id": 3, "title": "IMPLEMENT_[GAP_SKILL]", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
+                        { "id": 1, "title": "LEARN_[GAP]", "primaryGoal": "string", "points": [] },
+                        { "id": 2, "title": "MASTER_[GAP]", "primaryGoal": "string", "points": [] },
+                        { "id": 3, "title": "IMPLEMENT_[GAP]", "primaryGoal": "string", "points": [] },
                         { 
                           "id": 4, "title": "STRATEGIC PROJECT LAB", "isProject": true, 
                           "projectList": [
-                            { "name": "Project 1", "desc": "string", "points": ["p1", "p2", "p3"] },
-                            { "name": "Project 2", "desc": "string", "points": ["p1", "p2", "p3"] },
-                            { "name": "Project 3", "desc": "string", "points": ["p1", "p2", "p3"] }
+                            { "name": "Proj 1", "desc": "string", "points": ["p1", "p2", "p3"] },
+                            { "name": "Proj 2", "desc": "string", "points": ["p1", "p2", "p3"] },
+                            { "name": "Proj 3", "desc": "string", "points": ["p1", "p2", "p3"] }
                           ] 
                         }
                       ]
@@ -97,15 +93,15 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                 },
                 { 
                     role: "user", 
-                    content: `Analyze this resume. Bridge Strategy Gaps in the roadmap and generate EXACTLY 3 diverse project simulations in the 'projectList' targeting the missing skills: ${resumeText.substring(0, 7000)}` 
+                    content: `Analyze this document. If it is NOT a professional resume or CV, set 'isValidResume' to false: ${resumeText.substring(0, 7000)}` 
                 }
             ],
             model: "llama-3.3-70b-versatile",
             response_format: { type: "json_object" },
-            temperature: 0.7 
+            temperature: 0.5 
         });
 
-        // C. SAFE PARSING
+        // C. SAFE PARSING & AUTHENTICATION CHECK
         let analysis;
         try {
             analysis = JSON.parse(completion.choices[0].message.content);
@@ -113,15 +109,18 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
             return res.status(500).json({ message: "Neural Link Formatting Error" });
         }
 
+        // REJECTION LOGIC: Stop if document is not a resume
         if (analysis.isValidResume === false) {
-            return res.status(422).json({ message: "INVALID DOCUMENT. Please upload a Resume." });
+            console.log("🚫 Authentication Failed: Invalid Document Type.");
+            return res.status(422).json({ 
+                message: "INVALID DOCUMENT DETECTED. The system only accepts professional Resumes or CVs." 
+            });
         }
 
         // D. DATA REFINEMENT
         analysis.score = parseInt(analysis.score) || 65;
         analysis.score = Math.max(5, Math.min(100, analysis.score));
 
-        // Ensure we always have links for the curriculum
         if (analysis.phasedCurriculum) {
             analysis.phasedCurriculum = analysis.phasedCurriculum.map(item => ({
                 ...item,
@@ -131,7 +130,7 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
         }
 
         res.json(analysis);
-        console.log(`🚀 Analysis Delivered. Projects Generated: ${analysis.phasedCurriculum[3]?.projectList?.length || 0}`);
+        console.log(`🚀 Strategic Scan Delivered. Domain: ${analysis.domain} | Score: ${analysis.score}%`);
 
     } catch (error) {
         console.error("🔥 SERVER ERROR:", error.message);
