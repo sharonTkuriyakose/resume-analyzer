@@ -10,9 +10,10 @@ function App() {
   // Automatically switches between local server and Render based on where the app is running
   const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
   
+  // Note: Render URLs should not end with a trailing slash to avoid 404/Redirect issues
   const API_URL = isLocal 
     ? 'http://localhost:5000' 
-    : 'https://resume-analyzer-na6o.onrender.com'; // Updated to match your current Render URL
+    : 'https://resume-analyzer-na6o.onrender.com';
 
   // ✅ DEBUG LOGGING
   useEffect(() => {
@@ -24,6 +25,7 @@ function App() {
   const handleAnalysisComplete = (data) => {
     console.log(`🚀 Neural Link Established. Analysis Received.`);
     setAnalysisData(data); 
+    // Smooth scroll to top to see the results immediately
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -54,17 +56,19 @@ function App() {
           </div>
         </div>
 
-        {/* Reset Button */}
-        {analysisData && (
-          <button 
-            onClick={handleReset}
-            className="flex items-center gap-2 text-[9px] md:text-xs font-black uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-600 hover:text-white px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl transition-all shadow-lg shrink-0 ml-2"
-          >
-            <RotateCcw className="w-3 h-3 md:w-4 md:h-4" />
-            <span className="hidden sm:inline">Start New Analysis</span>
-            <span className="sm:hidden">Reset</span>
-          </button>
-        )}
+        {/* Action Buttons */}
+        <div className="flex items-center gap-3">
+          {analysisData && (
+            <button 
+              onClick={handleReset}
+              className="flex items-center gap-2 text-[9px] md:text-xs font-black uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-600 hover:text-white px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl transition-all shadow-lg shrink-0 ml-2"
+            >
+              <RotateCcw className="w-3 h-3 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Start New Analysis</span>
+              <span className="sm:hidden">Reset</span>
+            </button>
+          )}
+        </div>
       </nav>
 
       {/* 2. MAIN APPLICATION STAGE */}
@@ -74,6 +78,7 @@ function App() {
 
         <div className="w-full transition-all duration-700">
           {!analysisData ? (
+            // Pass the API_URL down so UploadPage knows where to POST the file
             <UploadPage onAnalysisComplete={handleAnalysisComplete} apiUrl={API_URL} />
           ) : (
             <ResultPage data={analysisData} apiUrl={API_URL} />
