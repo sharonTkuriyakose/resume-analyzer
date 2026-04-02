@@ -25,7 +25,7 @@ const groq = new Groq({ apiKey });
 app.post('/api/analyze', upload.single('resume'), async (req, res) => {
     try {
         if (!req.file || !req.file.buffer) {
-            return res.status(400).json({ message: "No file uploaded or file is empty." });
+            return res.status(400).json({ message: "No file uploaded." });
         }
 
         console.log(`--- Processing: ${req.file.originalname} ---`);
@@ -41,27 +41,29 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
             
             if (resumeText.length < 20) throw new Error("Unreadable content");
         } catch (pdfErr) {
-            return res.status(400).json({ message: "ERROR READING PDF FILE STRUCTURE." });
+            return res.status(400).json({ message: "ERROR READING PDF." });
         }
 
-        // B. AI CALL (Strict Professional Response Logic)
-        console.log("🤖 Generating High-Impact Industry Response...");
+        // B. AI CALL (Deductive Scoring Logic)
+        console.log("🤖 Performing Deductive ATS Scoring...");
         const completion = await groq.chat.completions.create({
             messages: [
                 { 
                     role: "system", 
-                    content: `You are a Senior Career Strategist. Analyze the resume and return ONLY a JSON object.
+                    content: `You are a Strict ATS (Applicant Tracking System) Scanner. 
                     
-                    STRICT RESPONSE RULES:
-                    1. 'domain': MUST be the specific job title detected (e.g., 'Registered Nurse', 'Full Stack Developer').
-                    2. 'phasedCurriculum' (Stages 1-3): 
-                       - EVERY STAGE TITLE must be a professional industry name (e.g., 'Scalable Infrastructure' or 'Clinical Informatics'). 
-                       - DO NOT use titles like 'UPGRADE_STAGE' or 'Stage 1'.
-                       - Base these stages ONLY on the 'keywordsMissing' (The Strategy Gaps).
-                    3. 'Stage 4' (The Final Phase):
-                       - DO NOT name it 'Capstone Projects' or 'Strategic Projects'.
-                       - Name it an 'Advanced [Domain] Integration' title.
-                    4. 'projectList': Generate 3 unique projects. Each MUST have exactly 3 strategic points that use the MISSING skills.
+                    DEDUCTIVE SCORING SYSTEM:
+                    1. Start with a base score of 100.
+                    2. Deduct 5-10 points for every "keywordsMissing" (Strategy Gaps) found relative to the industry.
+                    3. Deduct 10 points if there are no quantifiable metrics (e.g., percentages, dollar amounts).
+                    4. Deduct 5 points if the resume is too short or lacks a clear summary.
+                    5. The 'score' MUST be the final result of these subtractions.
+                    
+                    STRICT RULES:
+                    - 'domain': The exact detected profession.
+                    - 'phasedCurriculum': 3 stages targeting the Strategy Gaps (Missing Skills).
+                    - Stage 4: 3 projects using Missing Skills with 3 points each.
+                    - DO NOT use 75, 82, or any static numbers. Every resume must have a unique score based on its flaws.
                     
                     REQUIRED JSON STRUCTURE:
                     {
@@ -72,13 +74,12 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                       "keywordsDetected": [],
                       "keywordsMissing": [],
                       "phasedCurriculum": [
-                        { "id": 1, "title": "PROFESSIONAL_INDUSTRY_TITLE", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
-                        { "id": 2, "title": "PROFESSIONAL_INDUSTRY_TITLE", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
-                        { "id": 3, "title": "PROFESSIONAL_INDUSTRY_TITLE", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
+                        { "id": 1, "title": "string", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
+                        { "id": 2, "title": "string", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
+                        { "id": 3, "title": "string", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
                         { 
                           "id": 4, 
-                          "title": "ADVANCED_DOMAIN_MASTERY_TITLE", 
-                          "primaryGoal": "string",
+                          "title": "ADVANCED DOMAIN PROJECTS", 
                           "isProject": true, 
                           "projectList": [
                             { "name": "string", "desc": "string", "points": ["step1", "step2", "step3"] }
@@ -89,12 +90,13 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                 },
                 { 
                     role: "user", 
-                    content: `Analyze this resume. Ignore all generic templates. Create a professional learning path and project list that uses ONLY high-level industry titles to fill the user's Strategy Gaps: ${resumeText.substring(0, 6000)}` 
+                    content: `Scan this resume for flaws and missing industry keywords. Apply the Deductive Scoring System to provide a unique, harsh, and honest market readiness score: ${resumeText.substring(0, 6000)}` 
                 }
             ],
             model: "llama-3.3-70b-versatile",
             response_format: { type: "json_object" },
-            temperature: 0.5
+            // TEMPERATURE AT 0.8: This ensures the model is creative and varied with numbers.
+            temperature: 0.8 
         });
 
         // C. SAFE PARSING
@@ -106,22 +108,23 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
         }
 
         // D. DATA REFINEMENT
-        let rawScore = parseInt(analysis.score) || 75;
-        analysis.score = Math.max(75, Math.min(100, rawScore));
+        analysis.score = parseInt(analysis.score);
+        if (isNaN(analysis.score)) analysis.score = 50; 
+        analysis.score = Math.max(0, Math.min(100, analysis.score));
 
         if (analysis.phasedCurriculum) {
             analysis.phasedCurriculum = analysis.phasedCurriculum.map(item => ({
                 ...item,
-                docLink: `https://google.com/search?q=${encodeURIComponent(item.title || "")}+training+path`,
+                docLink: `https://google.com/search?q=${encodeURIComponent(item.title || "")}+learning+path`,
                 videoLink: `https://www.youtube.com/results?search_query=${encodeURIComponent(item.title || "")}+tutorial+2026`
             }));
         }
 
         res.json(analysis);
-        console.log(`🚀 Strategic Analysis Delivered for ${analysis.domain}`);
+        console.log(`🚀 Strategic Scan Delivered for ${analysis.domain} | Score: ${analysis.score}%`);
 
     } catch (error) {
-        console.error("🔥 GLOBAL ERROR:", error.message);
+        console.error("🔥 SERVER ERROR:", error.message);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
