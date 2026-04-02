@@ -40,24 +40,28 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                 .trim();
             
             if (resumeText.length < 20) throw new Error("Unreadable content");
-            console.log(`✅ Extraction successful: ${resumeText.length} chars found.`);
         } catch (pdfErr) {
-            console.error("❌ PDF Parse Failure:", pdfErr.message);
             return res.status(400).json({ message: "ERROR READING PDF FILE STRUCTURE." });
         }
 
-        // B. AI CALL (Dynamic Project Generation + Score Logic)
-        console.log("🤖 Consulting AI Strategist...");
+        // B. AI CALL (Strict Professional Response Logic)
+        console.log("🤖 Generating High-Impact Industry Response...");
         const completion = await groq.chat.completions.create({
             messages: [
                 { 
                     role: "system", 
-                    content: `You are a Career Strategist. Analyze the resume and return ONLY a JSON object.
+                    content: `You are a Senior Career Strategist. Analyze the resume and return ONLY a JSON object.
                     
-                    RULES:
-                    1. 'score': Must be an integer between 75 and 100 based on resume quality.
-                    2. 'projects': Provide 3 high-level 'Project Simulations' tailored to the specific domain of the resume.
-                    3. 'points': Each project MUST have exactly 3 professional, strategic bullet points.
+                    STRICT RESPONSE RULES:
+                    1. 'domain': MUST be the specific job title detected (e.g., 'Registered Nurse', 'Full Stack Developer').
+                    2. 'phasedCurriculum' (Stages 1-3): 
+                       - EVERY STAGE TITLE must be a professional industry name (e.g., 'Scalable Infrastructure' or 'Clinical Informatics'). 
+                       - DO NOT use titles like 'UPGRADE_STAGE' or 'Stage 1'.
+                       - Base these stages ONLY on the 'keywordsMissing' (The Strategy Gaps).
+                    3. 'Stage 4' (The Final Phase):
+                       - DO NOT name it 'Capstone Projects' or 'Strategic Projects'.
+                       - Name it an 'Advanced [Domain] Integration' title.
+                    4. 'projectList': Generate 3 unique projects. Each MUST have exactly 3 strategic points that use the MISSING skills.
                     
                     REQUIRED JSON STRUCTURE:
                     {
@@ -65,20 +69,32 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                       "domain": "string",
                       "foundSkills": [],
                       "missingSkills": [],
-                      "projects": [
-                        { "title": "string", "target": "string", "points": ["point1", "point2", "point3"] }
-                      ],
-                      "roadmap": [{"skill": "string", "reason": "string"}]
+                      "keywordsDetected": [],
+                      "keywordsMissing": [],
+                      "phasedCurriculum": [
+                        { "id": 1, "title": "PROFESSIONAL_INDUSTRY_TITLE", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
+                        { "id": 2, "title": "PROFESSIONAL_INDUSTRY_TITLE", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
+                        { "id": 3, "title": "PROFESSIONAL_INDUSTRY_TITLE", "primaryGoal": "string", "points": ["p1", "p2", "p3"] },
+                        { 
+                          "id": 4, 
+                          "title": "ADVANCED_DOMAIN_MASTERY_TITLE", 
+                          "primaryGoal": "string",
+                          "isProject": true, 
+                          "projectList": [
+                            { "name": "string", "desc": "string", "points": ["step1", "step2", "step3"] }
+                          ] 
+                        }
+                      ]
                     }` 
                 },
                 { 
                     role: "user", 
-                    content: `Analyze this resume and provide a tailored career lab: ${resumeText.substring(0, 6000)}` 
+                    content: `Analyze this resume. Ignore all generic templates. Create a professional learning path and project list that uses ONLY high-level industry titles to fill the user's Strategy Gaps: ${resumeText.substring(0, 6000)}` 
                 }
             ],
             model: "llama-3.3-70b-versatile",
             response_format: { type: "json_object" },
-            temperature: 0.3
+            temperature: 0.5
         });
 
         // C. SAFE PARSING
@@ -90,20 +106,19 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
         }
 
         // D. DATA REFINEMENT
-        // 1. Force Score Range (75-100)
         let rawScore = parseInt(analysis.score) || 75;
         analysis.score = Math.max(75, Math.min(100, rawScore));
 
-        // 2. Roadmap Link Enrichment
-        const rawRoadmap = analysis.roadmap || [];
-        analysis.roadmap = rawRoadmap.map(item => ({
-            ...item,
-            link: `https://google.com/search?q=${encodeURIComponent(item.skill || "")}+documentation`,
-            youtubeLink: `https://www.youtube.com/results?search_query=${encodeURIComponent(item.skill || "")}+tutorial`
-        }));
+        if (analysis.phasedCurriculum) {
+            analysis.phasedCurriculum = analysis.phasedCurriculum.map(item => ({
+                ...item,
+                docLink: `https://google.com/search?q=${encodeURIComponent(item.title || "")}+training+path`,
+                videoLink: `https://www.youtube.com/results?search_query=${encodeURIComponent(item.title || "")}+tutorial+2026`
+            }));
+        }
 
         res.json(analysis);
-        console.log(`🚀 Analysis Delivered. Score: ${analysis.score}%`);
+        console.log(`🚀 Strategic Analysis Delivered for ${analysis.domain}`);
 
     } catch (error) {
         console.error("🔥 GLOBAL ERROR:", error.message);
