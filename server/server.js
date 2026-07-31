@@ -148,7 +148,7 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
             
             if (jobRes.ok) {
                 const jobData = await jobRes.json();
-                analysis.liveJobs = (jobData.data || []).slice(0, 6).map(j => ({
+                analysis.liveJobs = (jobData.data?.jobs || []).slice(0, 6).map(j => ({
                     id: j.job_id,
                     title: j.job_title,
                     company: j.employer_name,
