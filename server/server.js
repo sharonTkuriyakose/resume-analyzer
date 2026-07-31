@@ -63,6 +63,9 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                     - ONLY if "isValidResume" is true, proceed to Step 2.
 
                     STEP 2: STRATEGIC ANALYSIS
+                    - Identify the user's specific Job Role or Target Domain from their experience/summary.
+                    - 'domain': The specific professional domain or job title detected.
+                    - 'missingSkills' and 'keywordsMissing': IMPORTANT: MUST be strictly relevant to the identified Job Role based on current industry standards. Do NOT provide irrelevant or generic gaps.
                     - 'score': Dynamic integer based on skill density vs. gaps (Base 85).
                     - 'phasedCurriculum': 3 stages built ONLY to bridge the 'keywordsMissing'.
                     - 'projectList': EXACTLY 3 unique project simulations targeting missing skills.
@@ -127,6 +130,41 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                 docLink: `https://google.com/search?q=${encodeURIComponent(item.title || "")}+learning+roadmap`,
                 videoLink: `https://www.youtube.com/results?search_query=${encodeURIComponent(item.title || "")}+tutorial+2026`
             }));
+        }
+
+        // E. FETCH LIVE JOB RECOMMENDATIONS (South India focus via JSearch)
+        try {
+            console.log(`🌐 Fetching live jobs for domain: ${analysis.domain} in South India...`);
+            const query = `${analysis.domain} in Bangalore, Chennai, Hyderabad, India`;
+            const jobSearchUrl = `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(query)}&page=1&num_pages=1&date_posted=week`;
+            
+            const jobRes = await fetch(jobSearchUrl, {
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+                    'X-RapidAPI-Host': 'jsearch.p.rapidapi.com'
+                }
+            });
+            
+            if (jobRes.ok) {
+                const jobData = await jobRes.json();
+                analysis.liveJobs = (jobData.data || []).slice(0, 6).map(j => ({
+                    id: j.job_id,
+                    title: j.job_title,
+                    company: j.employer_name,
+                    url: j.job_apply_link || j.job_google_link,
+                    type: j.job_employment_type ? j.job_employment_type.toLowerCase().replace('_', ' ') : "full time",
+                    location: [j.job_city, j.job_state].filter(Boolean).join(', ') || j.job_country || "South India",
+                    description: j.job_description ? j.job_description.substring(0, 150) + '...' : 'No description provided.'
+                }));
+                console.log(`✅ Fetched ${analysis.liveJobs.length} live jobs from JSearch.`);
+            } else {
+                console.error("⚠️ JSearch API Error:", jobRes.status, await jobRes.text());
+                analysis.liveJobs = [];
+            }
+        } catch (jobErr) {
+            console.error("⚠️ Failed to fetch live jobs via JSearch:", jobErr.message);
+            analysis.liveJobs = [];
         }
 
         res.json(analysis);

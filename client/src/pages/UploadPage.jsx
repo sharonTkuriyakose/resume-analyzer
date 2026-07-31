@@ -1,5 +1,6 @@
 import React from 'react';
 import ResumeUpload from '../components/ResumeUpload';
+import { motion } from 'framer-motion';
 import { 
   ShieldCheck, Map, Cpu, Zap, 
   Search, BarChart3, Globe, Sparkles,
@@ -7,156 +8,259 @@ import {
 } from 'lucide-react';
 
 const UploadPage = ({ onAnalysisComplete }) => {
-  const PEOPLE = [
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150",
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150",
-    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150",
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150&h=150"
-  ];
-
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   return (
-    <div className="min-h-screen w-full bg-[#0A0C10] text-slate-200 font-sans selection:bg-indigo-500/30 overflow-x-hidden pt-8 md:pt-12">
+    <div className="w-full bg-[#050505] text-slate-200 font-sans selection:bg-[#FF6A00]/30 overflow-x-hidden relative">
       <style dangerouslySetInnerHTML={{ __html: `
         html, body, #root { 
           margin: 0 !important; 
           padding: 0 !important; 
-          background-color: #0A0C10 !important; 
+          background-color: #050505 !important; 
           width: 100%;
           min-height: 100%;
+          scroll-behavior: smooth;
+        }
+        /* Hide scrollbar for clean cinematic look */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #050505; 
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #333; 
+          border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #555; 
         }
       `}} />
 
-      <div className="max-w-[1700px] mx-auto px-6 md:px-12 space-y-24 md:space-y-48">
+      <main className="relative w-full flex flex-col items-center">
         
-        {/* 1. TOP SYSTEM STATUS */}
-        <div className="flex flex-col sm:flex-row justify-between items-center pb-6 md:pb-8 border-b border-white/5 gap-6">
-            <div className="flex items-center gap-4 text-white font-black text-sm md:text-xl uppercase tracking-[0.2em] md:tracking-[0.4em] text-center">
-                <Activity className="w-5 h-5 text-indigo-500" /> System Neural Link Active
-            </div>
-            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
-                <div className="flex items-center gap-2 text-emerald-400 font-bold text-[10px] md:text-sm uppercase tracking-widest">
-                    <CheckCircle2 className="w-4 h-4" /> Groq Engine Online
-                </div>
-                <div className="px-4 md:px-6 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-[10px] md:text-sm font-black uppercase tracking-[0.2em] text-white">
-                    v2.0 Scan Ready
-                </div>
-            </div>
-        </div>
+        {/* ========================================================
+            SECTION 1: DASHBOARD HERO (Circuit Animation)
+            ======================================================== */}
+        <section className="w-full flex flex-col items-center justify-start pt-4 md:pt-12 min-h-screen relative overflow-hidden">
+          {/* BACKGROUND NOISE / AMBIENT */}
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay z-0"></div>
 
-        {/* 2. HERO SECTION */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
-          <div className="lg:col-span-7 space-y-8 md:space-y-14 text-center lg:text-left">
-            <div className="inline-flex items-center gap-3 px-4 md:px-6 py-2 md:py-3 bg-indigo-500/10 border border-indigo-500/20 rounded-full shadow-lg">
-              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-indigo-400 animate-pulse" />
-              <span className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-white">
-                Next-Gen MERN Intelligence
+          {/* HEADER AREA */}
+          <div className="text-center space-y-6 flex flex-col items-center relative z-20 px-4 mt-8 md:mt-0 w-full max-w-5xl mx-auto">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="inline-flex items-center gap-3 px-4 md:px-6 py-2 md:py-3 bg-[#111] border border-[#333] rounded-full shadow-lg backdrop-blur-md"
+            >
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-[#FF6A00]" />
+              <span className="text-[10px] md:text-sm font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-slate-300">
+                Neural Architecture
               </span>
-            </div>
-
-            <h1 className="text-4xl sm:text-6xl lg:text-9xl font-black text-white leading-tight lg:leading-[0.9] tracking-tighter break-words">
-              Elevate Your <br />
-              Professional Path.
-            </h1>
-
-            <div className="space-y-6 md:space-y-8">
-                <p className="text-lg md:text-2xl text-slate-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                  Instantly detect skill gaps in your profile and generate an automated, 
-                  project-based learning roadmap to reach your career goals.
-                </p>
-                <div className="flex flex-wrap justify-center lg:justify-start gap-3 md:gap-8 pt-4">
-                    {[{icon: <Zap/>, label: "Benchmarking"}, {icon: <BarChart3/>, label: "Scoring"}, {icon: <Globe/>, label: "Standards"}].map((item, i) => (
-                      <div key={i} className="flex items-center gap-2 text-slate-300 font-bold text-[10px] md:text-sm uppercase tracking-widest bg-white/5 px-3 md:px-4 py-2 rounded-lg border border-white/5">
-                        <span className="text-indigo-500">{React.cloneElement(item.icon, {className: "w-4 h-4"})}</span> {item.label}
-                      </div>
-                    ))}
-                </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 md:gap-12 pt-6 md:pt-10">
-              <div className="flex -space-x-3 md:-space-x-6">
-                {PEOPLE.map((url, i) => (
-                  <div key={i} className="w-10 h-10 md:w-20 md:h-20 rounded-full border-[3px] md:border-[8px] border-[#0A0C10] shadow-2xl overflow-hidden relative group">
-                    <img src={url} alt="User" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
-                  </div>
-                ))}
-                <div className="w-10 h-10 md:w-20 md:h-20 rounded-full border-[3px] md:border-[8px] border-[#0A0C10] bg-indigo-600 flex items-center justify-center text-white text-[8px] md:text-sm font-black shadow-2xl">
-                  +500
-                </div>
-              </div>
-              <div className="space-y-1 text-center sm:text-left">
-                <p className="text-lg md:text-3xl font-black text-white tracking-tight">500+ Professionals</p>
-                <p className="text-[10px] md:text-base text-slate-500 font-bold uppercase tracking-widest">Daily Analysis Active</p>
-              </div>
-            </div>
+            </motion.div>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 1 }}
+              className="text-4xl sm:text-6xl lg:text-[5rem] font-black text-white leading-[1.1] tracking-tighter drop-shadow-2xl"
+            >
+              Inference at the <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#FF6A00] to-[#FFA040]">Edge.</span>
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9, duration: 1 }}
+              className="text-sm md:text-xl text-slate-400 max-w-3xl text-center leading-relaxed font-medium px-4"
+            >
+               Instantly detect skill gaps in your profile and generate an automated, project-based learning roadmap to reach your career goals. Enjoy unparalleled performance with our best-in-class analysis engine.
+            </motion.p>
           </div>
 
-          {/* UPLOAD CARD */}
-          <div className="lg:col-span-5 relative w-full">
-            <div className="absolute -inset-8 md:-inset-24 bg-indigo-600/10 blur-[60px] md:blur-[140px] rounded-full -z-10 animate-pulse"></div>
-            <div className="bg-white/[0.03] backdrop-blur-3xl p-6 sm:p-12 md:p-16 rounded-[2.5rem] md:rounded-[4.5rem] border border-white/10 shadow-2xl relative w-full overflow-hidden">
-              <div className="absolute top-6 right-6 md:top-12 md:right-16">
-                  <div className="bg-emerald-500 w-2 h-2 md:w-4 md:h-4 rounded-full animate-ping" />
-              </div>
-              <ResumeUpload 
-                onResult={onAnalysisComplete} 
-                apiUrl={API_BASE_URL} 
-              />
+          {/* NEURAL CIRCUIT DASHBOARD */}
+          <div className="relative w-full max-w-7xl h-[600px] md:h-[700px] mt-12 md:mt-16 flex items-center justify-center">
+            
+            {/* SVG Circuit Lines */}
+            <div className="absolute inset-0 hidden md:block z-10">
+              <svg viewBox="0 0 1200 800" className="w-full h-full overflow-visible" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                     <feGaussianBlur stdDeviation="6" result="blur" />
+                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
+                {/* Dim Background Lines */}
+                <g fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="2">
+                  <path d="M 600 400 L 600 150 L 200 150" />
+                  <path d="M 600 400 L 600 150 L 1000 150" />
+                  <path d="M 600 400 L 600 650 L 200 650" />
+                  <path d="M 600 400 L 600 650 L 1000 650" />
+                </g>
+
+                {/* Glowing Animated Lines */}
+                <motion.g fill="none" stroke="#FF6A00" strokeWidth="3" filter="url(#glow)">
+                  <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1, ease: "easeOut"}} d="M 600 400 L 600 150 L 200 150" />
+                  <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1, ease: "easeOut"}} d="M 600 400 L 600 150 L 1000 150" />
+                  <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1.2, ease: "easeOut"}} d="M 600 400 L 600 650 L 200 650" />
+                  <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1.2, ease: "easeOut"}} d="M 600 400 L 600 650 L 1000 650" />
+                </motion.g>
+              </svg>
             </div>
+
+            {/* FLOATING NODES */}
+            <div className="absolute inset-0 hidden md:block pointer-events-none z-20">
+               {/* Top Left */}
+               <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3, type: "spring"}} className="absolute top-[18.75%] left-[16.66%] -translate-x-1/2 -translate-y-1/2">
+                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,106,0,0.2)] backdrop-blur-xl">
+                   <Cpu className="w-8 h-8 text-white/70" />
+                 </div>
+               </motion.div>
+               {/* Top Right */}
+               <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3.1, type: "spring"}} className="absolute top-[18.75%] left-[83.33%] -translate-x-1/2 -translate-y-1/2">
+                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,106,0,0.2)] backdrop-blur-xl">
+                   <Zap className="w-8 h-8 text-white/70" />
+                 </div>
+               </motion.div>
+               {/* Bottom Left */}
+               <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3.2, type: "spring"}} className="absolute top-[81.25%] left-[16.66%] -translate-x-1/2 -translate-y-1/2">
+                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,106,0,0.2)] backdrop-blur-xl">
+                   <Target className="w-8 h-8 text-white/70" />
+                 </div>
+               </motion.div>
+               {/* Bottom Right */}
+               <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3.3, type: "spring"}} className="absolute top-[81.25%] left-[83.33%] -translate-x-1/2 -translate-y-1/2">
+                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,106,0,0.2)] backdrop-blur-xl">
+                   <Globe className="w-8 h-8 text-white/70" />
+                 </div>
+               </motion.div>
+            </div>
+
+            {/* UPLOAD CARD (CENTER ENGINE) */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+              className="relative z-30 w-full max-w-xl px-4 md:px-0"
+            >
+              <div className="absolute inset-0 bg-[#FF6A00]/20 blur-[100px] rounded-full -z-10 animate-pulse"></div>
+              
+              <div className="bg-[#0A0C10]/95 backdrop-blur-3xl p-6 md:p-12 rounded-[2.5rem] border border-[#FF6A00]/30 shadow-[0_0_80px_rgba(255,106,0,0.15)] relative w-full flex flex-col items-center">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF6A00] to-transparent opacity-50"></div>
+                
+                {/* Core Node Icon */}
+                <motion.div 
+                  initial={{ rotate: -90 }}
+                  animate={{ rotate: 0 }}
+                  transition={{ duration: 2, delay: 1 }}
+                  className="w-16 h-16 md:w-20 md:h-20 bg-[#FF6A00]/10 border border-[#FF6A00]/40 rounded-3xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(255,106,0,0.3)]"
+                >
+                   <Activity className="w-8 h-8 md:w-10 md:h-10 text-[#FF6A00]" />
+                </motion.div>
+
+                <div className="w-full pointer-events-auto">
+                  <ResumeUpload onResult={onAnalysisComplete} apiUrl={API_BASE_URL} />
+                </div>
+              </div>
+            </motion.div>
+
           </div>
         </section>
 
-        {/* 3. BENTO GRID FEATURES - Responsive fix for narrow columns */}
-        <section className="space-y-12 md:space-y-24">
+
+        {/* ========================================================
+            SECTION 2: FEATURES GRID (Smooth Scroll Reveal)
+            ======================================================== */}
+        <motion.section 
+          initial={{ opacity: 0, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-[1700px] mx-auto px-6 md:px-12 space-y-12 md:space-y-20 py-24 md:py-32 relative z-20"
+        >
           <div className="flex flex-col items-center text-center space-y-4 md:space-y-8">
             <div className="px-6 md:px-8 py-2 md:py-3 bg-white/5 border border-white/10 text-slate-400 rounded-xl md:rounded-2xl text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.4em]">
               System Architecture
             </div>
-            <h2 className="text-3xl md:text-7xl font-black text-white tracking-tight uppercase text-center">Full-Stack Intelligence</h2>
+            <h2 className="text-3xl md:text-6xl font-black text-white tracking-tight uppercase text-center">Unleash your AI application's full potential</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
-              { icon: <Search/>, title: "Deep Scan", desc: "Scanning MERN & UI/UX competencies with high-precision parsing logic.", color: "text-indigo-400" },
-              { icon: <Target/>, title: "Gap Detection", desc: "Identifying exactly which tools and frameworks are missing from your stack.", color: "text-amber-400" },
-              { icon: <Map/>, title: "Live Roadmap", desc: "Personalized learning paths with documentation and YouTube resources.", color: "text-emerald-400" }
+              { icon: <Search/>, title: "Deep Scan", desc: "Scanning competencies with high-precision parsing logic." },
+              { icon: <Target/>, title: "Gap Detection", desc: "Identifying exactly which tools and frameworks are missing." },
+              { icon: <Map/>, title: "Live Roadmap", desc: "Personalized learning paths with documentation and resources." }
             ].map((feature, i) => (
-              <div key={i} className="group bg-white/[0.02] p-8 md:p-14 rounded-[2.5rem] md:rounded-[4rem] border border-white/5 hover:border-indigo-500/30 hover:bg-white/[0.04] transition-all duration-700 min-w-0">
-                <div className={`w-14 h-14 md:w-24 md:h-24 bg-white/5 ${feature.color} rounded-xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-12 group-hover:scale-110 transition-transform shadow-2xl shrink-0`}>
+              <div key={i} className="group bg-[#111111]/90 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-white/5 hover:border-[#FF6A00]/40 transition-all duration-500 shadow-2xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#FF6A00]/0 via-transparent to-[#FF6A00]/0 group-hover:from-[#FF6A00]/10 transition-all duration-700 pointer-events-none" />
+                
+                <div className="w-14 h-14 md:w-20 md:h-20 bg-[#1A1A1A] text-[#FF6A00] rounded-2xl md:rounded-3xl flex items-center justify-center mb-8 md:mb-10 shadow-[0_0_15px_rgba(255,106,0,0.1)] border border-white/5 group-hover:-translate-y-2 transition-transform duration-500">
                   {React.cloneElement(feature.icon, {className: "w-7 h-7 md:w-9 md:h-9"})}
                 </div>
-                <h3 className="text-xl md:text-3xl font-black text-white mb-4 md:mb-6 uppercase tracking-tight break-words">{feature.title}</h3>
-                <p className="text-sm md:text-xl text-slate-400 leading-relaxed font-medium">{feature.desc}</p>
+                <h3 className="text-xl md:text-2xl font-black text-white mb-4 md:mb-6 uppercase tracking-tight relative z-10">{feature.title}</h3>
+                <p className="text-sm md:text-lg text-slate-400 leading-relaxed font-medium relative z-10">{feature.desc}</p>
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
-        {/* 4. SYSTEM STATS - Grid fix for overlapping numbers */}
-        <section className="bg-white/[0.03] border border-white/5 rounded-[2.5rem] md:rounded-[6rem] p-8 sm:p-16 md:p-28 text-white relative overflow-hidden shadow-2xl mb-12 md:mb-24">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-20 text-center relative z-10">
-            {[
-              { label: "Analyzed", val: "50+", icon: <Cpu /> },
-              { label: "Accuracy", val: "99%", icon: <Award /> },
-              { label: "Time", val: "1.2s", icon: <Zap /> },
-              { label: "Global", val: "24/7", icon: <Globe /> }
-            ].map((stat, i) => (
-              <div key={i} className="space-y-4 md:space-y-8 flex flex-col items-center">
-                <div className="flex items-center justify-center gap-2 md:gap-4 text-indigo-400/60">
-                   {React.cloneElement(stat.icon, {className: "w-4 h-4 md:w-6 md:h-6"})}
-                   <span className="text-[10px] md:text-base font-black uppercase tracking-[0.2em] md:tracking-[0.3em]">{stat.label}</span>
-                </div>
-                <h4 className="text-5xl md:text-8xl font-black tracking-tighter text-white break-words">
-                  {stat.val}
-                </h4>
-              </div>
-            ))}
+        {/* ========================================================
+            SECTION 3: SYSTEM STATS (The Glowing Globe)
+            ======================================================== */}
+        <motion.section 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className="w-full relative py-32 md:py-48 flex flex-col items-center justify-center overflow-hidden"
+        >
+          {/* THE GIANT GLOWING GLOBE */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+             {/* Halo Glow */}
+             <div className="absolute w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[#FF6A00]/30 rounded-full blur-[100px] md:blur-[150px]"></div>
+             
+             {/* The Sphere */}
+             <div className="w-[300px] h-[300px] md:w-[600px] md:h-[600px] rounded-full border border-white/10 bg-[radial-gradient(circle_at_30%_30%,_rgba(255,106,0,0.2)_0%,_rgba(5,5,5,1)_80%)] shadow-[inset_0_0_80px_rgba(255,106,0,0.6)] relative overflow-hidden flex items-center justify-center">
+                {/* Dotted Grid / Lat Long Lines */}
+                <div className="absolute w-[200%] h-[1px] bg-[#FF6A00]/20 rotate-45"></div>
+                <div className="absolute w-[200%] h-[1px] bg-[#FF6A00]/20 -rotate-45"></div>
+                <div className="absolute w-[200%] h-[1px] bg-[#FF6A00]/20 rotate-12"></div>
+                <div className="absolute w-[200%] h-[1px] bg-[#FF6A00]/20 -rotate-12"></div>
+                {/* Fake rotation animation on texture */}
+                <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
+             </div>
           </div>
-        </section>
-      </div>
+
+          <div className="relative z-10 w-full max-w-[1700px] mx-auto px-6 md:px-12 flex flex-col items-center">
+            
+            <h2 className="text-3xl md:text-6xl lg:text-7xl font-black text-white tracking-tight uppercase text-center mb-16 md:mb-24 drop-shadow-2xl max-w-4xl">
+              A truly global network for lightning-fast inference
+            </h2>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-16 text-center w-full max-w-5xl bg-[#050505]/60 backdrop-blur-xl p-8 md:p-12 rounded-[3rem] border border-white/5 shadow-2xl">
+              {[
+                { label: "Analyzed", val: "50+", icon: <Cpu /> },
+                { label: "Accuracy", val: "99%", icon: <Award /> },
+                { label: "Time", val: "1.2s", icon: <Zap /> },
+                { label: "Global", val: "24/7", icon: <Globe /> }
+              ].map((stat, i) => (
+                <div key={i} className="space-y-4 md:space-y-6 flex flex-col items-center">
+                  <div className="flex items-center justify-center gap-2 md:gap-3 text-slate-400">
+                     {React.cloneElement(stat.icon, {className: "w-4 h-4 md:w-5 md:h-5 text-[#FF6A00]"})}
+                     <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">{stat.label}</span>
+                  </div>
+                  <h4 className="text-4xl md:text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+                    {stat.val}
+                  </h4>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+      </main>
     </div>
   );
 };
