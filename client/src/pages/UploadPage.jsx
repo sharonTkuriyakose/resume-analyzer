@@ -11,7 +11,7 @@ const UploadPage = ({ onAnalysisComplete }) => {
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   return (
-    <div className="w-full bg-[#050505] text-slate-200 font-sans selection:bg-[#FF6A00]/30 overflow-x-hidden relative">
+    <div className="w-full bg-[#050505] text-slate-200 font-sans selection:bg-[#06b6d4]/30 overflow-x-hidden relative">
       <style dangerouslySetInnerHTML={{ __html: `
         html, body, #root { 
           margin: 0 !important; 
@@ -54,7 +54,7 @@ const UploadPage = ({ onAnalysisComplete }) => {
               transition={{ delay: 0.5, duration: 0.8 }}
               className="inline-flex items-center gap-3 px-4 md:px-6 py-2 md:py-3 bg-[#111] border border-[#333] rounded-full shadow-lg backdrop-blur-md"
             >
-              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-[#FF6A00]" />
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-[#06b6d4]" />
               <span className="text-[10px] md:text-sm font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-slate-300">
                 Neural Architecture
               </span>
@@ -66,7 +66,7 @@ const UploadPage = ({ onAnalysisComplete }) => {
               transition={{ delay: 0.7, duration: 1 }}
               className="text-4xl sm:text-6xl lg:text-[5rem] font-black text-white leading-[1.1] tracking-tighter drop-shadow-2xl"
             >
-              Inference at the <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#FF6A00] to-[#FFA040]">Edge.</span>
+              Inference at the Edge.
             </motion.h1>
             
             <motion.p 
@@ -101,7 +101,7 @@ const UploadPage = ({ onAnalysisComplete }) => {
                 </g>
 
                 {/* Glowing Animated Lines */}
-                <motion.g fill="none" stroke="#FF6A00" strokeWidth="3" filter="url(#glow)">
+                <motion.g fill="none" stroke="#06b6d4" strokeWidth="3" filter="url(#glow)">
                   <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1, ease: "easeOut"}} d="M 600 400 L 600 150 L 200 150" />
                   <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1, ease: "easeOut"}} d="M 600 400 L 600 150 L 1000 150" />
                   <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1.2, ease: "easeOut"}} d="M 600 400 L 600 650 L 200 650" />
@@ -114,25 +114,25 @@ const UploadPage = ({ onAnalysisComplete }) => {
             <div className="absolute inset-0 hidden md:block pointer-events-none z-20">
                {/* Top Left */}
                <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3, type: "spring"}} className="absolute top-[18.75%] left-[16.66%] -translate-x-1/2 -translate-y-1/2">
-                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,106,0,0.2)] backdrop-blur-xl">
+                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.2)] backdrop-blur-xl">
                    <Cpu className="w-8 h-8 text-white/70" />
                  </div>
                </motion.div>
                {/* Top Right */}
                <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3.1, type: "spring"}} className="absolute top-[18.75%] left-[83.33%] -translate-x-1/2 -translate-y-1/2">
-                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,106,0,0.2)] backdrop-blur-xl">
+                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.2)] backdrop-blur-xl">
                    <Zap className="w-8 h-8 text-white/70" />
                  </div>
                </motion.div>
                {/* Bottom Left */}
                <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3.2, type: "spring"}} className="absolute top-[81.25%] left-[16.66%] -translate-x-1/2 -translate-y-1/2">
-                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,106,0,0.2)] backdrop-blur-xl">
+                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.2)] backdrop-blur-xl">
                    <Target className="w-8 h-8 text-white/70" />
                  </div>
                </motion.div>
                {/* Bottom Right */}
                <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3.3, type: "spring"}} className="absolute top-[81.25%] left-[83.33%] -translate-x-1/2 -translate-y-1/2">
-                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(255,106,0,0.2)] backdrop-blur-xl">
+                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.2)] backdrop-blur-xl">
                    <Globe className="w-8 h-8 text-white/70" />
                  </div>
                </motion.div>
@@ -145,19 +145,19 @@ const UploadPage = ({ onAnalysisComplete }) => {
               transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
               className="relative z-30 w-full max-w-xl px-4 md:px-0"
             >
-              <div className="absolute inset-0 bg-[#FF6A00]/20 blur-[100px] rounded-full -z-10 animate-pulse"></div>
+              <div className="absolute inset-0 bg-[#06b6d4]/20 blur-[100px] rounded-full -z-10 animate-pulse"></div>
               
-              <div className="bg-[#0A0C10]/95 backdrop-blur-3xl p-6 md:p-12 rounded-[2.5rem] border border-[#FF6A00]/30 shadow-[0_0_80px_rgba(255,106,0,0.15)] relative w-full flex flex-col items-center">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF6A00] to-transparent opacity-50"></div>
+              <div className="bg-[#0A0C10]/95 backdrop-blur-3xl p-6 md:p-12 rounded-[2.5rem] border border-[#06b6d4]/30 shadow-[0_0_80px_rgba(6,182,212,0.15)] relative w-full flex flex-col items-center">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#06b6d4] to-transparent opacity-50"></div>
                 
                 {/* Core Node Icon */}
                 <motion.div 
                   initial={{ rotate: -90 }}
                   animate={{ rotate: 0 }}
                   transition={{ duration: 2, delay: 1 }}
-                  className="w-16 h-16 md:w-20 md:h-20 bg-[#FF6A00]/10 border border-[#FF6A00]/40 rounded-3xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(255,106,0,0.3)]"
+                  className="w-16 h-16 md:w-20 md:h-20 bg-[#06b6d4]/10 border border-[#06b6d4]/40 rounded-3xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(6,182,212,0.3)]"
                 >
-                   <Activity className="w-8 h-8 md:w-10 md:h-10 text-[#FF6A00]" />
+                   <Activity className="w-8 h-8 md:w-10 md:h-10 text-[#06b6d4]" />
                 </motion.div>
 
                 <div className="w-full pointer-events-auto">
@@ -193,10 +193,10 @@ const UploadPage = ({ onAnalysisComplete }) => {
               { icon: <Target/>, title: "Gap Detection", desc: "Identifying exactly which tools and frameworks are missing." },
               { icon: <Map/>, title: "Live Roadmap", desc: "Personalized learning paths with documentation and resources." }
             ].map((feature, i) => (
-              <div key={i} className="group bg-[#111111]/90 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-white/5 hover:border-[#FF6A00]/40 transition-all duration-500 shadow-2xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#FF6A00]/0 via-transparent to-[#FF6A00]/0 group-hover:from-[#FF6A00]/10 transition-all duration-700 pointer-events-none" />
+              <div key={i} className="group bg-[#111111]/90 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-white/5 hover:border-[#06b6d4]/40 transition-all duration-500 shadow-2xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#06b6d4]/0 via-transparent to-[#06b6d4]/0 group-hover:from-[#06b6d4]/10 transition-all duration-700 pointer-events-none" />
                 
-                <div className="w-14 h-14 md:w-20 md:h-20 bg-[#1A1A1A] text-[#FF6A00] rounded-2xl md:rounded-3xl flex items-center justify-center mb-8 md:mb-10 shadow-[0_0_15px_rgba(255,106,0,0.1)] border border-white/5 group-hover:-translate-y-2 transition-transform duration-500">
+                <div className="w-14 h-14 md:w-20 md:h-20 bg-[#1A1A1A] text-[#06b6d4] rounded-2xl md:rounded-3xl flex items-center justify-center mb-8 md:mb-10 shadow-[0_0_15px_rgba(6,182,212,0.1)] border border-white/5 group-hover:-translate-y-2 transition-transform duration-500">
                   {React.cloneElement(feature.icon, {className: "w-7 h-7 md:w-9 md:h-9"})}
                 </div>
                 <h3 className="text-xl md:text-2xl font-black text-white mb-4 md:mb-6 uppercase tracking-tight relative z-10">{feature.title}</h3>
@@ -219,17 +219,23 @@ const UploadPage = ({ onAnalysisComplete }) => {
           {/* THE GIANT GLOWING GLOBE */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
              {/* Halo Glow */}
-             <div className="absolute w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[#FF6A00]/30 rounded-full blur-[100px] md:blur-[150px]"></div>
+             <div className="absolute w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[#06b6d4]/50 rounded-full blur-[100px] md:blur-[120px]"></div>
              
              {/* The Sphere */}
-             <div className="w-[300px] h-[300px] md:w-[600px] md:h-[600px] rounded-full border border-white/10 bg-[radial-gradient(circle_at_30%_30%,_rgba(255,106,0,0.2)_0%,_rgba(5,5,5,1)_80%)] shadow-[inset_0_0_80px_rgba(255,106,0,0.6)] relative overflow-hidden flex items-center justify-center">
+             <div className="w-[300px] h-[300px] md:w-[600px] md:h-[600px] rounded-full border border-[#06b6d4]/30 bg-[radial-gradient(circle_at_30%_30%,_rgba(6,182,212,0.4)_0%,_rgba(5,5,5,1)_80%)] shadow-[inset_0_0_100px_rgba(6,182,212,0.8),0_0_40px_rgba(6,182,212,0.3)] relative overflow-hidden flex items-center justify-center">
                 {/* Dotted Grid / Lat Long Lines */}
-                <div className="absolute w-[200%] h-[1px] bg-[#FF6A00]/20 rotate-45"></div>
-                <div className="absolute w-[200%] h-[1px] bg-[#FF6A00]/20 -rotate-45"></div>
-                <div className="absolute w-[200%] h-[1px] bg-[#FF6A00]/20 rotate-12"></div>
-                <div className="absolute w-[200%] h-[1px] bg-[#FF6A00]/20 -rotate-12"></div>
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 w-full h-full flex items-center justify-center"
+                >
+                  <div className="absolute w-[200%] h-[2px] bg-[#06b6d4]/60 rotate-45 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
+                  <div className="absolute w-[200%] h-[2px] bg-[#06b6d4]/60 -rotate-45 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
+                  <div className="absolute w-[200%] h-[2px] bg-[#06b6d4]/60 rotate-12 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
+                  <div className="absolute w-[200%] h-[2px] bg-[#06b6d4]/60 -rotate-12 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
+                </motion.div>
                 {/* Fake rotation animation on texture */}
-                <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
+                <div className="absolute inset-0 opacity-30 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
              </div>
           </div>
 
@@ -248,7 +254,7 @@ const UploadPage = ({ onAnalysisComplete }) => {
               ].map((stat, i) => (
                 <div key={i} className="space-y-4 md:space-y-6 flex flex-col items-center">
                   <div className="flex items-center justify-center gap-2 md:gap-3 text-slate-400">
-                     {React.cloneElement(stat.icon, {className: "w-4 h-4 md:w-5 md:h-5 text-[#FF6A00]"})}
+                     {React.cloneElement(stat.icon, {className: "w-4 h-4 md:w-5 md:h-5 text-[#06b6d4]"})}
                      <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">{stat.label}</span>
                   </div>
                   <h4 className="text-4xl md:text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">

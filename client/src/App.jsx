@@ -35,7 +35,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#050505] text-slate-200 selection:bg-[#FF6A00]/30 overflow-x-hidden relative">
+    <div className="min-h-screen flex flex-col bg-[#050505] text-slate-200 selection:bg-[#06b6d4]/30 overflow-x-hidden relative">
       
       {/* 0. CINEMATIC INTRO ANIMATION */}
       <AnimatePresence>
@@ -52,7 +52,7 @@ function App() {
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: [0, 1.2, 1], opacity: [0, 1, 0] }}
                 transition={{ duration: 2, ease: "easeInOut" }}
-                className="absolute w-32 h-32 rounded-full border-4 border-white shadow-[0_0_40px_rgba(255,106,0,0.8)]"
+                className="absolute w-32 h-32 rounded-full border-4 border-white shadow-[0_0_40px_rgba(6,182,212,0.8)]"
               />
               
               {/* Logo appearance */}
@@ -66,10 +66,10 @@ function App() {
                   <ScanSearch className="w-12 h-12" strokeWidth={2.5} />
                 </div>
                 <div className="flex flex-col items-start leading-none">
-                  <span className="font-black text-4xl tracking-tighter text-white uppercase">
+                  <span className="font-black text-2xl sm:text-4xl tracking-tighter text-white uppercase text-center sm:text-left">
                     Resume Analyzer
                   </span>
-                  <span className="text-sm font-black text-[#FF6A00] uppercase tracking-[0.4em] ml-0.5 mt-1">
+                  <span className="text-[10px] sm:text-sm font-black text-[#06b6d4] uppercase tracking-[0.4em] ml-0.5 mt-1 text-center sm:text-left">
                     Neural Lab v2.0
                   </span>
                 </div>
@@ -87,14 +87,14 @@ function App() {
         className="fixed top-0 z-50 w-full bg-[#050505]/80 backdrop-blur-2xl border-b border-white/5 py-4 md:py-6 px-4 md:px-12 flex justify-between items-center"
       >
         <div className="flex items-center gap-2 md:gap-4 group cursor-default min-w-0">
-          <div className="bg-white text-black p-2 md:p-2.5 rounded-xl md:rounded-2xl shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_20px_rgba(255,106,0,0.4)] group-hover:rotate-12 transition-all duration-500 shrink-0">
+          <div className="bg-white text-black p-2 md:p-2.5 rounded-xl md:rounded-2xl shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] group-hover:rotate-12 transition-all duration-500 shrink-0">
             <ScanSearch className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
           </div>
           <div className="flex flex-col items-start leading-none min-w-0 overflow-hidden">
             <span className="font-black text-sm md:text-2xl tracking-tighter text-white uppercase whitespace-nowrap overflow-hidden text-ellipsis">
               Resume Analyzer
             </span>
-            <span className="text-[6px] md:text-[9px] font-black text-[#FF6A00] uppercase tracking-[0.4em] ml-0.5 whitespace-nowrap">
+            <span className="text-[6px] md:text-[9px] font-black text-[#06b6d4] uppercase tracking-[0.4em] ml-0.5 whitespace-nowrap">
               Neural Lab v2.0
             </span>
           </div>
@@ -104,7 +104,7 @@ function App() {
           {analysisData && (
             <button 
               onClick={handleReset}
-              className="flex items-center gap-2 text-[9px] md:text-xs font-black uppercase tracking-widest text-[#FF6A00] bg-[#FF6A00]/10 border border-[#FF6A00]/20 hover:bg-[#FF6A00] hover:text-black px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl transition-all shadow-lg shrink-0 ml-2"
+              className="flex items-center gap-2 text-[9px] md:text-xs font-black uppercase tracking-widest text-[#06b6d4] bg-[#06b6d4]/10 border border-[#06b6d4]/20 hover:bg-[#06b6d4] hover:text-black px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl transition-all shadow-lg shrink-0 ml-2"
             >
               <RotateCcw className="w-3 h-3 md:w-4 md:h-4" />
               <span className="hidden sm:inline">Start New Analysis</span>
@@ -117,7 +117,7 @@ function App() {
       {/* 2. MAIN APPLICATION STAGE */}
       <main className="flex-grow flex flex-col relative w-full pt-[80px] md:pt-[100px]">
         {/* Background Ambient Glow (Updated to Orange/Amber) */}
-        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[800px] bg-[#FF6A00]/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[800px] bg-[#06b6d4]/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
 
         <motion.div 
           initial={{ opacity: 0 }}
@@ -137,7 +137,7 @@ function App() {
       <footer className="py-8 md:py-12 border-t border-white/5 bg-[#0B0B0B]/50 backdrop-blur-sm relative z-40">
         <div className="flex flex-col items-center gap-4 px-6 text-center">
           <div className="flex items-center gap-2 text-slate-500 font-bold text-[9px] md:text-xs uppercase tracking-[0.3em]">
-            <Activity className="w-3 h-3 md:w-4 md:h-4 text-[#FF6A00]" /> 
+            <Activity className="w-3 h-3 md:w-4 md:h-4 text-[#06b6d4]" /> 
             Skill Intelligence Engine 
           </div>
           <div className="flex flex-col items-center gap-1">

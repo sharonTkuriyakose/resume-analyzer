@@ -62,33 +62,35 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                     - If the text is a textbook, article, receipt, or random notes, set "isValidResume" to false.
                     - ONLY if "isValidResume" is true, proceed to Step 2.
 
-                    STEP 2: STRATEGIC ANALYSIS
-                    - Identify the user's specific Job Role or Target Domain from their experience/summary.
-                    - 'domain': The specific professional domain or job title detected.
-                    - 'missingSkills' and 'keywordsMissing': IMPORTANT: MUST be strictly relevant to the identified Job Role based on current industry standards. Do NOT provide irrelevant or generic gaps.
-                    - 'score': Dynamic integer based on skill density vs. gaps (Base 85).
-                    - 'phasedCurriculum': 3 stages built ONLY to bridge the 'keywordsMissing'.
-                    - 'projectList': EXACTLY 3 unique project simulations targeting missing skills.
+                    STEP 2: EXPERT PANEL ANALYSIS
+                    - Act as a panel of Senior Technical Recruiters and Hiring Managers. Analyze the candidate's core competencies to identify their exact Target Job Role. Set 'domain' to this title.
+                    - 'score': Generate a rigorous "Market Readiness Score" (0-100) based on how well their current resume matches the strict industry requirements for their target role. Be honest and critical.
+                    - 'foundSkills': List EXACT hard skills found. Provide an estimated proficiency 'score' (0-100).
+                    - 'missingSkills': Identify critical missing hard skills for the 'domain'. Provide an importance 'score' (0-100).
+                    - 'keywordsDetected': Extract ATS-friendly keywords present. Provide a 'keyword' and a detailed 'context' explaining why it's valuable.
+                    - 'keywordsMissing': List essential ATS keywords they are missing. Provide a 'keyword' and a detailed 'context' on why it's a critical gap.
+                    - 'phasedCurriculum': 3 stages to bridge their specific gaps. For each phase, provide a detailed 'primaryGoal' (2-3 sentences of expert advice).
+                    - 'projectList': EXACTLY 3 unique project simulations STRICTLY designed to bridge the user's MISSING skills (deficiencies). Do NOT suggest projects based on their existing strengths. Use realistic, industry-standard project ideas with a detailed 'desc' (2-3 sentences outlining the architecture).
                     
-                    REQUIRED JSON STRUCTURE:
+                    REQUIRED JSON STRUCTURE (STRICTLY FOLLOW THIS):
                     {
                       "isValidResume": boolean,
                       "score": number,
                       "domain": "string",
-                      "foundSkills": [],
-                      "missingSkills": [],
-                      "keywordsDetected": [],
-                      "keywordsMissing": [],
+                      "foundSkills": [{"skill": "skill1", "score": 90}],
+                      "missingSkills": [{"skill": "skill1", "score": 95}],
+                      "keywordsDetected": [{"keyword": "string", "context": "Detailed explanation..."}],
+                      "keywordsMissing": [{"keyword": "string", "context": "Detailed explanation..."}],
                       "phasedCurriculum": [
-                        { "id": 1, "title": "LEARN_[GAP]", "primaryGoal": "string", "points": [] },
-                        { "id": 2, "title": "MASTER_[GAP]", "primaryGoal": "string", "points": [] },
-                        { "id": 3, "title": "IMPLEMENT_[GAP]", "primaryGoal": "string", "points": [] },
+                        { "id": 1, "title": "LEARN_[GAP]", "primaryGoal": "Detailed expert advice...", "points": [] },
+                        { "id": 2, "title": "MASTER_[GAP]", "primaryGoal": "Detailed expert advice...", "points": [] },
+                        { "id": 3, "title": "IMPLEMENT_[GAP]", "primaryGoal": "Detailed expert advice...", "points": [] },
                         { 
                           "id": 4, "title": "STRATEGIC PROJECT LAB", "isProject": true, 
                           "projectList": [
-                            { "name": "Proj 1", "desc": "string", "points": ["p1", "p2", "p3"] },
-                            { "name": "Proj 2", "desc": "string", "points": ["p1", "p2", "p3"] },
-                            { "name": "Proj 3", "desc": "string", "points": ["p1", "p2", "p3"] }
+                            { "name": "Proj 1", "desc": "Detailed architecture overview...", "points": ["p1", "p2", "p3"] },
+                            { "name": "Proj 2", "desc": "Detailed architecture overview...", "points": ["p1", "p2", "p3"] },
+                            { "name": "Proj 3", "desc": "Detailed architecture overview...", "points": ["p1", "p2", "p3"] }
                           ] 
                         }
                       ]
