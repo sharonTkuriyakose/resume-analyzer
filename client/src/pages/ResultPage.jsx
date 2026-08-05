@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import html2canvas from 'html2canvas';
+import domtoimage from 'dom-to-image-more';
 import { jsPDF } from 'jspdf';
 import { 
   Target, Zap, BookOpen, Activity, 
@@ -25,17 +25,17 @@ const ResultPage = ({ data }) => {
     
     setIsGeneratingPDF(true);
     try {
-        // Reduced scale to 1 to prevent memory crashes on mobile browsers
-        const canvas = await html2canvas(element, { 
-            scale: 1, 
-            useCORS: true, 
-            backgroundColor: '#050505',
-            logging: false
-        });
-        const imgData = canvas.toDataURL('image/jpeg', 0.7);
+        const imgData = await domtoimage.toJpeg(element, { quality: 0.85, bgcolor: '#050505' });
+        
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        // Load the image data into an Image object to retrieve its natural dimensions
+        const img = new Image();
+        img.src = imgData;
+        await new Promise(resolve => img.onload = resolve);
+        
+        const pdfHeight = (img.height * pdfWidth) / img.width;
         
         pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
         const pdfBlob = pdf.output('blob');
