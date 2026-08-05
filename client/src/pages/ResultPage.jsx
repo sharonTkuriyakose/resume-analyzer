@@ -16,7 +16,22 @@ const ResultPage = ({ data }) => {
   const shareText = `Check out my Neural Resume Analysis! I scored ${data?.score || 0}% for ${data?.domain || 'roles'}.`;
   const shareUrl = window.location.href; 
 
-  const handleShare = (platform) => {
+  const handleShare = async (platform) => {
+    // Attempt to use native Web Share API on mobile devices for the best UX
+    if (platform !== 'copy' && navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+      try {
+        await navigator.share({
+          title: 'Neural Resume Analysis',
+          text: shareText,
+          url: shareUrl,
+        });
+        setShowShareMenu(false);
+        return;
+      } catch (err) {
+        console.log("Native share failed or cancelled", err);
+      }
+    }
+
     let url = '';
     switch (platform) {
       case 'twitter':
@@ -38,13 +53,27 @@ const ResultPage = ({ data }) => {
         url = `mailto:?subject=Neural%20Resume%20Analysis&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
         break;
       case 'copy':
-        navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-        alert("Link copied to clipboard!");
+        try {
+            await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+            alert("Link copied to clipboard!");
+        } catch (err) {
+            console.error("Clipboard copy failed:", err);
+            // Fallback for environments where Clipboard API is restricted
+            const textArea = document.createElement("textarea");
+            textArea.value = `${shareText} ${shareUrl}`;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("Copy");
+            textArea.remove();
+            alert("Link copied to clipboard!");
+        }
         setShowShareMenu(false);
         return;
     }
+    
     if (url) {
-        window.open(url, '_blank', 'width=600,height=400');
+        // Omitting fixed dimensions prevents strict popup blockers from silently blocking the window
+        window.open(url, '_blank', 'noopener,noreferrer');
         setShowShareMenu(false);
     }
   };
