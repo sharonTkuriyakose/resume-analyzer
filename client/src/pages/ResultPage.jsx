@@ -18,16 +18,21 @@ const ResultPage = ({ data }) => {
 
   const handleSharePDF = async () => {
     const element = document.getElementById('report-container');
-    if (!element) return;
+    if (!element) {
+        alert("Could not find the report container.");
+        return;
+    }
     
     setIsGeneratingPDF(true);
     try {
+        // Reduced scale to 1 to prevent memory crashes on mobile browsers
         const canvas = await html2canvas(element, { 
-            scale: 2, 
+            scale: 1, 
             useCORS: true, 
-            backgroundColor: '#050505'
+            backgroundColor: '#050505',
+            logging: false
         });
-        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+        const imgData = canvas.toDataURL('image/jpeg', 0.7);
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
@@ -53,7 +58,7 @@ const ResultPage = ({ data }) => {
         }
     } catch(err) {
         console.error("PDF Generation Failed", err);
-        alert('Failed to generate PDF. Please try again.');
+        alert(`Failed to generate PDF: ${err.message || JSON.stringify(err)}`);
     } finally {
         setIsGeneratingPDF(false);
     }
