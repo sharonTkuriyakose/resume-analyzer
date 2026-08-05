@@ -16,66 +16,30 @@ const ResultPage = ({ data }) => {
   const shareText = `Check out my Neural Resume Analysis! I scored ${data?.score || 0}% for ${data?.domain || 'roles'}.`;
   const shareUrl = window.location.href; 
 
-  const handleShare = async (platform) => {
-    // Attempt to use native Web Share API on mobile devices for the best UX
-    if (platform !== 'copy' && navigator.share && /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-      try {
-        await navigator.share({
-          title: 'Neural Resume Analysis',
-          text: shareText,
-          url: shareUrl,
-        });
-        setShowShareMenu(false);
-        return;
-      } catch (err) {
-        console.log("Native share failed or cancelled", err);
-      }
-    }
+  const urls = {
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
+    telegram: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
+    email: `mailto:?subject=Neural%20Resume%20Analysis&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`
+  };
 
-    let url = '';
-    switch (platform) {
-      case 'twitter':
-        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-        break;
-      case 'linkedin':
-        url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-        break;
-      case 'facebook':
-        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-        break;
-      case 'whatsapp':
-        url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
-        break;
-      case 'telegram':
-        url = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-        break;
-      case 'email':
-        url = `mailto:?subject=Neural%20Resume%20Analysis&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
-        break;
-      case 'copy':
-        try {
-            await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-            alert("Link copied to clipboard!");
-        } catch (err) {
-            console.error("Clipboard copy failed:", err);
-            // Fallback for environments where Clipboard API is restricted
-            const textArea = document.createElement("textarea");
-            textArea.value = `${shareText} ${shareUrl}`;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand("Copy");
-            textArea.remove();
-            alert("Link copied to clipboard!");
-        }
-        setShowShareMenu(false);
-        return;
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      alert("Link copied to clipboard!");
+    } catch (err) {
+      console.error("Clipboard copy failed:", err);
+      const textArea = document.createElement("textarea");
+      textArea.value = `${shareText} ${shareUrl}`;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("Copy");
+      textArea.remove();
+      alert("Link copied to clipboard!");
     }
-    
-    if (url) {
-        // Omitting fixed dimensions prevents strict popup blockers from silently blocking the window
-        window.open(url, '_blank', 'noopener,noreferrer');
-        setShowShareMenu(false);
-    }
+    setShowShareMenu(false);
   };
 
   if (!data || Object.keys(data).length === 0) {
@@ -521,49 +485,49 @@ const ResultPage = ({ data }) => {
               <p className="text-xs text-slate-400 font-medium mb-8 text-center px-4">Showcase your Neural Lab results and market readiness score with your network.</p>
               
               <div className="w-full flex flex-wrap justify-center gap-6 mt-4">
-                <button onClick={() => handleShare('linkedin')} className="flex flex-col items-center gap-2 group">
+                <a href={urls.linkedin} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
                   <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#0077b5]/20 border border-white/5 group-hover:border-[#0077b5]/50 flex items-center justify-center transition-all shadow-lg">
                     <Linkedin className="w-6 h-6 text-slate-300 group-hover:text-[#0077b5] transition-colors" />
                   </div>
                   <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">LinkedIn</span>
-                </button>
+                </a>
                 
-                <button onClick={() => handleShare('twitter')} className="flex flex-col items-center gap-2 group">
+                <a href={urls.twitter} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
                   <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#1DA1F2]/20 border border-white/5 group-hover:border-[#1DA1F2]/50 flex items-center justify-center transition-all shadow-lg">
                     <Twitter className="w-6 h-6 text-slate-300 group-hover:text-[#1DA1F2] transition-colors" />
                   </div>
                   <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">X/Twitter</span>
-                </button>
+                </a>
 
-                <button onClick={() => handleShare('whatsapp')} className="flex flex-col items-center gap-2 group">
+                <a href={urls.whatsapp} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
                   <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#25D366]/20 border border-white/5 group-hover:border-[#25D366]/50 flex items-center justify-center transition-all shadow-lg">
                     <MessageCircle className="w-6 h-6 text-slate-300 group-hover:text-[#25D366] transition-colors" />
                   </div>
                   <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">WhatsApp</span>
-                </button>
+                </a>
                 
-                <button onClick={() => handleShare('facebook')} className="flex flex-col items-center gap-2 group">
+                <a href={urls.facebook} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
                   <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#1877F2]/20 border border-white/5 group-hover:border-[#1877F2]/50 flex items-center justify-center transition-all shadow-lg">
                     <Facebook className="w-6 h-6 text-slate-300 group-hover:text-[#1877F2] transition-colors" />
                   </div>
                   <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Facebook</span>
-                </button>
+                </a>
                 
-                <button onClick={() => handleShare('telegram')} className="flex flex-col items-center gap-2 group">
+                <a href={urls.telegram} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
                   <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#0088cc]/20 border border-white/5 group-hover:border-[#0088cc]/50 flex items-center justify-center transition-all shadow-lg">
                     <Send className="w-6 h-6 text-slate-300 group-hover:text-[#0088cc] transition-colors" />
                   </div>
                   <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Telegram</span>
-                </button>
+                </a>
 
-                <button onClick={() => handleShare('email')} className="flex flex-col items-center gap-2 group">
+                <a href={urls.email} className="flex flex-col items-center gap-2 group">
                   <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#D44638]/20 border border-white/5 group-hover:border-[#D44638]/50 flex items-center justify-center transition-all shadow-lg">
                     <Mail className="w-6 h-6 text-slate-300 group-hover:text-[#D44638] transition-colors" />
                   </div>
                   <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Email</span>
-                </button>
+                </a>
                 
-                <button onClick={() => handleShare('copy')} className="flex flex-col items-center gap-2 group">
+                <button onClick={handleCopy} className="flex flex-col items-center gap-2 group">
                   <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-white/20 border border-white/5 group-hover:border-white/50 flex items-center justify-center transition-all shadow-lg">
                     <Link className="w-6 h-6 text-slate-300 group-hover:text-white transition-colors" />
                   </div>
