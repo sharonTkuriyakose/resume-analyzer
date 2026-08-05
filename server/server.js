@@ -69,7 +69,7 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                     - 'missingSkills': Identify critical missing hard skills for the 'domain'. Provide an importance 'score' (0-100).
                     - 'keywordsDetected': Extract ATS-friendly keywords present. Provide a 'keyword' and a detailed 'context' explaining why it's valuable.
                     - 'keywordsMissing': List essential ATS keywords they are missing. Provide a 'keyword' and a detailed 'context' on why it's a critical gap.
-                    - 'phasedCurriculum': 3 stages to bridge their specific gaps. For each phase, provide a detailed 'primaryGoal' (2-3 sentences of expert advice).
+                    - 'phasedCurriculum': 3 stages to bridge their specific gaps. For each phase, provide a simple, natural 'title' (e.g. "Cloud Computing Basics", "Containerization", without underscores or ALL CAPS) and a detailed 'primaryGoal' (2-3 sentences of expert advice).
                     - 'projectList': EXACTLY 3 unique project simulations STRICTLY designed to bridge the user's MISSING skills (deficiencies). Do NOT suggest projects based on their existing strengths. Use realistic, industry-standard project ideas with a detailed 'desc' (2-3 sentences outlining the architecture).
                     
                     REQUIRED JSON STRUCTURE (STRICTLY FOLLOW THIS):
@@ -82,9 +82,9 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                       "keywordsDetected": [{"keyword": "string", "context": "Detailed explanation..."}],
                       "keywordsMissing": [{"keyword": "string", "context": "Detailed explanation..."}],
                       "phasedCurriculum": [
-                        { "id": 1, "title": "LEARN_[GAP]", "primaryGoal": "Detailed expert advice...", "points": [] },
-                        { "id": 2, "title": "MASTER_[GAP]", "primaryGoal": "Detailed expert advice...", "points": [] },
-                        { "id": 3, "title": "IMPLEMENT_[GAP]", "primaryGoal": "Detailed expert advice...", "points": [] },
+                        { "id": 1, "title": "Topic 1 (e.g. Cloud Computing)", "primaryGoal": "Detailed expert advice...", "points": [] },
+                        { "id": 2, "title": "Topic 2 (e.g. Containerization)", "primaryGoal": "Detailed expert advice...", "points": [] },
+                        { "id": 3, "title": "Topic 3 (e.g. CI/CD Pipelines)", "primaryGoal": "Detailed expert advice...", "points": [] },
                         { 
                           "id": 4, "title": "STRATEGIC PROJECT LAB", "isProject": true, 
                           "projectList": [
@@ -134,79 +134,48 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
             }));
         }
 
-        // E. FETCH LIVE JOB RECOMMENDATIONS (Switched to Remotive API)
+        // E. GENERATE JOB PORTAL SEARCH LINKS
         try {
-            console.log(`🌐 Fetching live jobs for domain: ${analysis.domain}...`);
-            const jobRes = await fetch(`https://remotive.com/api/remote-jobs?search=${encodeURIComponent(analysis.domain || 'developer')}&limit=10`);
+            console.log(`🌐 Generating portal searches for domain: ${analysis.domain}...`);
+            const d = analysis.domain || 'Software Engineer';
+            const q = encodeURIComponent(d);
             
-            let jobsArr = [];
-            if (jobRes.ok) {
-                const jobData = await jobRes.json();
-                const rawJobs = jobData.jobs || [];
-                
-                // Filter jobs to ensure they are actually relevant to the domain
-                const domainLower = (analysis.domain || 'developer').toLowerCase();
-                const domainKeywords = domainLower.split(' ').filter(kw => kw.length > 2);
-                
-                jobsArr = rawJobs.filter(j => {
-                    const titleLower = j.title.toLowerCase();
-                    return domainKeywords.some(kw => titleLower.includes(kw)) || titleLower.includes(domainLower);
-                });
-            }
+            analysis.liveJobs = [
+                {
+                    id: 'p1', title: `Search on LinkedIn`, company: 'LinkedIn',
+                    url: `https://www.linkedin.com/jobs/search/?keywords=${q}`,
+                    type: 'Portal Search', location: 'Global', description: `Explore thousands of ${d} opportunities and connect with recruiters directly on LinkedIn.`
+                },
+                {
+                    id: 'p2', title: `Search on Indeed`, company: 'Indeed',
+                    url: `https://www.indeed.com/jobs?q=${q}`,
+                    type: 'Portal Search', location: 'Global', description: `Browse aggregated job listings for ${d} roles from company career sites and job boards.`
+                },
+                {
+                    id: 'p3', title: `Search on Glassdoor`, company: 'Glassdoor',
+                    url: `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${q}`,
+                    type: 'Portal Search', location: 'Global', description: `Find ${d} jobs and access company reviews, salaries, and interview insights.`
+                },
+                {
+                    id: 'p4', title: `Search on Wellfound`, company: 'Wellfound',
+                    url: `https://wellfound.com/role/${q.toLowerCase().replace(/%20/g, '-')}`, // Note: Wellfound uses hyphens for roles in URL
+                    type: 'Portal Search', location: 'Global', description: `Discover ${d} opportunities at top startups and tech companies.`
+                },
+                {
+                    id: 'p5', title: `Search on ZipRecruiter`, company: 'ZipRecruiter',
+                    url: `https://www.ziprecruiter.com/candidate/search?search=${q}`,
+                    type: 'Portal Search', location: 'Global', description: `Apply to ${d} roles quickly with 1-Click Apply on ZipRecruiter.`
+                },
+                {
+                    id: 'p6', title: `Search on Monster`, company: 'Monster',
+                    url: `https://www.monster.com/jobs/search/?q=${q}`,
+                    type: 'Portal Search', location: 'Global', description: `Search a vast database of ${d} jobs and get resume help.`
+                }
+            ];
             
-            if (jobsArr.length >= 6) {
-                analysis.liveJobs = jobsArr.slice(0, 6).map(j => ({
-                    id: j.id,
-                    title: j.title,
-                    company: j.company_name,
-                    url: j.url,
-                    type: j.job_type ? j.job_type.toLowerCase().replace('_', ' ') : "full time",
-                    location: j.candidate_required_location || "Remote",
-                    description: j.description ? j.description.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...' : 'No description provided.'
-                }));
-            } else {
-                console.log("⚠️ Not enough live jobs found, generating dynamic smart fallbacks across portals.");
-                const d = analysis.domain || 'Software Engineer';
-                const q = encodeURIComponent(d);
-                
-                analysis.liveJobs = [
-                    {
-                        id: 'm1', title: `Senior ${d}`, company: 'Tech Corp (via LinkedIn)',
-                        url: `https://www.linkedin.com/jobs/search/?keywords=${q}`,
-                        type: 'full time', location: 'Remote', description: 'Looking for an experienced professional to lead key product initiatives and drive engineering excellence.'
-                    },
-                    {
-                        id: 'm2', title: `${d} Role`, company: 'Startup Inc (via Indeed)',
-                        url: `https://www.indeed.com/jobs?q=${q}`,
-                        type: 'contract', location: 'Remote / Hybrid', description: 'Join our fast-paced environment to build scalable systems from the ground up.'
-                    },
-                    {
-                        id: 'm3', title: `Lead ${d}`, company: 'Enterprise Solutions (via Glassdoor)',
-                        url: `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${q}`,
-                        type: 'full time', location: 'Multiple Locations', description: 'Drive architectural decisions and mentor junior engineers in a rapidly growing enterprise.'
-                    },
-                    {
-                        id: 'm4', title: `${d} - Series A Startup`, company: 'InnovateAI (via Wellfound)',
-                        url: `https://wellfound.com/jobs?search=${q}`,
-                        type: 'full time', location: 'Remote', description: 'We are looking for a passionate builder to join our core team and help scale our MVP.'
-                    },
-                    {
-                        id: 'm5', title: `Staff ${d}`, company: 'Global Tech (via Monster)',
-                        url: `https://www.monster.com/jobs/search/?q=${q}`,
-                        type: 'contract', location: 'Remote', description: 'Strategic technical leadership position focused on cross-functional system architecture.'
-                    },
-                    {
-                        id: 'm6', title: `Mid-level ${d}`, company: 'Growth Agency (via ZipRecruiter)',
-                        url: `https://www.ziprecruiter.com/candidate/search?search=${q}`,
-                        type: 'full time', location: 'Hybrid', description: 'Excellent opportunity for growth, working alongside seasoned veterans on exciting client projects.'
-                    }
-                ];
-            }
-            console.log(`✅ Fetched/Mocked ${analysis.liveJobs.length} live jobs.`);
+            console.log(`✅ Generated ${analysis.liveJobs.length} job portal links.`);
         } catch (jobErr) {
-            console.error("⚠️ Failed to fetch live jobs:", jobErr.message);
-            // Fallback is handled above, but if fetch throws completely, we can just assign empty and let UI handle it, 
-            // or assign the same fallback. Let's just assign empty for critical failure.
+            console.error("⚠️ Failed to generate job portals:", jobErr.message);
             analysis.liveJobs = [];
         }
 

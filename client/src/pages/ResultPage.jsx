@@ -4,12 +4,50 @@ import {
   Target, Zap, BookOpen, Activity, 
   Sparkles, Award, Search, 
   CheckCircle2, AlertCircle, Briefcase, MapPin, 
-  ExternalLink, Youtube, ChevronRight, Share2, Download, ArrowLeft, ArrowUpRight
+  ExternalLink, Youtube, ChevronRight, Share2, Download, ArrowLeft, ArrowUpRight,
+  Twitter, Linkedin, Facebook, Link, X, MessageCircle, Mail, Send
 } from 'lucide-react';
 
 const ResultPage = ({ data }) => {
   const [activeCard, setActiveCard] = useState(null);
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const handleExport = () => window.print();
+
+  const shareText = `Check out my Neural Resume Analysis! I scored ${data?.score || 0}% for ${data?.domain || 'roles'}.`;
+  const shareUrl = window.location.href; 
+
+  const handleShare = (platform) => {
+    let url = '';
+    switch (platform) {
+      case 'twitter':
+        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'linkedin':
+        url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'facebook':
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'whatsapp':
+        url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
+        break;
+      case 'telegram':
+        url = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+        break;
+      case 'email':
+        url = `mailto:?subject=Neural%20Resume%20Analysis&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+        alert("Link copied to clipboard!");
+        setShowShareMenu(false);
+        return;
+    }
+    if (url) {
+        window.open(url, '_blank', 'width=600,height=400');
+        setShowShareMenu(false);
+    }
+  };
 
   if (!data || Object.keys(data).length === 0) {
     return (
@@ -100,11 +138,11 @@ const ResultPage = ({ data }) => {
                </span>
              </div>
            </div>
-           <div className="flex items-center gap-4 no-print">
-              <button className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-black uppercase text-white flex items-center gap-2 transition-all">
+           <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-3 sm:gap-4 no-print mt-6 md:mt-0">
+              <button onClick={() => setShowShareMenu(true)} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-black uppercase text-white flex items-center gap-2 transition-all">
                 <Share2 className="w-4 h-4 text-slate-400" /> Share
               </button>
-              <button onClick={handleExport} className="px-5 py-2.5 bg-gradient-to-r from-[#06b6d4] to-[#FF8C00] hover:from-[#0284c7] hover:to-[#0369a1] text-black rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+              <button onClick={handleExport} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-gradient-to-r from-[#06b6d4] to-[#FF8C00] hover:from-[#0284c7] hover:to-[#0369a1] text-black rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)]">
                 <Download className="w-4 h-4" /> Export Report
               </button>
            </div>
@@ -156,7 +194,7 @@ const ResultPage = ({ data }) => {
               </div>
 
               {/* CENTER HUB: MARKET READINESS */}
-              <div className="xl:absolute top-1/2 left-1/2 xl:-translate-x-1/2 xl:-translate-y-1/2 w-[240px] h-[240px] sm:w-[300px] sm:h-[300px] xl:w-[350px] xl:h-[350px] z-20 flex items-center justify-center relative mb-4 xl:mb-0 shrink-0">
+              <div className="xl:absolute xl:top-1/2 xl:left-1/2 xl:-translate-x-1/2 xl:-translate-y-1/2 w-[240px] h-[240px] sm:w-[300px] sm:h-[300px] xl:w-[350px] xl:h-[350px] z-20 flex items-center justify-center relative mb-4 xl:mb-0 shrink-0 mx-auto">
                  <div className="absolute inset-0 bg-[#06b6d4]/20 rounded-full blur-[60px] animate-pulse"></div>
                  <div className="relative w-full h-full bg-[#111]/80 backdrop-blur-xl rounded-full border border-white/10 flex flex-col items-center justify-center shadow-[inset_0_0_60px_rgba(6,182,212,0.2),0_0_40px_rgba(0,0,0,0.8)]">
                     <svg className="absolute w-[90%] h-[90%] transform -rotate-90 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]" viewBox="0 0 120 120">
@@ -190,10 +228,10 @@ const ResultPage = ({ data }) => {
 
               {/* 4 OUTER NODES */}
               <div className="w-full flex flex-col gap-4 xl:contents">
-                <NodeButton id="ats" icon={Search} title="ATS Intelligence" onClick={setActiveCard} positionClass="top-[20%] left-[9%]" />
-                <NodeButton id="skills" icon={Zap} title="Skill Proficiency" onClick={setActiveCard} positionClass="top-[70%] left-[9%]" />
-                <NodeButton id="projects" icon={Sparkles} title="Projects Lab" onClick={setActiveCard} positionClass="top-[20%] right-[9%]" />
-                <NodeButton id="roadmap" icon={Briefcase} title="Career & Jobs" onClick={setActiveCard} positionClass="top-[70%] right-[9%]" />
+                <NodeButton id="ats" icon={Search} title="ATS Intelligence" onClick={setActiveCard} positionClass="xl:top-[20%] xl:left-[9%]" />
+                <NodeButton id="skills" icon={Zap} title="Skill Proficiency" onClick={setActiveCard} positionClass="xl:top-[70%] xl:left-[9%]" />
+                <NodeButton id="projects" icon={Sparkles} title="Projects Lab" onClick={setActiveCard} positionClass="xl:top-[20%] xl:right-[9%]" />
+                <NodeButton id="roadmap" icon={Briefcase} title="Career & Jobs" onClick={setActiveCard} positionClass="xl:top-[70%] xl:right-[9%]" />
               </div>
 
             </motion.div>
@@ -365,17 +403,19 @@ const ResultPage = ({ data }) => {
                               <div key={i} className="relative pl-6 group/item">
                                 <div className="absolute left-[-29px] top-1 w-4 h-4 rounded-full bg-black border-2 border-[#06b6d4] group-hover/item:bg-[#06b6d4] transition-colors"></div>
                                 <div className="text-[10px] font-black text-[#06b6d4] uppercase tracking-widest mb-1">Phase {item.id}</div>
-                                <h4 className="text-sm font-bold text-white uppercase tracking-tight mb-2">{item.title}</h4>
+                                <h4 className="text-sm font-bold text-white tracking-tight mb-2">
+                                  {item.title.replace(/_/g, ' ')}
+                                </h4>
                                 <p className="text-xs text-slate-400 font-medium mb-4 leading-relaxed">{item.primaryGoal}</p>
                                 
                                 <div className="flex gap-3">
-                                  {item.docLink && (
-                                    <a href={item.docLink} target="_blank" rel="noreferrer" className="px-4 py-2 bg-black border border-white/10 hover:border-[#06b6d4]/50 rounded-lg flex items-center gap-2 text-[9px] font-bold text-white uppercase transition-colors">
+                                  {item.title && (
+                                    <a href={`https://google.com/search?q=${encodeURIComponent(item.title.replace(/_/g, ' ').replace(/^(LEARN|MASTER|IMPLEMENT)\s+/i, '').trim().toLowerCase())}+learning+roadmap`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-black border border-white/10 hover:border-[#06b6d4]/50 rounded-lg flex items-center gap-2 text-[9px] font-bold text-white uppercase transition-colors">
                                       Documentation <ExternalLink className="w-3 h-3"/>
                                     </a>
                                   )}
-                                  {item.videoLink && (
-                                    <a href={item.videoLink} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#06b6d4]/10 border border-[#06b6d4]/20 hover:bg-[#06b6d4]/30 rounded-lg flex items-center gap-2 text-[9px] font-bold text-[#06b6d4] uppercase transition-colors">
+                                  {item.title && (
+                                    <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(item.title.replace(/_/g, ' ').replace(/^(LEARN|MASTER|IMPLEMENT)\s+/i, '').trim().toLowerCase())}+tutorial+2026`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#06b6d4]/10 border border-[#06b6d4]/20 hover:bg-[#06b6d4]/30 rounded-lg flex items-center gap-2 text-[9px] font-bold text-[#06b6d4] uppercase transition-colors">
                                       Video Guide <Youtube className="w-3 h-3"/>
                                     </a>
                                   )}
@@ -388,20 +428,23 @@ const ResultPage = ({ data }) => {
                        {/* Jobs */}
                        <div>
                          <h3 className="text-sm font-black text-slate-300 uppercase tracking-widest mb-8 flex items-center gap-2">
-                           <MapPin className="w-4 h-4 text-emerald-500" /> Live Market Opportunities
-                         </h3>
-                         <div className="space-y-4">
-                           {data.liveJobs && data.liveJobs.length > 0 ? data.liveJobs.map((job, i) => (
-                             <a key={i} href={job.url} target="_blank" rel="noreferrer" className="block bg-black/40 border border-white/5 hover:border-emerald-500/50 rounded-xl p-5 transition-all group">
-                               <div className="flex justify-between items-start mb-2">
-                                 <h4 className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">{job.title}</h4>
-                                 <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition-colors" />
-                               </div>
-                               <div className="text-xs text-slate-400 font-medium mb-3">{job.company} • {job.location}</div>
-                               <div className="flex flex-wrap gap-2">
-                                 <span className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] text-slate-300 font-bold uppercase tracking-wider">{job.type}</span>
-                               </div>
-                             </a>
+                            <MapPin className="w-4 h-4 text-emerald-500" /> Job Portal Search Hub
+                          </h3>
+                          <div className="space-y-4">
+                            {data.liveJobs && data.liveJobs.length > 0 ? data.liveJobs.map((job, i) => (
+                              <a key={i} href={job.url} target="_blank" rel="noreferrer" className="block bg-black/40 border border-white/5 hover:border-emerald-500/50 rounded-xl p-5 transition-all group">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h4 className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">{job.title}</h4>
+                                  <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                                </div>
+                                <div className="text-xs text-slate-400 font-medium mb-3">{job.company} • {job.location}</div>
+                                {job.description && (
+                                  <p className="text-[10px] text-slate-500 mb-3 leading-relaxed">{job.description}</p>
+                                )}
+                                <div className="flex flex-wrap gap-2">
+                                  <span className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] text-slate-300 font-bold uppercase tracking-wider">{job.type}</span>
+                                </div>
+                              </a>
                            )) : (
                              <div className="bg-black/40 border border-white/5 rounded-xl p-8 text-center flex flex-col items-center">
                                <Briefcase className="w-8 h-8 text-slate-600 mb-3" />
@@ -422,6 +465,86 @@ const ResultPage = ({ data }) => {
         </AnimatePresence>
 
       </div>
+
+      {/* SHARE MODAL */}
+      <AnimatePresence>
+        {showShareMenu && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowShareMenu(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-[#111] border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col items-center"
+            >
+              <button onClick={() => setShowShareMenu(false)} className="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="w-12 h-12 bg-[#06b6d4]/10 rounded-full flex items-center justify-center mb-4 border border-[#06b6d4]/20">
+                <Share2 className="w-5 h-5 text-[#06b6d4]" />
+              </div>
+              <h2 className="text-xl font-black text-white uppercase tracking-tight mb-2">Share Analysis</h2>
+              <p className="text-xs text-slate-400 font-medium mb-8 text-center px-4">Showcase your Neural Lab results and market readiness score with your network.</p>
+              
+              <div className="w-full flex flex-wrap justify-center gap-6 mt-4">
+                <button onClick={() => handleShare('linkedin')} className="flex flex-col items-center gap-2 group">
+                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#0077b5]/20 border border-white/5 group-hover:border-[#0077b5]/50 flex items-center justify-center transition-all shadow-lg">
+                    <Linkedin className="w-6 h-6 text-slate-300 group-hover:text-[#0077b5] transition-colors" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">LinkedIn</span>
+                </button>
+                
+                <button onClick={() => handleShare('twitter')} className="flex flex-col items-center gap-2 group">
+                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#1DA1F2]/20 border border-white/5 group-hover:border-[#1DA1F2]/50 flex items-center justify-center transition-all shadow-lg">
+                    <Twitter className="w-6 h-6 text-slate-300 group-hover:text-[#1DA1F2] transition-colors" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">X/Twitter</span>
+                </button>
+
+                <button onClick={() => handleShare('whatsapp')} className="flex flex-col items-center gap-2 group">
+                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#25D366]/20 border border-white/5 group-hover:border-[#25D366]/50 flex items-center justify-center transition-all shadow-lg">
+                    <MessageCircle className="w-6 h-6 text-slate-300 group-hover:text-[#25D366] transition-colors" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">WhatsApp</span>
+                </button>
+                
+                <button onClick={() => handleShare('facebook')} className="flex flex-col items-center gap-2 group">
+                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#1877F2]/20 border border-white/5 group-hover:border-[#1877F2]/50 flex items-center justify-center transition-all shadow-lg">
+                    <Facebook className="w-6 h-6 text-slate-300 group-hover:text-[#1877F2] transition-colors" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Facebook</span>
+                </button>
+                
+                <button onClick={() => handleShare('telegram')} className="flex flex-col items-center gap-2 group">
+                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#0088cc]/20 border border-white/5 group-hover:border-[#0088cc]/50 flex items-center justify-center transition-all shadow-lg">
+                    <Send className="w-6 h-6 text-slate-300 group-hover:text-[#0088cc] transition-colors" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Telegram</span>
+                </button>
+
+                <button onClick={() => handleShare('email')} className="flex flex-col items-center gap-2 group">
+                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#D44638]/20 border border-white/5 group-hover:border-[#D44638]/50 flex items-center justify-center transition-all shadow-lg">
+                    <Mail className="w-6 h-6 text-slate-300 group-hover:text-[#D44638] transition-colors" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Email</span>
+                </button>
+                
+                <button onClick={() => handleShare('copy')} className="flex flex-col items-center gap-2 group">
+                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-white/20 border border-white/5 group-hover:border-white/50 flex items-center justify-center transition-all shadow-lg">
+                    <Link className="w-6 h-6 text-slate-300 group-hover:text-white transition-colors" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Copy Link</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
