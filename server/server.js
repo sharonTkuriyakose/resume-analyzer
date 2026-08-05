@@ -63,7 +63,7 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                     - ONLY if "isValidResume" is true, proceed to Step 2.
 
                     STEP 2: EXPERT PANEL ANALYSIS
-                    - Act as a panel of Senior Technical Recruiters and Hiring Managers. Analyze the candidate's core competencies to identify their exact Target Job Role. Set 'domain' to this title.
+                    - Act as a panel of Senior Technical Recruiters and Hiring Managers. Analyze the candidate's core competencies to identify their exact Target Job Role. Set 'domain' to this title. MUST BE a standard, highly-searchable industry job title (e.g., "Backend Developer", "Data Scientist", "DevOps Engineer"). Maximum 3 words. No commas or special characters.
                     - 'score': Generate a rigorous "Market Readiness Score" (0-100) based on how well their current resume matches the strict industry requirements for their target role. Be honest and critical.
                     - 'foundSkills': List EXACT hard skills found. Provide an estimated proficiency 'score' (0-100).
                     - 'missingSkills': Identify critical missing hard skills for the 'domain'. Provide an importance 'score' (0-100).
@@ -139,37 +139,68 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
             console.log(`🌐 Generating portal searches for domain: ${analysis.domain}...`);
             const d = analysis.domain || 'Software Engineer';
             const q = encodeURIComponent(d);
+            const exactQ = encodeURIComponent(`"${d}"`);
             
             analysis.liveJobs = [
                 {
-                    id: 'p1', title: `Search on LinkedIn`, company: 'LinkedIn',
-                    url: `https://www.linkedin.com/jobs/search/?keywords=${q}`,
+                    id: 'p1', title: `${d} Jobs on LinkedIn`, company: 'LinkedIn',
+                    url: `https://www.linkedin.com/jobs/search/?keywords=${exactQ}`,
                     type: 'Portal Search', location: 'Global', description: `Explore thousands of ${d} opportunities and connect with recruiters directly on LinkedIn.`
                 },
                 {
-                    id: 'p2', title: `Search on Indeed`, company: 'Indeed',
-                    url: `https://www.indeed.com/jobs?q=${q}`,
+                    id: 'p2', title: `${d} Jobs on Indeed`, company: 'Indeed',
+                    url: `https://www.indeed.com/jobs?q=${exactQ}`,
                     type: 'Portal Search', location: 'Global', description: `Browse aggregated job listings for ${d} roles from company career sites and job boards.`
                 },
                 {
-                    id: 'p3', title: `Search on Glassdoor`, company: 'Glassdoor',
-                    url: `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${q}`,
+                    id: 'p3', title: `${d} Jobs on Glassdoor`, company: 'Glassdoor',
+                    url: `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${exactQ}`,
                     type: 'Portal Search', location: 'Global', description: `Find ${d} jobs and access company reviews, salaries, and interview insights.`
                 },
                 {
-                    id: 'p4', title: `Search on Wellfound`, company: 'Wellfound',
+                    id: 'p4', title: `${d} Jobs on Wellfound`, company: 'Wellfound',
                     url: `https://wellfound.com/role/${q.toLowerCase().replace(/%20/g, '-')}`, // Note: Wellfound uses hyphens for roles in URL
-                    type: 'Portal Search', location: 'Global', description: `Discover ${d} opportunities at top startups and tech companies.`
+                    type: 'Startup Search', location: 'Global', description: `Discover ${d} opportunities at top startups and tech companies.`
                 },
                 {
-                    id: 'p5', title: `Search on ZipRecruiter`, company: 'ZipRecruiter',
-                    url: `https://www.ziprecruiter.com/candidate/search?search=${q}`,
+                    id: 'p5', title: `${d} Jobs on ZipRecruiter`, company: 'ZipRecruiter',
+                    url: `https://www.ziprecruiter.com/candidate/search?search=${exactQ}`,
                     type: 'Portal Search', location: 'Global', description: `Apply to ${d} roles quickly with 1-Click Apply on ZipRecruiter.`
                 },
                 {
-                    id: 'p6', title: `Search on Monster`, company: 'Monster',
-                    url: `https://www.monster.com/jobs/search/?q=${q}`,
+                    id: 'p6', title: `${d} Jobs on Monster`, company: 'Monster',
+                    url: `https://www.monster.com/jobs/search/?q=${exactQ}`,
                     type: 'Portal Search', location: 'Global', description: `Search a vast database of ${d} jobs and get resume help.`
+                },
+                {
+                    id: 'p7', title: `${d} Jobs on Dice`, company: 'Dice',
+                    url: `https://www.dice.com/jobs?q=${exactQ}`,
+                    type: 'Tech Search', location: 'Global', description: `The leading database for technology professionals and ${d} jobs.`
+                },
+                {
+                    id: 'p8', title: `${d} Jobs on SimplyHired`, company: 'SimplyHired',
+                    url: `https://www.simplyhired.com/search?q=${exactQ}`,
+                    type: 'Portal Search', location: 'Global', description: `A robust job search engine for discovering local and remote ${d} positions.`
+                },
+                {
+                    id: 'p9', title: `${d} Jobs on WeWorkRemotely`, company: 'WeWorkRemotely',
+                    url: `https://weworkremotely.com/remote-jobs/search?term=${exactQ}`,
+                    type: 'Remote Work', location: 'Global', description: `Find the best remote ${d} jobs from anywhere in the world.`
+                },
+                {
+                    id: 'p10', title: `${d} Jobs on FlexJobs`, company: 'FlexJobs',
+                    url: `https://www.flexjobs.com/search?search=${exactQ}`,
+                    type: 'Remote/Flex Work', location: 'Global', description: `Discover hand-screened remote, part-time, freelance, and flexible ${d} jobs.`
+                },
+                {
+                    id: 'p11', title: `${d} Jobs on Upwork`, company: 'Upwork',
+                    url: `https://www.upwork.com/nx/jobs/search/?q=${exactQ}`,
+                    type: 'Freelance', location: 'Global', description: `Explore freelance ${d} projects and short-term contracts.`
+                },
+                {
+                    id: 'p12', title: `${d} Jobs on Remote.co`, company: 'Remote.co',
+                    url: `https://remote.co/remote-jobs/search/?search_keywords=${exactQ}`,
+                    type: 'Remote Work', location: 'Global', description: `Curated remote ${d} jobs from companies that embrace distributed work.`
                 }
             ];
             
