@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { 
   Target, Zap, BookOpen, Activity, 
   Sparkles, Award, Search, 
@@ -12,34 +14,49 @@ const ResultPage = ({ data }) => {
   const [activeCard, setActiveCard] = useState(null);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const handleExport = () => window.print();
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-  const shareText = `Check out my Neural Resume Analysis! I scored ${data?.score || 0}% for ${data?.domain || 'roles'}.`;
-  const shareUrl = window.location.href; 
-
-  const urls = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
-    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
-    telegram: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
-    email: `mailto:?subject=Neural%20Resume%20Analysis&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`
-  };
-
-  const handleCopy = async () => {
+  const handleSharePDF = async () => {
+    const element = document.getElementById('report-container');
+    if (!element) return;
+    
+    setIsGeneratingPDF(true);
     try {
-      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-      alert("Link copied to clipboard!");
-    } catch (err) {
-      console.error("Clipboard copy failed:", err);
-      const textArea = document.createElement("textarea");
-      textArea.value = `${shareText} ${shareUrl}`;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("Copy");
-      textArea.remove();
-      alert("Link copied to clipboard!");
+        const canvas = await html2canvas(element, { 
+            scale: 2, 
+            useCORS: true, 
+            backgroundColor: '#050505'
+        });
+        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        const pdfBlob = pdf.output('blob');
+        const file = new File([pdfBlob], 'Neural_Resume_Analysis.pdf', { type: 'application/pdf' });
+        
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    title: 'Neural Resume Analysis',
+                    text: `My Neural Resume Analysis! Score: ${data?.score || 0}% for ${data?.domain || 'roles'}.`,
+                    files: [file]
+                });
+            } catch(e) {
+                console.log("Native share failed", e);
+                pdf.save('Neural_Resume_Analysis.pdf');
+            }
+        } else {
+            pdf.save('Neural_Resume_Analysis.pdf');
+            alert('PDF Downloaded! You can now attach this file to WhatsApp, LinkedIn, or Email.');
+        }
+    } catch(err) {
+        console.error("PDF Generation Failed", err);
+        alert('Failed to generate PDF. Please try again.');
+    } finally {
+        setIsGeneratingPDF(false);
     }
-    setShowShareMenu(false);
   };
 
   if (!data || Object.keys(data).length === 0) {
@@ -115,7 +132,7 @@ const ResultPage = ({ data }) => {
         }
       `}} />
 
-      <div className="max-w-[1600px] mx-auto relative z-10 flex flex-col items-center">
+      <div id="report-container" className="max-w-[1600px] mx-auto relative z-10 flex flex-col items-center">
         
         {/* Top Metadata Bar */}
         <div className="w-full flex flex-col md:flex-row items-center justify-between mb-8 gap-6 bg-[#111]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-4 md:px-8 shadow-2xl relative overflow-hidden">
@@ -132,8 +149,8 @@ const ResultPage = ({ data }) => {
              </div>
            </div>
            <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-3 sm:gap-4 no-print mt-6 md:mt-0">
-              <button onClick={() => setShowShareMenu(true)} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-black uppercase text-white flex items-center gap-2 transition-all">
-                <Share2 className="w-4 h-4 text-slate-400" /> Share
+              <button onClick={handleSharePDF} disabled={isGeneratingPDF} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-black uppercase text-white flex items-center gap-2 transition-all disabled:opacity-50">
+                <Share2 className="w-4 h-4 text-slate-400" /> {isGeneratingPDF ? 'Generating PDF...' : 'Share Progress (PDF)'}
               </button>
               <button onClick={handleExport} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-gradient-to-r from-[#06b6d4] to-[#FF8C00] hover:from-[#0284c7] hover:to-[#0369a1] text-black rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)]">
                 <Download className="w-4 h-4" /> Export Report
@@ -459,85 +476,7 @@ const ResultPage = ({ data }) => {
 
       </div>
 
-      {/* SHARE MODAL */}
-      <AnimatePresence>
-        {showShareMenu && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setShowShareMenu(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-[#111] border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col items-center"
-            >
-              <button onClick={() => setShowShareMenu(false)} className="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-              
-              <div className="w-12 h-12 bg-[#06b6d4]/10 rounded-full flex items-center justify-center mb-4 border border-[#06b6d4]/20">
-                <Share2 className="w-5 h-5 text-[#06b6d4]" />
-              </div>
-              <h2 className="text-xl font-black text-white uppercase tracking-tight mb-2">Share Analysis</h2>
-              <p className="text-xs text-slate-400 font-medium mb-8 text-center px-4">Showcase your Neural Lab results and market readiness score with your network.</p>
-              
-              <div className="w-full flex flex-wrap justify-center gap-6 mt-4">
-                <a href={urls.linkedin} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
-                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#0077b5]/20 border border-white/5 group-hover:border-[#0077b5]/50 flex items-center justify-center transition-all shadow-lg">
-                    <Linkedin className="w-6 h-6 text-slate-300 group-hover:text-[#0077b5] transition-colors" />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">LinkedIn</span>
-                </a>
-                
-                <a href={urls.twitter} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
-                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#1DA1F2]/20 border border-white/5 group-hover:border-[#1DA1F2]/50 flex items-center justify-center transition-all shadow-lg">
-                    <Twitter className="w-6 h-6 text-slate-300 group-hover:text-[#1DA1F2] transition-colors" />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">X/Twitter</span>
-                </a>
-
-                <a href={urls.whatsapp} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
-                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#25D366]/20 border border-white/5 group-hover:border-[#25D366]/50 flex items-center justify-center transition-all shadow-lg">
-                    <MessageCircle className="w-6 h-6 text-slate-300 group-hover:text-[#25D366] transition-colors" />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">WhatsApp</span>
-                </a>
-                
-                <a href={urls.facebook} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
-                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#1877F2]/20 border border-white/5 group-hover:border-[#1877F2]/50 flex items-center justify-center transition-all shadow-lg">
-                    <Facebook className="w-6 h-6 text-slate-300 group-hover:text-[#1877F2] transition-colors" />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Facebook</span>
-                </a>
-                
-                <a href={urls.telegram} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
-                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#0088cc]/20 border border-white/5 group-hover:border-[#0088cc]/50 flex items-center justify-center transition-all shadow-lg">
-                    <Send className="w-6 h-6 text-slate-300 group-hover:text-[#0088cc] transition-colors" />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Telegram</span>
-                </a>
-
-                <a href={urls.email} className="flex flex-col items-center gap-2 group">
-                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-[#D44638]/20 border border-white/5 group-hover:border-[#D44638]/50 flex items-center justify-center transition-all shadow-lg">
-                    <Mail className="w-6 h-6 text-slate-300 group-hover:text-[#D44638] transition-colors" />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Email</span>
-                </a>
-                
-                <button onClick={handleCopy} className="flex flex-col items-center gap-2 group">
-                  <div className="w-14 h-14 rounded-full bg-white/5 group-hover:bg-white/20 border border-white/5 group-hover:border-white/50 flex items-center justify-center transition-all shadow-lg">
-                    <Link className="w-6 h-6 text-slate-300 group-hover:text-white transition-colors" />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-white uppercase tracking-wider">Copy Link</span>
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* SHARE MODAL REMOVED - NOW USES DIRECT PDF GENERATION */}
     </div>
   );
 };
