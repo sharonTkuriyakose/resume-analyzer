@@ -17,14 +17,23 @@ const ResultPage = ({ data }) => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const handleSharePDF = async () => {
-    const element = document.getElementById('report-container');
-    if (!element) {
+    const originalElement = document.getElementById('report-container');
+    if (!originalElement) {
         alert("Could not find the report container.");
         return;
     }
     
     setIsGeneratingPDF(true);
     try {
+        // Clone the element and render it off-screen to bypass iOS Safari viewport clipping bugs
+        const element = originalElement.cloneNode(true);
+        element.style.position = 'absolute';
+        element.style.top = '-9999px';
+        element.style.left = '0';
+        // Remove animations for the clone so it captures instantly
+        element.style.animation = 'none';
+        document.body.appendChild(element);
+
         const options = {
             quality: 0.85, 
             bgcolor: '#050505',
@@ -38,6 +47,9 @@ const ResultPage = ({ data }) => {
             }
         };
         const imgData = await domtoimage.toJpeg(element, options);
+        
+        // Cleanup the hidden clone immediately
+        document.body.removeChild(element);
         
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -254,7 +266,7 @@ const ResultPage = ({ data }) => {
               </div>
 
               {/* 4 OUTER NODES */}
-              <div className="w-full flex flex-col gap-4 xl:contents">
+              <div className="w-full grid grid-cols-2 gap-4 xl:flex xl:flex-col xl:contents">
                 <NodeButton id="ats" icon={Search} title="ATS Intelligence" onClick={setActiveCard} positionClass="xl:top-[20%] xl:left-[9%]" />
                 <NodeButton id="skills" icon={Zap} title="Skill Proficiency" onClick={setActiveCard} positionClass="xl:top-[70%] xl:left-[9%]" />
                 <NodeButton id="projects" icon={Sparkles} title="Projects Lab" onClick={setActiveCard} positionClass="xl:top-[20%] xl:right-[9%]" />
