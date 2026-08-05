@@ -14,78 +14,9 @@ const ResultPage = ({ data }) => {
   const [activeCard, setActiveCard] = useState(null);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const handleExport = () => window.print();
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-
-  const handleSharePDF = async () => {
-    const originalElement = document.getElementById('report-container');
-    if (!originalElement) {
-        alert("Could not find the report container.");
-        return;
-    }
-    
-    setIsGeneratingPDF(true);
-    try {
-        // Clone the element and render it off-screen to bypass iOS Safari viewport clipping bugs
-        const element = originalElement.cloneNode(true);
-        element.style.position = 'absolute';
-        element.style.top = '-9999px';
-        element.style.left = '0';
-        // Remove animations for the clone so it captures instantly
-        element.style.animation = 'none';
-        document.body.appendChild(element);
-
-        const options = {
-            quality: 0.85, 
-            bgcolor: '#050505',
-            width: element.scrollWidth,
-            height: element.scrollHeight,
-            style: {
-                transform: 'scale(1)',
-                transformOrigin: 'top left',
-                width: element.scrollWidth + 'px',
-                height: element.scrollHeight + 'px'
-            }
-        };
-        const imgData = await domtoimage.toJpeg(element, options);
-        
-        // Cleanup the hidden clone immediately
-        document.body.removeChild(element);
-        
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        
-        // Load the image data into an Image object to retrieve its natural dimensions
-        const img = new Image();
-        img.src = imgData;
-        await new Promise(resolve => img.onload = resolve);
-        
-        const pdfHeight = (img.height * pdfWidth) / img.width;
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-        const pdfBlob = pdf.output('blob');
-        const file = new File([pdfBlob], 'Neural_Resume_Analysis.pdf', { type: 'application/pdf' });
-        
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            try {
-                await navigator.share({
-                    title: 'Neural Resume Analysis',
-                    text: `My Neural Resume Analysis! Score: ${data?.score || 0}% for ${data?.domain || 'roles'}.`,
-                    files: [file]
-                });
-            } catch(e) {
-                console.log("Native share failed", e);
-                pdf.save('Neural_Resume_Analysis.pdf');
-            }
-        } else {
-            pdf.save('Neural_Resume_Analysis.pdf');
-            alert('PDF Downloaded! You can now attach this file to WhatsApp, LinkedIn, or Email.');
-        }
-    } catch(err) {
-        console.error("PDF Generation Failed", err);
-        alert(`Failed to generate PDF: ${err.message || JSON.stringify(err)}`);
-    } finally {
-        setIsGeneratingPDF(false);
-    }
+  const handleSharePDF = () => {
+    alert("To share your progress as a PDF, please select 'Save as PDF' from the native print menu that will appear next, then share that file.");
+    window.print();
   };
 
   if (!data || Object.keys(data).length === 0) {
@@ -178,8 +109,8 @@ const ResultPage = ({ data }) => {
              </div>
            </div>
            <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-3 sm:gap-4 no-print mt-6 md:mt-0">
-              <button onClick={handleSharePDF} disabled={isGeneratingPDF} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-black uppercase text-white flex items-center gap-2 transition-all disabled:opacity-50">
-                <Share2 className="w-4 h-4 text-slate-400" /> {isGeneratingPDF ? 'Generating PDF...' : 'Share Progress (PDF)'}
+              <button onClick={handleSharePDF} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-black uppercase text-white flex items-center gap-2 transition-all">
+                <Share2 className="w-4 h-4 text-slate-400" /> Share Progress (PDF)
               </button>
               <button onClick={handleExport} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-gradient-to-r from-[#06b6d4] to-[#FF8C00] hover:from-[#0284c7] hover:to-[#0369a1] text-black rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)]">
                 <Download className="w-4 h-4" /> Export Report
@@ -266,7 +197,7 @@ const ResultPage = ({ data }) => {
               </div>
 
               {/* 4 OUTER NODES */}
-              <div className="w-full grid grid-cols-2 gap-4 xl:flex xl:flex-col xl:contents">
+              <div className="w-full flex flex-col gap-4 xl:contents">
                 <NodeButton id="ats" icon={Search} title="ATS Intelligence" onClick={setActiveCard} positionClass="xl:top-[20%] xl:left-[9%]" />
                 <NodeButton id="skills" icon={Zap} title="Skill Proficiency" onClick={setActiveCard} positionClass="xl:top-[70%] xl:left-[9%]" />
                 <NodeButton id="projects" icon={Sparkles} title="Projects Lab" onClick={setActiveCard} positionClass="xl:top-[20%] xl:right-[9%]" />
