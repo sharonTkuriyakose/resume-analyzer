@@ -25,7 +25,19 @@ const ResultPage = ({ data }) => {
     
     setIsGeneratingPDF(true);
     try {
-        const imgData = await domtoimage.toJpeg(element, { quality: 0.85, bgcolor: '#050505' });
+        const options = {
+            quality: 0.85, 
+            bgcolor: '#050505',
+            width: element.scrollWidth,
+            height: element.scrollHeight,
+            style: {
+                transform: 'scale(1)',
+                transformOrigin: 'top left',
+                width: element.scrollWidth + 'px',
+                height: element.scrollHeight + 'px'
+            }
+        };
+        const imgData = await domtoimage.toJpeg(element, options);
         
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
