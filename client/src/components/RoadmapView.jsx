@@ -31,7 +31,7 @@ const RoadmapView = ({ roadmap }) => {
                   <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Master {item.skill}</h3>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500">Phase {index + 1} • Specialization</p>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-1.5 bg-cyan-50 text-cyan-600 text-[10px] font-black uppercase tracking-widest rounded-xl border border-cyan-100 w-fit">
+                <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-xl border border-emerald-100 w-fit">
                   <Circle className="w-2.5 h-2.5 fill-current animate-pulse" />
                   {item.status}
                 </div>

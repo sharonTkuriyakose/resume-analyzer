@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScanSearch, Activity, RotateCcw } from 'lucide-react'; 
+import { ScanSearch, Activity, RotateCcw, Cpu } from 'lucide-react'; 
 import { motion, AnimatePresence } from 'framer-motion';
 import UploadPage from './pages/UploadPage';
 import ResultPage from './pages/ResultPage';
@@ -20,7 +20,7 @@ function App() {
     // Intro sequence timing
     const timer = setTimeout(() => {
       setShowIntro(false);
-    }, 3500);
+    }, 4000);
     return () => clearTimeout(timer);
   }, [isLocal, API_URL]);
 
@@ -35,7 +35,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#050505] text-slate-200 selection:bg-[#06b6d4]/30 overflow-x-hidden relative">
+    <div className="min-h-screen flex flex-col bg-[#050505] text-slate-200 selection:bg-[#10b981]/30 overflow-x-hidden relative font-sans">
       
       {/* 0. CINEMATIC INTRO ANIMATION */}
       <AnimatePresence>
@@ -44,35 +44,70 @@ function App() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#050505]"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505]"
           >
-            <div className="relative flex items-center justify-center">
-              {/* Expanding glowing circle */}
+            {/* Background sweeping lines */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+               <svg viewBox="0 0 1200 800" className="w-full h-full opacity-30">
+                 <defs>
+                   <filter id="glow-intro" x="-20%" y="-20%" width="140%" height="140%">
+                     <feGaussianBlur stdDeviation="15" result="blur" />
+                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                   </filter>
+                 </defs>
+                 <motion.path 
+                   d="M 100,800 Q 600,400 1100,800" 
+                   fill="none" 
+                   stroke="#10b981" 
+                   strokeWidth="2" 
+                   filter="url(#glow-intro)"
+                   initial={{ pathLength: 0, opacity: 0 }}
+                   animate={{ pathLength: 1, opacity: 0.5 }}
+                   transition={{ duration: 2, ease: "easeOut" }}
+                 />
+                 <motion.path 
+                   d="M 100,0 Q 600,400 1100,0" 
+                   fill="none" 
+                   stroke="#10b981" 
+                   strokeWidth="2" 
+                   filter="url(#glow-intro)"
+                   initial={{ pathLength: 0, opacity: 0 }}
+                   animate={{ pathLength: 1, opacity: 0.5 }}
+                   transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+                 />
+               </svg>
+            </div>
+
+            <div className="relative flex flex-col items-center justify-center z-10">
+              {/* Chip appearance */}
               <motion.div 
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: [0, 1.2, 1], opacity: [0, 1, 0] }}
-                transition={{ duration: 2, ease: "easeInOut" }}
-                className="absolute w-32 h-32 rounded-full border-4 border-white shadow-[0_0_40px_rgba(6,182,212,0.8)]"
-              />
-              
-              {/* Logo appearance */}
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1, duration: 1, ease: "easeOut" }}
-                className="flex items-center gap-4 relative z-10"
+                initial={{ opacity: 0, scale: 0.5, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                className="relative flex items-center justify-center w-24 h-24 mb-6"
               >
-                <div className="bg-white text-black p-4 rounded-2xl shadow-[0_0_50px_rgba(255,255,255,0.3)]">
-                  <ScanSearch className="w-12 h-12" strokeWidth={2.5} />
+                <div className="absolute inset-0 bg-[#10b981]/20 rounded-xl blur-[20px] animate-pulse"></div>
+                <div className="w-20 h-20 bg-black border border-[#10b981]/50 shadow-[0_0_30px_rgba(16,185,129,0.3)] rounded-xl flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+                  <Cpu className="w-10 h-10 text-[#10b981]" strokeWidth={1.5} />
+                  {/* Grid lines on chip */}
+                  <div className="absolute top-0 left-1/2 w-[1px] h-3 bg-[#10b981]/40 -translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-1/2 w-[1px] h-3 bg-[#10b981]/40 -translate-x-1/2"></div>
+                  <div className="absolute left-0 top-1/2 w-3 h-[1px] bg-[#10b981]/40 -translate-y-1/2"></div>
+                  <div className="absolute right-0 top-1/2 w-3 h-[1px] bg-[#10b981]/40 -translate-y-1/2"></div>
                 </div>
-                <div className="flex flex-col items-start leading-none">
-                  <span className="font-black text-2xl sm:text-4xl tracking-tighter text-white uppercase text-center sm:text-left">
-                    Resume Analyzer
-                  </span>
-                  <span className="text-[10px] sm:text-sm font-black text-[#06b6d4] uppercase tracking-[0.4em] ml-0.5 mt-1 text-center sm:text-left">
-                    Neural Lab v2.0
-                  </span>
-                </div>
+              </motion.div>
+              
+              {/* Text appearance */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5, duration: 1, ease: "easeOut" }}
+                className="flex flex-col items-center leading-none"
+              >
+                <span className="font-black text-3xl md:text-5xl tracking-tighter text-white text-center drop-shadow-lg">
+                  Verify your <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-300">Career AI</span>
+                </span>
               </motion.div>
             </div>
           </motion.div>
@@ -84,27 +119,55 @@ function App() {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: showIntro ? 0 : 1, y: showIntro ? -50 : 0 }}
         transition={{ delay: showIntro ? 0 : 0.5, duration: 1 }}
-        className="fixed top-0 z-50 w-full bg-[#050505]/80 backdrop-blur-2xl border-b border-white/5 py-4 md:py-6 px-4 md:px-12 flex justify-between items-center"
+        className="fixed top-0 z-50 w-full bg-[#050505]/70 backdrop-blur-2xl border-b border-white/5 py-4 px-6 md:px-12 flex justify-between items-center"
       >
-        <div className="flex items-center gap-2 md:gap-4 group cursor-default min-w-0">
-          <div className="bg-white text-black p-2 md:p-2.5 rounded-xl md:rounded-2xl shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] group-hover:rotate-12 transition-all duration-500 shrink-0">
-            <ScanSearch className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
-          </div>
-          <div className="flex flex-col items-start leading-none min-w-0 overflow-hidden">
-            <span className="font-black text-sm md:text-2xl tracking-tighter text-white uppercase whitespace-nowrap overflow-hidden text-ellipsis">
-              Resume Analyzer
-            </span>
-            <span className="text-[6px] md:text-[9px] font-black text-[#06b6d4] uppercase tracking-[0.4em] ml-0.5 whitespace-nowrap">
-              Neural Lab v2.0
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex flex-col items-start leading-none min-w-0 overflow-hidden cursor-pointer">
+            <span className="font-black text-xl md:text-2xl tracking-tighter text-white whitespace-nowrap overflow-hidden text-ellipsis flex items-center gap-2">
+              <Cpu className="w-5 h-5 text-[#10b981]" /> ResumeLab
             </span>
           </div>
+        </div>
+
+        {/* Center links */}
+        <div className="hidden md:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+          {[
+            { name: "Performance", href: "#performance" },
+            { name: "Architecture", href: "#architecture" },
+            { name: "Scope", href: "#scope" }
+          ].map((item, idx) => (
+            <motion.a 
+              key={idx} 
+              href={item.href}
+              onClick={(e) => {
+                // Only prevent default if we are on the UploadPage and the element exists
+                if (!analysisData) {
+                  const el = document.querySelector(item.href);
+                  if (el) {
+                    e.preventDefault();
+                    el.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }
+              }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: showIntro ? 0 : 0.6 + (idx * 0.1) }}
+              whileHover={{ scale: 1.05, color: '#10b981' }}
+              whileTap={{ scale: 0.95 }}
+              className="hover:text-white transition-colors relative group"
+            >
+              {item.name}
+              {/* Animated underline */}
+              <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-[#10b981] transition-all duration-300 group-hover:w-full"></span>
+            </motion.a>
+          ))}
         </div>
 
         <div className="flex items-center gap-3">
           {analysisData && (
             <button 
               onClick={handleReset}
-              className="flex items-center gap-2 text-[9px] md:text-xs font-black uppercase tracking-widest text-[#06b6d4] bg-[#06b6d4]/10 border border-[#06b6d4]/20 hover:bg-[#06b6d4] hover:text-black px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl transition-all shadow-lg shrink-0 ml-2"
+              className="flex items-center gap-2 text-[10px] md:text-xs font-black uppercase tracking-widest text-black bg-white hover:bg-slate-200 px-4 py-2 md:py-2.5 rounded-full transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]"
             >
               <RotateCcw className="w-3 h-3 md:w-4 md:h-4" />
               <span className="hidden sm:inline">Start New Analysis</span>
@@ -116,9 +179,6 @@ function App() {
 
       {/* 2. MAIN APPLICATION STAGE */}
       <main className="flex-grow flex flex-col relative w-full pt-[80px] md:pt-[100px]">
-        {/* Background Ambient Glow (Updated to Orange/Amber) */}
-        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[800px] bg-[#06b6d4]/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
-
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: showIntro ? 0 : 1 }}
@@ -134,18 +194,15 @@ function App() {
       </main>
 
       {/* 3. UNIVERSAL FOOTER */}
-      <footer className="py-8 md:py-12 border-t border-white/5 bg-[#0B0B0B]/50 backdrop-blur-sm relative z-40">
+      <footer className="py-8 md:py-12 bg-[#050505] relative z-40 border-t border-white/5">
         <div className="flex flex-col items-center gap-4 px-6 text-center">
-          <div className="flex items-center gap-2 text-slate-500 font-bold text-[9px] md:text-xs uppercase tracking-[0.3em]">
-            <Activity className="w-3 h-3 md:w-4 md:h-4 text-[#06b6d4]" /> 
+          <div className="flex items-center gap-2 text-emerald-500 font-bold text-[9px] md:text-xs uppercase tracking-[0.3em] drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+            <Activity className="w-3 h-3 md:w-4 md:h-4" /> 
             Skill Intelligence Engine 
           </div>
           <div className="flex flex-col items-center gap-1">
-            <p className="text-[8px] md:text-[10px] text-slate-600 uppercase tracking-widest">
+            <p className="text-[8px] md:text-[10px] text-slate-500 uppercase tracking-widest">
               Engineered by Sharon T Kuriyakose
-            </p>
-            <p className="text-[7px] md:text-[8px] text-slate-700 uppercase tracking-widest">
-              Universal Career Intelligence Suite 
             </p>
           </div>
         </div>

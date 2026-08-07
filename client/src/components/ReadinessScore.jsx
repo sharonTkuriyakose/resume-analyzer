@@ -1,7 +1,7 @@
 import React from 'react';
 
 const ReadinessScore = ({ score }) => {
-  const color = score > 75 ? 'text-emerald-500' : score > 50 ? 'text-cyan-500' : 'text-indigo-600';
+  const color = score > 75 ? 'text-emerald-500' : score > 50 ? 'text-emerald-500' : 'text-indigo-600';
   
   return (
     <div className="bg-white p-10 rounded-3xl shadow-sm border border-slate-200 text-center relative overflow-hidden">

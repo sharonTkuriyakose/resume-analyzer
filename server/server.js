@@ -4,25 +4,48 @@ const cors = require('cors');
 const multer = require('multer');
 const pdf = require('pdf-parse');
 const Groq = require("groq-sdk");
+const cluster = require('cluster');
+const os = require('os');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
-const app = express();
+const numCPUs = os.cpus().length;
 
-// --- 1. MIDDLEWARE ---
-app.use(cors({ origin: '*' }));
-app.use(express.json());
+if (cluster.isPrimary || cluster.isMaster) {
+  console.log(`[CLUSTER] Primary ${process.pid} is running. Forking ${numCPUs} workers...`);
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`[CLUSTER] Worker ${worker.process.pid} died. Forking a new one...`);
+    cluster.fork();
+  });
+} else {
+  const app = express();
 
-const storage = multer.memoryStorage();
-const upload = multer({ 
-    storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 } 
-});
+  // --- 1. MIDDLEWARE & SECURITY ---
+  app.use(helmet());
+  app.use(cors({ origin: '*' }));
+  app.use(express.json());
+
+  const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, 
+    max: 20, 
+    message: { message: "TOO MANY REQUESTS. Rate limit exceeded. Try again in 15 minutes." }
+  });
+
+  const storage = multer.memoryStorage();
+  const upload = multer({
+      storage: storage,
+      limits: { fileSize: 5 * 1024 * 1024 }
+  });
 
 // --- 2. INITIALIZATION ---
 const apiKey = process.env.GROQ_API_KEY;
 const groq = new Groq({ apiKey });
 
 // --- 3. THE ANALYSIS ROUTE ---
-app.post('/api/analyze', upload.single('resume'), async (req, res) => {
+app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) => {
     try {
         if (!req.file || !req.file.buffer) {
             return res.status(400).json({ message: "No file uploaded." });
@@ -38,11 +61,11 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                 .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, "")
                 .replace(/\s+/g, ' ')
                 .trim();
-            
+
             // Hard gate: Instant rejection for extremely short/empty files
             if (resumeText.length < 150) {
-                return res.status(422).json({ 
-                    message: "DOCUMENT CONTENT TOO SPARSE. Please upload a valid professional resume." 
+                return res.status(422).json({
+                    message: "DOCUMENT CONTENT TOO SPARSE. Please upload a valid professional resume."
                 });
             }
         } catch (pdfErr) {
@@ -53,8 +76,8 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
         console.log("🤖 Authenticating Document Structure...");
         const completion = await groq.chat.completions.create({
             messages: [
-                { 
-                    role: "system", 
+                {
+                    role: "system",
                     content: `You are a Strict ATS Authenticator and Career Architect. 
                     
                     STEP 1: VALIDATE DOCUMENT
@@ -64,7 +87,12 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
 
                     STEP 2: EXPERT PANEL ANALYSIS
                     - Act as a panel of Senior Technical Recruiters and Hiring Managers. Analyze the candidate's core competencies to identify their exact Target Job Role. Set 'domain' to this title. MUST BE a standard, highly-searchable industry job title (e.g., "Backend Developer", "Data Scientist", "DevOps Engineer"). Maximum 3 words. No commas or special characters.
-                    - 'score': Generate a rigorous "Market Readiness Score" (0-100) based on how well their current resume matches the strict industry requirements for their target role. Be honest and critical.
+                    - 'scoringComponents': Generate rigorous sub-scores (0-100) for five specific areas based on how well they meet industry standards for the 'domain':
+                        1. "skills": Hard skills relevance and proficiency.
+                        2. "projects": Quality, complexity, and relevance of projects/portfolio.
+                        3. "experience": Relevance and impact of professional experience.
+                        4. "certifications": Value of degrees, certifications, and courses.
+                        5. "atsFormatting": Resume structure, readability, and ATS parsing compatibility.
                     - 'foundSkills': List EXACT hard skills found. Provide an estimated proficiency 'score' (0-100).
                     - 'missingSkills': Identify critical missing hard skills for the 'domain'. Provide an importance 'score' (0-100).
                     - 'keywordsDetected': Extract ATS-friendly keywords present. Provide a 'keyword' and a detailed 'context' explaining why it's valuable.
@@ -72,10 +100,23 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                     - 'phasedCurriculum': 3 stages to bridge their specific gaps. For each phase, provide a simple, natural 'title' (e.g. "Cloud Computing Basics", "Containerization", without underscores or ALL CAPS) and a detailed 'primaryGoal' (2-3 sentences of expert advice).
                     - 'projectList': EXACTLY 3 unique project simulations STRICTLY designed to bridge the user's MISSING skills (deficiencies). Do NOT suggest projects based on their existing strengths. Use realistic, industry-standard project ideas with a detailed 'desc' (2-3 sentences outlining the architecture).
                     
+                    STEP 3: DEEP AUTHENTICITY & PLAGIARISM CHECK
+                    - Analyze the semantic structure and language patterns of the resume. 
+                    - Detect if it relies heavily on AI-generated cliches, exaggerated claims, or generic templates.
+                    - Assign an 'authenticity_score' (0-100) and provide an 'authenticity_reasoning'.
+
                     REQUIRED JSON STRUCTURE (STRICTLY FOLLOW THIS):
                     {
                       "isValidResume": boolean,
-                      "score": number,
+                      "authenticity_score": number,
+                      "authenticity_reasoning": "string",
+                      "scoringComponents": {
+                         "skills": number,
+                         "projects": number,
+                         "experience": number,
+                         "certifications": number,
+                         "atsFormatting": number
+                      },
                       "domain": "string",
                       "foundSkills": [{"skill": "skill1", "score": 90}],
                       "missingSkills": [{"skill": "skill1", "score": 95}],
@@ -94,16 +135,16 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                           ] 
                         }
                       ]
-                    }` 
+                    }`
                 },
-                { 
-                    role: "user", 
-                    content: `Analyze this document. If it is NOT a professional resume or CV, set 'isValidResume' to false: ${resumeText.substring(0, 7000)}` 
+                {
+                    role: "user",
+                    content: `Analyze this document. If it is NOT a professional resume or CV, set 'isValidResume' to false. Also calculate the authenticity score: ${resumeText.substring(0, 7000)}`
                 }
             ],
             model: "llama-3.3-70b-versatile",
             response_format: { type: "json_object" },
-            temperature: 0.5 
+            temperature: 0.5
         });
 
         // C. SAFE PARSING & AUTHENTICATION CHECK
@@ -117,14 +158,31 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
         // REJECTION LOGIC: Stop if document is not a resume
         if (analysis.isValidResume === false) {
             console.log("🚫 Authentication Failed: Invalid Document Type.");
-            return res.status(422).json({ 
-                message: "INVALID DOCUMENT DETECTED. The system only accepts professional Resumes or CVs." 
+            return res.status(422).json({
+                message: "INVALID DOCUMENT DETECTED. The system only accepts professional Resumes or CVs."
             });
         }
 
-        // D. DATA REFINEMENT
-        analysis.score = parseInt(analysis.score) || 65;
-        analysis.score = Math.max(5, Math.min(100, analysis.score));
+        // D. DATA REFINEMENT & DEDUCTIVE SCORING
+        const s = analysis.scoringComponents?.skills || 60;
+        const p = analysis.scoringComponents?.projects || 50;
+        const e = analysis.scoringComponents?.experience || 50;
+        const c = analysis.scoringComponents?.certifications || 40;
+        const a = analysis.scoringComponents?.atsFormatting || 70;
+
+        // Deductive Scoring Formula: Score = 0.30S + 0.25P + 0.20E + 0.15C + 0.10A
+        let rawScore = (0.30 * s) + (0.25 * p) + (0.20 * e) + (0.15 * c) + (0.10 * a);
+
+        analysis.score = Math.max(5, Math.min(100, Math.round(rawScore)));
+
+        // Ensure components are always passed back
+        analysis.scoringComponents = {
+            skills: s,
+            projects: p,
+            experience: e,
+            certifications: c,
+            atsFormatting: a
+        };
 
         if (analysis.phasedCurriculum) {
             analysis.phasedCurriculum = analysis.phasedCurriculum.map(item => ({
@@ -137,10 +195,10 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
         // E. GENERATE JOB PORTAL SEARCH LINKS
         try {
             console.log(`🌐 Generating portal searches for domain: ${analysis.domain}...`);
-            const d = analysis.domain || 'Software Engineer';
+            const d = analysis.domain || 'Professional';
             const q = encodeURIComponent(d);
             const exactQ = encodeURIComponent(`"${d}"`);
-            
+
             analysis.liveJobs = [
                 {
                     id: 'p1', title: `${d} Jobs on LinkedIn`, company: 'LinkedIn',
@@ -203,7 +261,7 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
                     type: 'Remote Work', location: 'Global', description: `Curated remote ${d} jobs from companies that embrace distributed work.`
                 }
             ];
-            
+
             console.log(`✅ Generated ${analysis.liveJobs.length} job portal links.`);
         } catch (jobErr) {
             console.error("⚠️ Failed to generate job portals:", jobErr.message);
@@ -220,4 +278,5 @@ app.post('/api/analyze', upload.single('resume'), async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Neural Lab Server: http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Neural Lab Worker ${process.pid} listening on port ${PORT}`));
+}

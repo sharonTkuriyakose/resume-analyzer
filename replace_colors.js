@@ -7,22 +7,21 @@ function replaceInFile(filePath) {
     let content = fs.readFileSync(filePath, 'utf8');
     
     // Replace hex colors
-    content = content.replace(/#FF6A00/g, '#06b6d4');
-    content = content.replace(/#FFA040/g, '#38bdf8');
-    content = content.replace(/#E65C00/g, '#0284c7');
-    content = content.replace(/#FF7A00/g, '#0369a1');
-    content = content.replace(/#ff6a00/gi, '#06b6d4');
+    content = content.replace(/#06b6d4/gi, '#10b981'); // Cyan-500 to Emerald-500
+    content = content.replace(/#0284c7/gi, '#059669'); // Sky-600 to Emerald-600
+    content = content.replace(/#0369a1/gi, '#047857'); // Sky-700 to Emerald-700
+    content = content.replace(/#38bdf8/gi, '#34d399'); // Sky-400 to Emerald-400
 
     // Replace rgb/rgba values
-    // 255,106,0 is #FF6A00 -> replace with 6,182,212
-    content = content.replace(/255,\s*106,\s*0/g, '6,182,212');
+    // 6,182,212 is #06b6d4 -> replace with 16,185,129
+    content = content.replace(/6,\s*182,\s*212/g, '16,185,129');
     
     // Replace gradient names if any
-    content = content.replace(/orangeGradient/g, 'blueGradient');
+    content = content.replace(/blueGradient/g, 'greenGradient');
 
-    // Replace amber- and orange- tailwind classes
-    content = content.replace(/amber-/g, 'cyan-');
-    content = content.replace(/orange-/g, 'blue-');
+    // Replace cyan- and sky- tailwind classes
+    content = content.replace(/cyan-/g, 'emerald-');
+    content = content.replace(/sky-/g, 'green-');
 
     fs.writeFileSync(filePath, content, 'utf8');
 }

@@ -2,271 +2,291 @@ import React from 'react';
 import ResumeUpload from '../components/ResumeUpload';
 import { motion } from 'framer-motion';
 import { 
-  ShieldCheck, Map, Cpu, Zap, 
-  Search, BarChart3, Globe, Sparkles,
-  Award, Target, ArrowRight, CheckCircle2, Activity
+  Search, Target, Map, Activity, 
+  Database, ShieldCheck, Zap, Server,
+  FileText, Cpu, BrainCircuit, LayoutDashboard
 } from 'lucide-react';
 
-const UploadPage = ({ onAnalysisComplete }) => {
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
+const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
   return (
-    <div className="w-full bg-[#050505] text-slate-200 font-sans selection:bg-[#06b6d4]/30 overflow-x-hidden relative">
-      <style dangerouslySetInnerHTML={{ __html: `
-        html, body, #root { 
-          margin: 0 !important; 
-          padding: 0 !important; 
-          background-color: #050505 !important; 
-          width: 100%;
-          min-height: 100%;
-          scroll-behavior: smooth;
-        }
-        /* Hide scrollbar for clean cinematic look */
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #050505; 
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #333; 
-          border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #555; 
-        }
-      `}} />
-
-      <main className="relative w-full flex flex-col items-center">
+    <div className="w-full bg-[#050505] font-sans selection:bg-[#10b981]/30">
+      
+      {/* ========================================================
+          SECTION 1: HERO (Dark Theme with Glowing Curves)
+          ======================================================== */}
+      <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-20 pb-32 overflow-hidden">
         
-        {/* ========================================================
-            SECTION 1: DASHBOARD HERO (Circuit Animation)
-            ======================================================== */}
-        <section className="w-full flex flex-col items-center justify-start pt-4 md:pt-12 min-h-screen relative overflow-hidden">
-          {/* BACKGROUND NOISE / AMBIENT */}
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay z-0"></div>
+        {/* Background Sweeping SVG Curves */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <svg viewBox="0 0 1200 800" className="w-full h-full opacity-60" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <filter id="glow-hero" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="8" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+            <motion.path 
+              d="M -200,600 Q 600,300 1400,600" 
+              fill="none" stroke="#10b981" strokeWidth="2" filter="url(#glow-hero)"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.7 }}
+              transition={{ duration: 2.5, ease: "easeInOut" }}
+            />
+            <motion.path 
+              d="M -200,700 Q 600,400 1400,700" 
+              fill="none" stroke="#34d399" strokeWidth="1" filter="url(#glow-hero)"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.3 }}
+              transition={{ duration: 2.5, ease: "easeInOut", delay: 0.2 }}
+            />
+            <motion.path 
+              d="M 200,0 Q 600,300 1000,0" 
+              fill="none" stroke="#10b981" strokeWidth="1.5" filter="url(#glow-hero)"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.4 }}
+              transition={{ duration: 2.5, ease: "easeInOut", delay: 0.4 }}
+            />
+          </svg>
+        </div>
 
-          {/* HEADER AREA */}
-          <div className="text-center space-y-6 flex flex-col items-center relative z-20 px-4 mt-8 md:mt-0 w-full max-w-5xl mx-auto">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="inline-flex items-center gap-3 px-4 md:px-6 py-2 md:py-3 bg-[#111] border border-[#333] rounded-full shadow-lg backdrop-blur-md"
-            >
-              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-[#06b6d4]" />
-              <span className="text-[10px] md:text-sm font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-slate-300">
-                Neural Architecture
-              </span>
-            </motion.div>
-            
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 1 }}
-              className="text-4xl sm:text-6xl lg:text-[5rem] font-black text-white leading-[1.1] tracking-tighter drop-shadow-2xl"
-            >
-              Inference at the Edge.
-            </motion.h1>
-            
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.9, duration: 1 }}
-              className="text-sm md:text-xl text-slate-400 max-w-3xl text-center leading-relaxed font-medium px-4"
-            >
-               Instantly detect skill gaps in your profile and generate an automated, project-based learning roadmap to reach your career goals. Enjoy unparalleled performance with our best-in-class analysis engine.
-            </motion.p>
-          </div>
+        {/* Ambient Glows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#10b981]/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
 
-          {/* NEURAL CIRCUIT DASHBOARD */}
-          <div className="relative w-full max-w-7xl h-[600px] md:h-[700px] mt-12 md:mt-16 flex items-center justify-center">
-            
-            {/* SVG Circuit Lines */}
-            <div className="absolute inset-0 hidden md:block z-10">
-              <svg viewBox="0 0 1200 800" className="w-full h-full overflow-visible" preserveAspectRatio="xMidYMid meet">
-                <defs>
-                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                     <feGaussianBlur stdDeviation="6" result="blur" />
-                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
+        {/* Floating Mini Nodes */}
+        <div className="absolute inset-0 pointer-events-none z-10 hidden md:block">
+          <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity }} className="absolute top-1/4 left-1/4 w-8 h-8 bg-black border border-[#10b981]/30 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            <Search className="w-4 h-4 text-[#10b981]" />
+          </motion.div>
+          <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 5, repeat: Infinity }} className="absolute top-1/3 right-1/4 w-8 h-8 bg-black border border-[#10b981]/30 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            <Target className="w-4 h-4 text-[#10b981]" />
+          </motion.div>
+        </div>
 
-                {/* Dim Background Lines */}
-                <g fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="2">
-                  <path d="M 600 400 L 600 150 L 200 150" />
-                  <path d="M 600 400 L 600 150 L 1000 150" />
-                  <path d="M 600 400 L 600 650 L 200 650" />
-                  <path d="M 600 400 L 600 650 L 1000 650" />
-                </g>
-
-                {/* Glowing Animated Lines */}
-                <motion.g fill="none" stroke="#06b6d4" strokeWidth="3" filter="url(#glow)">
-                  <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1, ease: "easeOut"}} d="M 600 400 L 600 150 L 200 150" />
-                  <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1, ease: "easeOut"}} d="M 600 400 L 600 150 L 1000 150" />
-                  <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1.2, ease: "easeOut"}} d="M 600 400 L 600 650 L 200 650" />
-                  <motion.path initial={{pathLength:0}} animate={{pathLength:1}} transition={{duration: 2.5, delay: 1.2, ease: "easeOut"}} d="M 600 400 L 600 650 L 1000 650" />
-                </motion.g>
-              </svg>
+        {/* Hero Content */}
+        <div className="relative z-20 flex flex-col items-center text-center px-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-8 relative"
+          >
+            {/* Center Graphic */}
+            <div className="w-24 h-24 bg-black border border-[#10b981]/50 rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.4)] overflow-hidden">
+               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 mix-blend-overlay"></div>
+               <Activity className="w-10 h-10 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+               <div className="absolute top-0 w-[1px] h-4 bg-[#10b981]"></div>
+               <div className="absolute bottom-0 w-[1px] h-4 bg-[#10b981]"></div>
+               <div className="absolute left-0 h-[1px] w-4 bg-[#10b981]"></div>
+               <div className="absolute right-0 h-[1px] w-4 bg-[#10b981]"></div>
             </div>
+          </motion.div>
 
-            {/* FLOATING NODES */}
-            <div className="absolute inset-0 hidden md:block pointer-events-none z-20">
-               {/* Top Left */}
-               <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3, type: "spring"}} className="absolute top-[18.75%] left-[16.66%] -translate-x-1/2 -translate-y-1/2">
-                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.2)] backdrop-blur-xl">
-                   <Cpu className="w-8 h-8 text-white/70" />
-                 </div>
-               </motion.div>
-               {/* Top Right */}
-               <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3.1, type: "spring"}} className="absolute top-[18.75%] left-[83.33%] -translate-x-1/2 -translate-y-1/2">
-                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.2)] backdrop-blur-xl">
-                   <Zap className="w-8 h-8 text-white/70" />
-                 </div>
-               </motion.div>
-               {/* Bottom Left */}
-               <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3.2, type: "spring"}} className="absolute top-[81.25%] left-[16.66%] -translate-x-1/2 -translate-y-1/2">
-                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.2)] backdrop-blur-xl">
-                   <Target className="w-8 h-8 text-white/70" />
-                 </div>
-               </motion.div>
-               {/* Bottom Right */}
-               <motion.div initial={{opacity:0, scale:0}} animate={{opacity:1, scale:1}} transition={{delay: 3.3, type: "spring"}} className="absolute top-[81.25%] left-[83.33%] -translate-x-1/2 -translate-y-1/2">
-                 <div className="w-16 h-16 bg-[#111] border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.2)] backdrop-blur-xl">
-                   <Globe className="w-8 h-8 text-white/70" />
-                 </div>
-               </motion.div>
-            </div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter mb-4 drop-shadow-lg"
+          >
+            Inference at the Edge.
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-slate-400 text-sm md:text-lg max-w-2xl mb-12 font-medium"
+          >
+            Instantly detect skill gaps in your profile and generate an automated, project-based learning roadmap to reach your career goals.
+          </motion.p>
 
-            {/* UPLOAD CARD (CENTER ENGINE) */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-              className="relative z-30 w-full max-w-xl px-4 md:px-0"
-            >
-              <div className="absolute inset-0 bg-[#06b6d4]/20 blur-[100px] rounded-full -z-10 animate-pulse"></div>
-              
-              <div className="bg-[#0A0C10]/95 backdrop-blur-3xl p-6 md:p-12 rounded-[2.5rem] border border-[#06b6d4]/30 shadow-[0_0_80px_rgba(6,182,212,0.15)] relative w-full flex flex-col items-center">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#06b6d4] to-transparent opacity-50"></div>
-                
-                {/* Core Node Icon */}
-                <motion.div 
-                  initial={{ rotate: -90 }}
-                  animate={{ rotate: 0 }}
-                  transition={{ duration: 2, delay: 1 }}
-                  className="w-16 h-16 md:w-20 md:h-20 bg-[#06b6d4]/10 border border-[#06b6d4]/40 rounded-3xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(6,182,212,0.3)]"
-                >
-                   <Activity className="w-8 h-8 md:w-10 md:h-10 text-[#06b6d4]" />
-                </motion.div>
+          {/* Upload Component styled as a sleek button */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            className="w-full max-w-sm mb-16"
+          >
+            <ResumeUpload onResult={onAnalysisComplete} apiUrl={apiUrl} />
+          </motion.div>
 
-                <div className="w-full pointer-events-auto">
-                  <ResumeUpload onResult={onAnalysisComplete} apiUrl={API_BASE_URL} />
-                </div>
-              </div>
-            </motion.div>
-
-          </div>
-        </section>
-
-
-        {/* ========================================================
-            SECTION 2: FEATURES GRID (Smooth Scroll Reveal)
-            ======================================================== */}
-        <motion.section 
-          initial={{ opacity: 0, y: 100 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-[1700px] mx-auto px-6 md:px-12 space-y-12 md:space-y-20 py-24 md:py-32 relative z-20"
-        >
-          <div className="flex flex-col items-center text-center space-y-4 md:space-y-8">
-            <div className="px-6 md:px-8 py-2 md:py-3 bg-white/5 border border-white/10 text-slate-400 rounded-xl md:rounded-2xl text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.4em]">
-              System Architecture
-            </div>
-            <h2 className="text-3xl md:text-6xl font-black text-white tracking-tight uppercase text-center">Unleash your AI application's full potential</h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {/* Three small feature pills */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="flex flex-col sm:flex-row gap-4 md:gap-8 mt-8"
+          >
             {[
-              { icon: <Search/>, title: "Deep Scan", desc: "Scanning competencies with high-precision parsing logic." },
-              { icon: <Target/>, title: "Gap Detection", desc: "Identifying exactly which tools and frameworks are missing." },
-              { icon: <Map/>, title: "Live Roadmap", desc: "Personalized learning paths with documentation and resources." }
-            ].map((feature, i) => (
-              <div key={i} className="group bg-[#111111]/90 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] border border-white/5 hover:border-[#06b6d4]/40 transition-all duration-500 shadow-2xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#06b6d4]/0 via-transparent to-[#06b6d4]/0 group-hover:from-[#06b6d4]/10 transition-all duration-700 pointer-events-none" />
-                
-                <div className="w-14 h-14 md:w-20 md:h-20 bg-[#1A1A1A] text-[#06b6d4] rounded-2xl md:rounded-3xl flex items-center justify-center mb-8 md:mb-10 shadow-[0_0_15px_rgba(6,182,212,0.1)] border border-white/5 group-hover:-translate-y-2 transition-transform duration-500">
-                  {React.cloneElement(feature.icon, {className: "w-7 h-7 md:w-9 md:h-9"})}
+              { icon: <Search/>, title: "Deep Scan" },
+              { icon: <Target/>, title: "Gap Detection" },
+              { icon: <Map/>, title: "Live Roadmap" }
+            ].map((feat, i) => (
+              <div key={i} className="flex items-center gap-3 px-6 py-3 bg-black/50 border border-white/10 hover:border-[#10b981]/50 rounded-2xl backdrop-blur-md transition-colors cursor-default shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                <div className="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center border border-[#10b981]/20">
+                   {React.cloneElement(feat.icon, {className: "w-4 h-4 text-[#10b981]"})}
                 </div>
-                <h3 className="text-xl md:text-2xl font-black text-white mb-4 md:mb-6 uppercase tracking-tight relative z-10">{feature.title}</h3>
-                <p className="text-sm md:text-lg text-slate-400 leading-relaxed font-medium relative z-10">{feature.desc}</p>
+                <span className="text-xs font-bold text-white uppercase tracking-widest">{feat.title}</span>
               </div>
             ))}
-          </div>
-        </motion.section>
+          </motion.div>
 
-        {/* ========================================================
-            SECTION 3: SYSTEM STATS (The Glowing Globe)
-            ======================================================== */}
-        <motion.section 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-          className="w-full relative py-32 md:py-48 flex flex-col items-center justify-center overflow-hidden"
-        >
-          {/* THE GIANT GLOWING GLOBE */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-             {/* Halo Glow */}
-             <div className="absolute w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-[#06b6d4]/50 rounded-full blur-[100px] md:blur-[120px]"></div>
-             
-             {/* The Sphere */}
-             <div className="w-[300px] h-[300px] md:w-[600px] md:h-[600px] rounded-full border border-[#06b6d4]/30 bg-[radial-gradient(circle_at_30%_30%,_rgba(6,182,212,0.4)_0%,_rgba(5,5,5,1)_80%)] shadow-[inset_0_0_100px_rgba(6,182,212,0.8),0_0_40px_rgba(6,182,212,0.3)] relative overflow-hidden flex items-center justify-center">
-                {/* Dotted Grid / Lat Long Lines */}
-                <motion.div 
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 w-full h-full flex items-center justify-center"
-                >
-                  <div className="absolute w-[200%] h-[2px] bg-[#06b6d4]/60 rotate-45 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
-                  <div className="absolute w-[200%] h-[2px] bg-[#06b6d4]/60 -rotate-45 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
-                  <div className="absolute w-[200%] h-[2px] bg-[#06b6d4]/60 rotate-12 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
-                  <div className="absolute w-[200%] h-[2px] bg-[#06b6d4]/60 -rotate-12 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
-                </motion.div>
-                {/* Fake rotation animation on texture */}
-                <div className="absolute inset-0 opacity-30 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
-             </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          SECTION 2: DARK THEME STATS & PROCESSING ENGINE
+          ======================================================== */}
+      <section id="performance" className="w-full bg-[#050505] text-white py-24 md:py-32 relative border-t border-emerald-500/10">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full opacity-10">
+             <circle cx="50" cy="50" r="40" fill="#10b981" filter="blur(40px)" />
+          </svg>
+        </div>
+        
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 relative z-10">
+          
+          <div className="flex justify-center mb-6">
+            <span className="px-4 py-1.5 bg-[#10b981]/10 border border-[#10b981]/20 text-[#10b981] rounded-full text-[10px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+              Performance Metrics
+            </span>
           </div>
 
-          <div className="relative z-10 w-full max-w-[1700px] mx-auto px-6 md:px-12 flex flex-col items-center">
+          <h2 className="text-3xl md:text-5xl font-black text-center mb-16 tracking-tight text-white drop-shadow-lg">
+            Unleash your AI application's full potential
+          </h2>
+
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-stretch">
             
-            <h2 className="text-3xl md:text-6xl lg:text-7xl font-black text-white tracking-tight uppercase text-center mb-16 md:mb-24 drop-shadow-2xl max-w-4xl">
-              A truly global network for lightning-fast inference
-            </h2>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-16 text-center w-full max-w-5xl bg-[#050505]/60 backdrop-blur-xl p-8 md:p-12 rounded-[3rem] border border-white/5 shadow-2xl">
-              {[
-                { label: "Analyzed", val: "50+", icon: <Cpu /> },
-                { label: "Accuracy", val: "99%", icon: <Award /> },
-                { label: "Time", val: "1.2s", icon: <Zap /> },
-                { label: "Global", val: "24/7", icon: <Globe /> }
-              ].map((stat, i) => (
-                <div key={i} className="space-y-4 md:space-y-6 flex flex-col items-center">
-                  <div className="flex items-center justify-center gap-2 md:gap-3 text-slate-400">
-                     {React.cloneElement(stat.icon, {className: "w-4 h-4 md:w-5 md:h-5 text-[#06b6d4]"})}
-                     <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em]">{stat.label}</span>
-                  </div>
-                  <h4 className="text-4xl md:text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
-                    {stat.val}
-                  </h4>
+            {/* Left Card: Dark Green Visual */}
+            <div className="flex-1 bg-black/40 border border-emerald-500/20 rounded-[2rem] p-8 md:p-12 relative overflow-hidden flex flex-col justify-between shadow-[0_0_30px_rgba(16,185,129,0.15)] min-h-[400px]">
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+              <div className="absolute inset-0 pointer-events-none">
+                 <svg viewBox="0 0 100 100" className="w-full h-full opacity-20">
+                    <circle cx="20" cy="80" r="40" fill="#10b981" filter="blur(30px)" />
+                 </svg>
+              </div>
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-black/50 border border-[#10b981]/30 rounded-xl flex items-center justify-center mb-6 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                  <Server className="w-6 h-6 text-[#10b981]" />
                 </div>
+                <h3 className="text-2xl font-black text-white tracking-tight uppercase">Neural Architecture</h3>
+              </div>
+              <div className="relative z-10 mt-12 text-[#34d399] font-medium text-sm">
+                 Explore the unparalleled performance of our edge inference engine powered by multi-layered semantic analysis.
+              </div>
+            </div>
+
+            {/* Right Side: List of Stats */}
+            <div className="flex-1 flex flex-col justify-center gap-6">
+              {[
+                { title: "Analyzed Resumes", val: "50,000+", desc: "Processed globally in the last year." },
+                { title: "Detection Accuracy", val: "99.9%", desc: "Precision parsing across all templates." },
+                { title: "Inference Time", val: "1.2s", desc: "Average time to generate a complete roadmap." },
+                { title: "Global Availability", val: "24/7", desc: "Always online, always analyzing." }
+              ].map((stat, i) => (
+                <motion.div 
+                  key={i} 
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ delay: i * 0.15, duration: 0.6, type: "spring", stiffness: 100 }}
+                  whileHover={{ scale: 1.02, x: -5 }}
+                  className="flex items-start gap-4 p-6 bg-black/40 rounded-2xl border border-white/5 hover:border-[#10b981]/50 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all cursor-default group"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#10b981]/10 border border-[#10b981]/20 flex items-center justify-center shrink-0 mt-1 group-hover:bg-[#10b981]/20 transition-colors">
+                    <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></div>
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-black tracking-tight text-white group-hover:text-emerald-400 transition-colors">{stat.title}</h4>
+                    <div className="flex items-center gap-3 mt-1">
+                       <span className="text-sm font-bold text-[#10b981]">{stat.val}</span>
+                       <span className="text-xs text-slate-400">{stat.desc}</span>
+                    </div>
+                  </div>
+                </motion.div>
               ))}
             </div>
-          </div>
-        </motion.section>
 
-      </main>
+          </div>
+        </div>
+      </section>
+      
+      {/* ========================================================
+          NEW SECTION: ARCHITECTURE PIPELINE & LIMITATIONS
+          ======================================================== */}
+      
+      {/* Architecture Section */}
+      <section id="architecture" className="w-full bg-[#050505] py-24 px-4 sm:px-8 xl:px-0 relative border-t border-white/5">
+        <div className="max-w-[1200px] mx-auto relative z-10">
+          <div className="text-center mb-16">
+             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">System <span className="text-[#10b981]">Architecture</span></h2>
+             <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">
+               A transparent, end-to-end pipeline from document parsing to actionable career roadmaps.
+             </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 relative py-12">
+             {/* Animated Connector Line */}
+             <div className="hidden md:block absolute top-1/2 left-[5%] w-[90%] h-1 bg-white/5 -translate-y-1/2 z-0 rounded-full overflow-hidden">
+               <motion.div 
+                 className="h-full bg-gradient-to-r from-emerald-500/0 via-emerald-500 to-emerald-500/0 w-1/3"
+                 animate={{ x: ['-100%', '300%'] }}
+                 transition={{ repeat: Infinity, duration: 2.5, ease: 'linear' }}
+               />
+             </div>
+
+             {[
+               { icon: FileText, label: "Resume PDF" },
+               { icon: Cpu, label: "Parsing Engine" },
+               { icon: ShieldCheck, label: "Authenticator" },
+               { icon: Target, label: "Skill Extraction" },
+               { icon: Activity, label: "Deductive Scoring" },
+               { icon: BrainCircuit, label: "LLM Gap Analysis" },
+               { icon: LayoutDashboard, label: "Dashboard" }
+             ].map((step, idx) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1, duration: 0.5 }}
+                  whileHover={{ scale: 1.1, y: -5 }}
+                  className="bg-[#111] border border-emerald-500/20 p-4 rounded-xl flex flex-col items-center justify-center gap-3 w-full md:w-[140px] h-32 relative z-10 shadow-[0_0_15px_rgba(16,185,129,0.1)] group hover:border-emerald-500 hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all cursor-default"
+                >
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+                    <step.icon className="w-5 h-5 text-emerald-400 group-hover:text-emerald-300" />
+                  </div>
+                  <span className="text-[10px] font-black text-slate-300 text-center uppercase tracking-wider">{step.label}</span>
+                </motion.div>
+             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Limitations Section */}
+      <section id="scope" className="w-full bg-[#111] py-16 px-4 sm:px-8 xl:px-0 relative border-t border-emerald-500/10 shadow-[inset_0_10px_30px_rgba(0,0,0,0.5)]">
+        <div className="max-w-[1200px] mx-auto relative z-10 text-center">
+          <h3 className="text-sm font-black text-emerald-500 uppercase tracking-widest mb-8 flex items-center justify-center gap-3">
+             <ShieldCheck className="w-5 h-5" /> System Scope & Capabilities
+          </h3>
+          <div className="flex flex-wrap justify-center gap-4">
+             {["Multi-Domain Analysis", "Universal Role Detection", "LLM-Dependent Quality", "Requires Standard ATS Formats"].map((lim, i) => (
+               <motion.span 
+                 key={i}
+                 initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 whileHover={{ scale: 1.05, y: -2, boxShadow: "0 0 20px rgba(16,185,129,0.4)" }}
+                 transition={{ delay: i * 0.1, duration: 0.3 }}
+                 className="px-5 py-2.5 bg-black/50 border border-white/10 text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-full hover:border-emerald-500 hover:text-emerald-400 transition-all cursor-default shadow-[0_0_10px_rgba(0,0,0,0.3)]"
+               >
+                 {lim}
+               </motion.span>
+             ))}
+          </div>
+        </div>
+      </section>
+      
     </div>
   );
 };

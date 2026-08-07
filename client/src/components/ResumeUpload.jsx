@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
-import { Upload, FileText, Loader2, XCircle, CheckCircle2 } from 'lucide-react';
+import { Upload, Loader2, XCircle, FileText, CheckCircle2 } from 'lucide-react';
 
 const ResumeUpload = ({ onResult, apiUrl }) => {
   const [file, setFile] = useState(null);
@@ -10,7 +10,7 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
   const fileInputRef = useRef(null);
 
   const handleAreaClick = () => {
-    fileInputRef.current.click();
+    if (!file) fileInputRef.current.click();
   };
 
   const validateAndSetFile = (selectedFile) => {
@@ -65,13 +65,9 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
     formData.append('resume', file);
 
     try {
-      // We remove manual Content-Type headers so Axios/Browser can set the correct boundary
       const response = await axios.post(`${apiUrl}/api/analyze`, formData);
-      
       onResult(response.data);
-
     } catch (err) {
-      // Improved error detection
       const serverMessage = err.response?.data?.message;
       const serverDetails = err.response?.data?.details;
       
@@ -80,7 +76,7 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
       } else if (err.code === 'ECONNABORTED') {
         setError("Request timed out. The AI is taking too long.");
       } else {
-        setError("Neural Link Interrupted. Check if your Local Server is running on Port 5000.");
+        setError("Neural Link Interrupted. Check connection.");
       }
       console.error("Analysis error details:", err);
     } finally {
@@ -89,7 +85,7 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full flex flex-col items-center">
       <input 
         type="file" 
         ref={fileInputRef}
@@ -98,80 +94,69 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
         className="hidden"
       />
 
-      {/* DRAG & DROP AREA */}
       <div 
         onClick={handleAreaClick}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        className={`group relative border-2 border-dashed rounded-3xl p-10 md:p-14 flex flex-col items-center justify-center transition-all cursor-pointer
-          ${dragActive 
-            ? 'border-white bg-white/10 scale-[1.02]' 
-            : file 
-              ? 'border-white bg-white/5' 
-              : 'border-white/10 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.04]'
-          }`}
+        className={`relative flex items-center justify-center gap-3 px-8 py-4 rounded-full cursor-pointer transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.3)]
+          ${dragActive ? 'bg-[#10b981]/20 border border-[#10b981] scale-105' : 'bg-[#10b981]/10 border border-[#10b981]/50 hover:bg-[#10b981]/20 hover:border-[#10b981] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]'}
+        `}
       >
-        {file ? (
+        {!file ? (
           <>
-            <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-4">
-                <FileText className="w-8 h-8 text-white animate-in zoom-in" />
-            </div>
-            <span className="text-white font-black text-lg text-center break-all px-4 tracking-tight uppercase">
-              {file.name}
+            <Upload className={`w-5 h-5 ${dragActive ? 'text-white' : 'text-[#10b981]'}`} />
+            <span className="text-white text-sm font-bold uppercase tracking-wider">
+              {dragActive ? "Drop Resume Here" : "Upload Resume"}
             </span>
-            <button 
-              onClick={(e) => { e.stopPropagation(); setFile(null); }}
-              className="mt-4 text-[10px] text-slate-500 hover:text-white font-black uppercase tracking-widest transition-colors"
-            >
-              Remove file
-            </button>
           </>
         ) : (
-          <>
-            <div className={`w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-4 transition-transform ${dragActive ? 'scale-125' : 'group-hover:scale-110'}`}>
-                <Upload className={`w-8 h-8 transition-colors ${dragActive ? 'text-white' : 'text-slate-500 group-hover:text-white'}`} />
+          <div className="flex items-center gap-3 w-full justify-between">
+            <div className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-[#10b981]" />
+              <span className="text-white text-sm font-bold truncate max-w-[150px]">
+                {file.name}
+              </span>
             </div>
-            <span className="text-white font-black text-lg text-center uppercase tracking-tight">
-              {dragActive ? "Drop to Upload" : "Select or Drag Resume"}
-            </span>
-            <span className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-2">
-              PDF Only • Max 5MB
-            </span>
-          </>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setFile(null); }}
+              className="text-[#10b981] hover:text-white text-xs font-bold uppercase tracking-wider px-2 py-1 bg-black/30 rounded"
+            >
+              Clear
+            </button>
+          </div>
         )}
       </div>
 
-      {/* ERROR MESSAGE */}
+      {file && (
+        <button
+          onClick={handleUpload}
+          disabled={loading}
+          className="mt-6 px-10 py-3 bg-[#10b981] hover:bg-[#059669] text-black rounded-full text-sm font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(16,185,129,0.5)] transition-all disabled:opacity-50 flex items-center gap-2"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin w-4 h-4" />
+              Scanning...
+            </>
+          ) : (
+            <>Run Deep Scan</>
+          )}
+        </button>
+      )}
+
       {error && (
-        <div className="flex items-center gap-3 text-red-400 bg-red-500/10 p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-red-500/20 animate-in fade-in slide-in-from-top-2">
-          <XCircle className="w-4 h-4 shrink-0" />
-          <p className="flex-1 leading-relaxed">{error}</p>
+        <div className="mt-6 flex items-center gap-2 text-red-400 bg-red-500/10 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-red-500/20">
+          <XCircle className="w-4 h-4" />
+          <p>{error}</p>
         </div>
       )}
 
-      {/* ANALYZE BUTTON */}
-      <button
-        onClick={handleUpload}
-        disabled={!file || loading}
-        className="w-full bg-white text-black font-black py-5 rounded-2xl shadow-2xl flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95 transition-all disabled:opacity-30 uppercase tracking-[0.2em] text-xs"
-      >
-        {loading ? (
-          <>
-            <Loader2 className="animate-spin w-5 h-5" />
-            Neural Scanning Active...
-          </>
-        ) : (
-          <>Run Skill Gap Analysis</>
-        )}
-      </button>
-
-      {/* SYSTEM TRUST BADGE */}
-      <div className="flex items-center justify-center gap-2 text-slate-600">
-          <CheckCircle2 className="w-3 h-3" />
-          <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">
-            Encrypted Cloud Processing
+      <div className="mt-8 flex items-center justify-center gap-2 text-slate-500">
+          <CheckCircle2 className="w-3 h-3 text-[#10b981]/50" />
+          <span className="text-[9px] font-bold uppercase tracking-[0.3em]">
+            Encrypted Verification
           </span>
       </div>
     </div>
