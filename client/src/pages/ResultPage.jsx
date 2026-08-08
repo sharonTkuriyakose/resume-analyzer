@@ -22,12 +22,19 @@ const ResultPage = ({ data }) => {
 
     try {
       setIsSharing(true);
-      // Temporarily unhide print view for html2pdf to capture it
+      // Temporarily unhide print view off-screen to force layout calculation without a visual flash
       const printContainer = document.getElementById('neural-print-view');
       if (printContainer) {
         printContainer.classList.remove('hidden');
-        printContainer.classList.add('block');
+        printContainer.style.display = 'block';
+        printContainer.style.position = 'absolute';
+        printContainer.style.left = '-9999px';
+        printContainer.style.top = '0';
+        printContainer.style.backgroundColor = 'white'; // Guarantee white background
       }
+
+      // CRITICAL: Wait for browser layout & paint cycle before capturing
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       const opt = {
         margin:       0,
@@ -40,8 +47,12 @@ const ResultPage = ({ data }) => {
       const pdfBlob = await html2pdf().set(opt).from(printContainer).output('blob');
       
       if (printContainer) {
+        printContainer.style.display = '';
+        printContainer.style.position = '';
+        printContainer.style.left = '';
+        printContainer.style.top = '';
+        printContainer.style.backgroundColor = '';
         printContainer.classList.add('hidden');
-        printContainer.classList.remove('block');
       }
 
       // EXPLICIT STEP: First, save/export the PDF to the device
