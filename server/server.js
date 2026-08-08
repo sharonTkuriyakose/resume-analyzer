@@ -63,9 +63,9 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                 .trim();
 
             // Hard gate: Instant rejection for extremely short/empty files
-            if (resumeText.length < 150) {
+            if (resumeText.length < 50) {
                 return res.status(422).json({
-                    message: "DOCUMENT CONTENT TOO SPARSE. Please upload a valid professional resume."
+                    message: "DOCUMENT CONTENT TOO SPARSE. Ensure your PDF contains actual text, not just flat images."
                 });
             }
         } catch (pdfErr) {
@@ -81,17 +81,18 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                     content: `You are a Strict ATS Authenticator and Career Architect. 
                     
                     STEP 1: VALIDATE DOCUMENT
-                    - Scan text for: Contact Details, Work History, Education, and Skills.
-                    - If the text is a textbook, article, receipt, or random notes, set "isValidResume" to false.
-                    - ONLY if "isValidResume" is true, proceed to Step 2.
+                    - Be extremely forgiving. Treat any document that even loosely resembles a professional profile, portfolio, or CV as valid.
+                    - Only set "isValidResume" to false if it is blatantly a non-resume (e.g., a cooking recipe, a novel, or a receipt).
+                    - If "isValidResume" is true, proceed to Step 2.
 
                     STEP 2: EXPERT PANEL ANALYSIS
+                    - CRITICAL: Ensure this analysis is strictly unique and tailored specifically to the text provided in the user prompt. Do not hallucinate or reuse previous analyses.
                     - Act as a panel of Senior Technical Recruiters and Hiring Managers. Analyze the candidate's core competencies to identify their exact Target Job Role. Set 'domain' to this title. MUST BE a standard, highly-searchable industry job title (e.g., "Backend Developer", "Data Scientist", "DevOps Engineer"). Maximum 3 words. No commas or special characters.
-                    - 'scoringComponents': Generate rigorous sub-scores (0-100) for five specific areas based on how well they meet industry standards for the 'domain':
-                        1. "skills": Hard skills relevance and proficiency.
-                        2. "projects": Quality, complexity, and relevance of projects/portfolio.
-                        3. "experience": Relevance and impact of professional experience.
-                        4. "certifications": Value of degrees, certifications, and courses.
+                    - 'scoringComponents': Generate rigorous, exact sub-scores (0-100) for five specific areas. CRITICAL: Base these scores STRICTLY on the provided text.
+                        1. "skills": Hard skills relevance and proficiency. (If no skills listed, 0).
+                        2. "projects": Quality, complexity, and relevance of projects/portfolio. (If no projects listed, 0).
+                        3. "experience": Relevance and impact of professional work experience. (If no formal work experience exists, evaluate the scale of their projects and award partial experience points (e.g., 20-50) based on practical implementation. Only give 0 if BOTH experience and projects are completely missing).
+                        4. "certifications": Value of degrees, certifications, and courses. (If no education/certs, 0).
                         5. "atsFormatting": Resume structure, readability, and ATS parsing compatibility.
                     - 'foundSkills': List EXACT hard skills found. Provide an estimated proficiency 'score' (0-100).
                     - 'missingSkills': Identify critical missing hard skills for the 'domain'. Provide an importance 'score' (0-100).
@@ -144,7 +145,8 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
             ],
             model: "llama-3.3-70b-versatile",
             response_format: { type: "json_object" },
-            temperature: 0.5
+            temperature: 0.0,
+            seed: 12345
         });
 
         // C. SAFE PARSING & AUTHENTICATION CHECK
@@ -164,11 +166,11 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
         }
 
         // D. DATA REFINEMENT & DEDUCTIVE SCORING
-        const s = analysis.scoringComponents?.skills || 60;
-        const p = analysis.scoringComponents?.projects || 50;
-        const e = analysis.scoringComponents?.experience || 50;
-        const c = analysis.scoringComponents?.certifications || 40;
-        const a = analysis.scoringComponents?.atsFormatting || 70;
+        const s = analysis.scoringComponents?.skills ?? 60;
+        const p = analysis.scoringComponents?.projects ?? 50;
+        const e = analysis.scoringComponents?.experience ?? 50;
+        const c = analysis.scoringComponents?.certifications ?? 40;
+        const a = analysis.scoringComponents?.atsFormatting ?? 70;
 
         // Deductive Scoring Formula: Score = 0.30S + 0.25P + 0.20E + 0.15C + 0.10A
         let rawScore = (0.30 * s) + (0.25 * p) + (0.20 * e) + (0.15 * c) + (0.10 * a);

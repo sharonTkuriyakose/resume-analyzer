@@ -52,13 +52,56 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
         {/* Ambient Glows */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#10b981]/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
 
-        {/* Floating Mini Nodes */}
-        <div className="absolute inset-0 pointer-events-none z-10 hidden md:block">
-          <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity }} className="absolute top-1/4 left-1/4 w-8 h-8 bg-black border border-[#10b981]/30 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-            <Search className="w-4 h-4 text-[#10b981]" />
+        {/* Floating Background Nodes */}
+        <div className="absolute inset-0 pointer-events-none z-10">
+          <motion.div 
+            animate={{ 
+              y: [0, -40, 0],
+              x: [0, 20, -10, 0],
+              rotate: [0, 10, -5, 0],
+            }} 
+            transition={{ 
+              duration: 8, 
+              repeat: Infinity,
+              ease: "easeInOut" 
+            }} 
+            className="absolute top-[20%] left-4 md:left-[15%] w-12 h-12 md:w-16 md:h-16 bg-black/60 backdrop-blur-md border border-[#10b981]/40 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.3)]"
+          >
+            <Search className="w-6 h-6 md:w-8 md:h-8 text-[#10b981] drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
           </motion.div>
-          <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 5, repeat: Infinity }} className="absolute top-1/3 right-1/4 w-8 h-8 bg-black border border-[#10b981]/30 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-            <Target className="w-4 h-4 text-[#10b981]" />
+
+          <motion.div 
+            animate={{ 
+              y: [0, 30, -20, 0],
+              x: [0, -30, 15, 0],
+              rotate: [0, -10, 5, 0],
+            }} 
+            transition={{ 
+              duration: 10, 
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1 
+            }} 
+            className="absolute top-[60%] right-4 md:right-[15%] w-12 h-12 md:w-16 md:h-16 bg-black/60 backdrop-blur-md border border-[#10b981]/40 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.3)]"
+          >
+            <Target className="w-6 h-6 md:w-8 md:h-8 text-[#10b981] drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+          </motion.div>
+
+          <motion.div 
+            animate={{ 
+              y: [0, -50, 20, 0],
+              x: [0, 20, -20, 0],
+              rotate: [0, 15, -15, 0],
+            }} 
+            transition={{ 
+              duration: 12, 
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2 
+            }} 
+            className="absolute top-[15%] right-[10%] md:right-[30%] w-10 h-10 md:w-12 md:h-12 bg-black/60 backdrop-blur-md border border-[#10b981]/40 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.2)] hidden sm:flex"
+          >
+            <BrainCircuit className="w-5 h-5 md:w-6 md:h-6 text-[#10b981] drop-shadow-[0_0_10px_rgba(16,185,129,0.6)]" />
           </motion.div>
         </div>
 
@@ -147,12 +190,12 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
           
           <div className="flex justify-center mb-6">
             <span className="px-4 py-1.5 bg-[#10b981]/10 border border-[#10b981]/20 text-[#10b981] rounded-full text-[10px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-              Performance Metrics
+              Processing Pipeline
             </span>
           </div>
 
           <h2 className="text-3xl md:text-5xl font-black text-center mb-16 tracking-tight text-white drop-shadow-lg">
-            Unleash your AI application's full potential
+            How we analyze your profile
           </h2>
 
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-stretch">
@@ -169,20 +212,20 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
                 <div className="w-12 h-12 bg-black/50 border border-[#10b981]/30 rounded-xl flex items-center justify-center mb-6 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                   <Server className="w-6 h-6 text-[#10b981]" />
                 </div>
-                <h3 className="text-2xl font-black text-white tracking-tight uppercase">Neural Architecture</h3>
+                <h3 className="text-2xl font-black text-white tracking-tight uppercase">Analysis Engine</h3>
               </div>
               <div className="relative z-10 mt-12 text-[#34d399] font-medium text-sm">
-                 Explore the unparalleled performance of our edge inference engine powered by multi-layered semantic analysis.
+                 Explore the seamless workflow of our intelligent engine, designed to evaluate your current skills and provide actionable insights to elevate your career trajectory.
               </div>
             </div>
 
             {/* Right Side: List of Stats */}
             <div className="flex-1 flex flex-col justify-center gap-6">
               {[
-                { title: "Analyzed Resumes", val: "50,000+", desc: "Processed globally in the last year." },
-                { title: "Detection Accuracy", val: "99.9%", desc: "Precision parsing across all templates." },
-                { title: "Inference Time", val: "1.2s", desc: "Average time to generate a complete roadmap." },
-                { title: "Global Availability", val: "24/7", desc: "Always online, always analyzing." }
+                { title: "Document Parsing", val: "Step 1", desc: "Extracts raw text and structure from your uploaded PDF." },
+                { title: "Skill Extraction", val: "Step 2", desc: "Identifies core competencies and technical skills using NLP." },
+                { title: "Gap Analysis", val: "Step 3", desc: "Evaluates your profile against target industry standards." },
+                { title: "Roadmap Generation", val: "Step 4", desc: "Creates a personalized, project-based learning path." }
               ].map((stat, i) => (
                 <motion.div 
                   key={i} 
@@ -226,11 +269,20 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 relative py-12">
-             {/* Animated Connector Line */}
+             {/* Animated Connector Line (Horizontal for Desktop) */}
              <div className="hidden md:block absolute top-1/2 left-[5%] w-[90%] h-1 bg-white/5 -translate-y-1/2 z-0 rounded-full overflow-hidden">
                <motion.div 
                  className="h-full bg-gradient-to-r from-emerald-500/0 via-emerald-500 to-emerald-500/0 w-1/3"
                  animate={{ x: ['-100%', '300%'] }}
+                 transition={{ repeat: Infinity, duration: 2.5, ease: 'linear' }}
+               />
+             </div>
+
+             {/* Animated Connector Line (Vertical for Mobile) */}
+             <div className="block md:hidden absolute top-[5%] left-1/2 w-1 h-[90%] bg-white/5 -translate-x-1/2 z-0 rounded-full overflow-hidden">
+               <motion.div 
+                 className="w-full bg-gradient-to-b from-emerald-500/0 via-emerald-500 to-emerald-500/0 h-1/3"
+                 animate={{ y: ['-100%', '300%'] }}
                  transition={{ repeat: Infinity, duration: 2.5, ease: 'linear' }}
                />
              </div>

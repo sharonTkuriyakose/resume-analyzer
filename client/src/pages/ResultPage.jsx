@@ -8,14 +8,75 @@ import {
   Twitter, Linkedin, Facebook, Link, X, MessageCircle, Mail, Send
 } from 'lucide-react';
 import PrintView from '../components/PrintView';
+import html2pdf from 'html2pdf.js';
 
 const ResultPage = ({ data }) => {
   const [activeCard, setActiveCard] = useState(null);
-  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const handleExport = () => window.print();
-  const handleSharePDF = () => {
-    alert("To share your progress as a PDF, please select 'Save as PDF' from the native print menu that will appear next, then share that file.");
-    window.print();
+  const handleShare = async () => {
+    if (!navigator.canShare) {
+      alert("Native sharing is not supported on this browser. Please use 'Export Report' to save your PDF!");
+      return;
+    }
+
+    try {
+      setIsSharing(true);
+      // Temporarily unhide print view for html2pdf to capture it
+      const printContainer = document.getElementById('neural-print-view');
+      if (printContainer) {
+        printContainer.classList.remove('hidden');
+        printContainer.classList.add('block');
+      }
+
+      const opt = {
+        margin:       0,
+        filename:     'NeuralPath_Analysis.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      const pdfBlob = await html2pdf().set(opt).from(printContainer).output('blob');
+      
+      if (printContainer) {
+        printContainer.classList.add('hidden');
+        printContainer.classList.remove('block');
+      }
+
+      // EXPLICIT STEP: First, save/export the PDF to the device
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'NeuralPath_Analysis.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      // EXPLICIT STEP: Then, redirect to the share options
+      const file = new File([pdfBlob], 'NeuralPath_Analysis.pdf', { type: 'application/pdf' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        // Adding a slight delay so the download registers before the share sheet takes over the screen
+        setTimeout(async () => {
+          try {
+            await navigator.share({
+              files: [file],
+              title: 'My NeuralPath Career Analysis',
+              text: `Check out my NeuralPath Career Analysis!\n\nTarget Role: ${data.domain || 'Professional'}\n`,
+            });
+          } catch (e) {
+            console.log('User cancelled share or error:', e);
+          }
+        }, 500);
+      }
+    } catch (error) {
+      console.log('Error sharing PDF:', error);
+      alert("Failed to generate PDF for sharing. Please try exporting it instead.");
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   // ---------------------------------------------------------
@@ -89,15 +150,15 @@ const ResultPage = ({ data }) => {
 
 
   return (
-    <div className="min-h-screen w-full bg-[#050505] text-slate-200 font-sans p-4 md:p-8 lg:p-12 selection:bg-[#10b981]/30 relative overflow-x-hidden">
+    <div className="min-h-screen print:min-h-0 w-full bg-[#050505] print:bg-white text-slate-200 print:text-black font-sans p-4 md:p-8 lg:p-12 print:p-0 selection:bg-[#10b981]/30 relative overflow-x-hidden print:overflow-visible">
       {/* Background Ambient Glows */}
-      <div className="fixed top-[-20%] left-[-10%] w-[800px] h-[800px] bg-[#10b981]/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0"></div>
-      <div className="fixed bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-[#10b981]/5 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0"></div>
+      <div className="fixed top-[-20%] left-[-10%] w-[800px] h-[800px] bg-[#10b981]/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0 print:hidden"></div>
+      <div className="fixed bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-[#10b981]/5 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0 print:hidden"></div>
 
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           .no-print { display: none !important; }
-          body { background: #050505 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          body { background: white !important; color: black !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           @page { size: auto; margin: 10mm; }
           .break-after-page { page-break-after: always; break-after: page; }
         }
@@ -116,10 +177,10 @@ const ResultPage = ({ data }) => {
         }
       `}} />
 
-      <div id="report-container" className="max-w-[1600px] mx-auto relative z-10 flex flex-col items-center">
+      <div id="report-container" className="max-w-[1600px] mx-auto relative z-10 flex flex-col items-center print:block">
         
         {/* Top Metadata Bar */}
-        <div className="w-full flex flex-col md:flex-row items-center justify-between mb-8 gap-6 bg-[#111]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-4 md:px-8 shadow-2xl relative overflow-hidden">
+        <div className="w-full flex flex-col md:flex-row items-center justify-between mb-8 gap-6 bg-[#111]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-4 md:px-8 shadow-2xl relative overflow-hidden print:hidden">
            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#10b981] to-transparent opacity-50"></div>
            <div className="flex flex-col items-center md:items-start">
              <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2">
@@ -133,8 +194,8 @@ const ResultPage = ({ data }) => {
              </div>
            </div>
            <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-3 sm:gap-4 no-print mt-6 md:mt-0">
-              <button onClick={handleSharePDF} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-black uppercase text-white flex items-center gap-2 transition-all">
-                <Share2 className="w-4 h-4 text-slate-400" /> Share Progress (PDF)
+              <button onClick={handleShare} disabled={isSharing} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-black uppercase text-white flex items-center gap-2 transition-all disabled:opacity-50">
+                <Share2 className="w-4 h-4 text-slate-400" /> {isSharing ? 'Generating PDF...' : 'Share Progress'}
               </button>
               <button onClick={handleExport} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-gradient-to-r from-[#10b981] to-[#FF8C00] hover:from-[#059669] hover:to-[#047857] text-black rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]">
                 <Download className="w-4 h-4" /> Export Report
@@ -455,14 +516,14 @@ const ResultPage = ({ data }) => {
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium mb-4 leading-relaxed">{item.primaryGoal}</p>
                                 
-                                <div className="flex gap-3">
+                                <div className="flex flex-wrap gap-3 mt-2">
                                   {item.title && (
-                                    <a href={`https://google.com/search?q=${encodeURIComponent(item.title.replace(/_/g, ' ').replace(/^(LEARN|MASTER|IMPLEMENT)\s+/i, '').trim().toLowerCase())}+learning+roadmap`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-black border border-white/10 hover:border-[#10b981]/50 rounded-lg flex items-center gap-2 text-[9px] font-bold text-white uppercase transition-colors">
+                                    <a href={`https://google.com/search?q=${encodeURIComponent(item.title.replace(/_/g, ' ').replace(/^(LEARN|MASTER|IMPLEMENT)\s+/i, '').trim().toLowerCase())}+learning+roadmap`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-black border border-white/10 hover:border-[#10b981]/50 rounded-lg flex items-center justify-center gap-2 text-[9px] font-bold text-white uppercase transition-colors whitespace-nowrap flex-1 sm:flex-none">
                                       Documentation <ExternalLink className="w-3 h-3"/>
                                     </a>
                                   )}
                                   {item.title && (
-                                    <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(item.title.replace(/_/g, ' ').replace(/^(LEARN|MASTER|IMPLEMENT)\s+/i, '').trim().toLowerCase())}+tutorial+2026`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#10b981]/10 border border-[#10b981]/20 hover:bg-[#10b981]/30 rounded-lg flex items-center gap-2 text-[9px] font-bold text-[#10b981] uppercase transition-colors">
+                                    <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(item.title.replace(/_/g, ' ').replace(/^(LEARN|MASTER|IMPLEMENT)\s+/i, '').trim().toLowerCase())}+tutorial+2026`} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#10b981]/10 border border-[#10b981]/20 hover:bg-[#10b981]/30 rounded-lg flex items-center justify-center gap-2 text-[9px] font-bold text-[#10b981] uppercase transition-colors whitespace-nowrap flex-1 sm:flex-none">
                                       Video Guide <Youtube className="w-3 h-3"/>
                                     </a>
                                   )}
@@ -512,7 +573,9 @@ const ResultPage = ({ data }) => {
           </AnimatePresence>
         </div>
 
-        <PrintView data={data} projectStage={projectStage} />
+        <div id="neural-print-view" className="hidden print:block w-full">
+          <PrintView data={data} projectStage={projectStage} />
+        </div>
 
         {/* HIDDEN PROOF FOR PAPER EVALUATION */}
         <div id="neural-lab-backend-proof" style={{ display: 'none' }} aria-hidden="true">

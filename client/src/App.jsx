@@ -35,7 +35,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#050505] text-slate-200 selection:bg-[#10b981]/30 overflow-x-hidden relative font-sans">
+    <div className="min-h-screen print:min-h-0 flex flex-col bg-[#050505] print:bg-white text-slate-200 print:text-black print:block selection:bg-[#10b981]/30 overflow-x-hidden relative font-sans">
       
       {/* 0. CINEMATIC INTRO ANIMATION */}
       <AnimatePresence>
@@ -119,18 +119,18 @@ function App() {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: showIntro ? 0 : 1, y: showIntro ? -50 : 0 }}
         transition={{ delay: showIntro ? 0 : 0.5, duration: 1 }}
-        className="fixed top-0 z-50 w-full bg-[#050505]/70 backdrop-blur-2xl border-b border-white/5 py-4 px-6 md:px-12 flex justify-between items-center"
+        className="fixed top-0 z-50 w-full bg-[#050505]/70 backdrop-blur-2xl border-b border-white/5 py-4 px-6 md:px-12 flex justify-between items-center print:hidden"
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex flex-col items-start leading-none min-w-0 overflow-hidden cursor-pointer">
             <span className="font-black text-xl md:text-2xl tracking-tighter text-white whitespace-nowrap overflow-hidden text-ellipsis flex items-center gap-2">
-              <Cpu className="w-5 h-5 text-[#10b981]" /> ResumeLab
+              <Cpu className="w-5 h-5 text-[#10b981]" /> NeuralPath
             </span>
           </div>
         </div>
 
         {/* Center links */}
-        <div className="hidden md:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+        <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
           {[
             { name: "Performance", href: "#performance" },
             { name: "Architecture", href: "#architecture" },
@@ -178,7 +178,7 @@ function App() {
       </motion.nav>
 
       {/* 2. MAIN APPLICATION STAGE */}
-      <main className="flex-grow flex flex-col relative w-full pt-[80px] md:pt-[100px]">
+      <main className="flex-grow flex flex-col print:block relative w-full pt-[80px] md:pt-[100px] print:pt-0">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: showIntro ? 0 : 1 }}
@@ -194,7 +194,7 @@ function App() {
       </main>
 
       {/* 3. UNIVERSAL FOOTER */}
-      <footer className="py-8 md:py-12 bg-[#050505] relative z-40 border-t border-white/5">
+      <footer className="py-8 md:py-12 bg-[#050505] relative z-40 border-t border-white/5 print:hidden">
         <div className="flex flex-col items-center gap-4 px-6 text-center">
           <div className="flex items-center gap-2 text-emerald-500 font-bold text-[9px] md:text-xs uppercase tracking-[0.3em] drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]">
             <Activity className="w-3 h-3 md:w-4 md:h-4" /> 
