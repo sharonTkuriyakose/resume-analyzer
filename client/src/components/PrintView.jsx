@@ -3,7 +3,7 @@ import { Search, CheckCircle2, AlertCircle, Zap, Sparkles, Briefcase, BookOpen, 
 
 const PrintView = ({ data, projectStage }) => {
   return (
-    <div className="hidden print:block w-full max-w-[1200px] mx-auto text-black">
+    <div className="w-full max-w-[1200px] mx-auto text-black">
       {/* ATS Breakdown */}
       <div className="break-after-page break-inside-avoid py-8 w-full">
         <h2 className="text-3xl font-black text-black uppercase tracking-tight flex items-center gap-3 mb-10 border-b-2 border-emerald-500 pb-4">

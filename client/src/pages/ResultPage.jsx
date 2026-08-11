@@ -22,15 +22,15 @@ const ResultPage = ({ data }) => {
 
     try {
       setIsSharing(true);
-      // Temporarily unhide print view off-screen to force layout calculation without a visual flash
       const printContainer = document.getElementById('neural-print-view');
       if (printContainer) {
         printContainer.classList.remove('hidden');
         printContainer.style.display = 'block';
-        printContainer.style.position = 'absolute';
-        printContainer.style.left = '-9999px';
-        printContainer.style.top = '0';
-        printContainer.style.backgroundColor = 'white'; // Guarantee white background
+        printContainer.style.position = 'fixed';
+        printContainer.style.left = '0';
+        printContainer.style.top = '200vh';
+        printContainer.style.zIndex = '-9999';
+        printContainer.style.backgroundColor = 'white';
       }
 
       // CRITICAL: Wait for browser layout & paint cycle before capturing
@@ -45,15 +45,6 @@ const ResultPage = ({ data }) => {
       };
 
       const pdfBlob = await html2pdf().set(opt).from(printContainer).output('blob');
-      
-      if (printContainer) {
-        printContainer.style.display = '';
-        printContainer.style.position = '';
-        printContainer.style.left = '';
-        printContainer.style.top = '';
-        printContainer.style.backgroundColor = '';
-        printContainer.classList.add('hidden');
-      }
 
       // EXPLICIT STEP: First, save/export the PDF to the device
       const url = URL.createObjectURL(pdfBlob);
@@ -87,6 +78,16 @@ const ResultPage = ({ data }) => {
       alert("Failed to generate PDF for sharing. Please try exporting it instead.");
     } finally {
       setIsSharing(false);
+      const printContainer = document.getElementById('neural-print-view');
+      if (printContainer) {
+        printContainer.style.display = '';
+        printContainer.style.position = '';
+        printContainer.style.left = '';
+        printContainer.style.top = '';
+        printContainer.style.zIndex = '';
+        printContainer.style.backgroundColor = '';
+        printContainer.classList.add('hidden');
+      }
     }
   };
 
@@ -364,7 +365,7 @@ const ResultPage = ({ data }) => {
               initial="hidden"
               animate="show"
               exit="exit"
-              className="w-full max-w-[1200px] min-h-[600px] glass-card rounded-[2rem] p-8 md:p-12 relative flex flex-col mt-4"
+              className="w-full max-w-[1200px] mx-auto min-h-[600px] glass-card rounded-[2rem] p-8 md:p-12 relative flex flex-col mt-4"
             >
               <button 
                 onClick={() => setActiveCard(null)}
@@ -584,7 +585,7 @@ const ResultPage = ({ data }) => {
           </AnimatePresence>
         </div>
 
-        <div id="neural-print-view" className="hidden print:block w-full">
+        <div id="neural-print-view" className="hidden w-full bg-white">
           <PrintView data={data} projectStage={projectStage} />
         </div>
 

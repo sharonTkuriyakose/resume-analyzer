@@ -8,6 +8,27 @@ const cluster = require('cluster');
 const os = require('os');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+
+const CACHE_FILE = path.join(__dirname, 'analysis_cache.json');
+let analysisCache = {};
+try {
+  if (fs.existsSync(CACHE_FILE)) {
+    analysisCache = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+  }
+} catch (e) {
+  console.error("Cache load error:", e);
+}
+
+function saveCache() {
+  try {
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(analysisCache));
+  } catch (e) {
+    console.error("Cache save error:", e);
+  }
+}
 
 const numCPUs = os.cpus().length;
 
@@ -72,6 +93,13 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
             return res.status(400).json({ message: "ERROR READING PDF STRUCTURE." });
         }
 
+        // Caching mechanism: if this exact text has been analyzed before, return the cached result.
+        const textHash = crypto.createHash('md5').update(resumeText).digest('hex');
+        if (analysisCache[textHash]) {
+            console.log("⚡ Returning CACHED analysis for this exact resume.");
+            return res.json(analysisCache[textHash]);
+        }
+
         // B. AI CALL (Strict Validation + Strategic Analysis)
         console.log("🤖 Authenticating Document Structure...");
         const completion = await groq.chat.completions.create({
@@ -85,17 +113,18 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                     - Only set "isValidResume" to false if it is blatantly a non-resume (e.g., a cooking recipe, a novel, or a receipt).
                     - If "isValidResume" is true, proceed to Step 2.
 
-                    STEP 2: EXPERT PANEL ANALYSIS
+                    STEP 2: EXPERT PANEL ANALYSIS (CHAIN OF THOUGHT)
+                    - YOU MUST fill out the '_reasoning' field FIRST. Write a detailed paragraph analyzing the specific skills, experiences, and gaps you found in the text to ground your subsequent scores.
                     - CRITICAL: Ensure this analysis is strictly unique and tailored specifically to the text provided in the user prompt. Do not hallucinate or reuse previous analyses.
                     - Act as a panel of Senior Technical Recruiters and Hiring Managers. Analyze the candidate's core competencies to identify their exact Target Job Role. Set 'domain' to this title. MUST BE a standard, highly-searchable industry job title (e.g., "Backend Developer", "Data Scientist", "DevOps Engineer"). Maximum 3 words. No commas or special characters.
                     - 'scoringComponents': Generate rigorous, exact sub-scores (0-100) for five specific areas. CRITICAL: Base these scores STRICTLY on the provided text.
-                        1. "skills": Hard skills relevance and proficiency. (If no skills listed, 0).
-                        2. "projects": Quality, complexity, and relevance of projects/portfolio. (If no projects listed, 0).
-                        3. "experience": Relevance and impact of professional work experience. (If no formal work experience exists, evaluate the scale of their projects and award partial experience points (e.g., 20-50) based on practical implementation. Only give 0 if BOTH experience and projects are completely missing).
-                        4. "certifications": Value of degrees, certifications, and courses. (If no education/certs, 0).
+                        1. "skills": Hard skills relevance and proficiency. Start at 0, add 10 points for each relevant hard skill found (up to 100).
+                        2. "projects": Quality, complexity, and relevance of projects/portfolio. Start at 0, add 25 points for each substantial project (up to 100).
+                        3. "experience": Relevance and impact of professional work experience. Start at 0, add 25 points per year of relevant experience (up to 100). (If no formal work experience exists, award partial points (e.g., 20-50) based on practical project implementation).
+                        4. "certifications": Value of degrees, certifications, and courses. Start at 0, add 25 for a degree, 15 for each relevant cert (up to 100).
                         5. "atsFormatting": Resume structure, readability, and ATS parsing compatibility.
-                    - 'foundSkills': List EXACT hard skills found. Provide an estimated proficiency 'score' (0-100).
-                    - 'missingSkills': Identify critical missing hard skills for the 'domain'. Provide an importance 'score' (0-100).
+                    - 'foundSkills': List EXACT hard skills found in the text. Provide an estimated proficiency 'score' (0-100).
+                    - 'missingSkills': Identify critical missing hard skills for the 'domain' that were NOT found in the text. Provide an importance 'score' (0-100).
                     - 'keywordsDetected': Extract ATS-friendly keywords present. Provide a 'keyword' and a detailed 'context' explaining why it's valuable.
                     - 'keywordsMissing': List essential ATS keywords they are missing. Provide a 'keyword' and a detailed 'context' on why it's a critical gap.
                     - 'phasedCurriculum': 3 stages to bridge their specific gaps. For each phase, provide a simple, natural 'title' (e.g. "Cloud Computing Basics", "Containerization", without underscores or ALL CAPS) and a detailed 'primaryGoal' (2-3 sentences of expert advice).
@@ -106,8 +135,13 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                     - Detect if it relies heavily on AI-generated cliches, exaggerated claims, or generic templates.
                     - Assign an 'authenticity_score' (0-100) and provide an 'authenticity_reasoning'.
 
+                    CRITICAL JSON SYNTAX RULE:
+                    - You MUST ensure all JSON objects are closed with curly braces '}' and all JSON arrays are closed with brackets ']'.
+                    - Never close an object using a bracket like this: {"key": "value"]. This is invalid JSON.
+
                     REQUIRED JSON STRUCTURE (STRICTLY FOLLOW THIS):
                     {
+                      "_reasoning": "REQUIRED: Write a detailed 1-paragraph analysis of the resume here BEFORE generating the rest of the JSON. Ground your scores in the text.",
                       "isValidResume": boolean,
                       "authenticity_score": number,
                       "authenticity_reasoning": "string",
@@ -119,10 +153,18 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                          "atsFormatting": number
                       },
                       "domain": "string",
-                      "foundSkills": [{"skill": "skill1", "score": 90}],
-                      "missingSkills": [{"skill": "skill1", "score": 95}],
-                      "keywordsDetected": [{"keyword": "string", "context": "Detailed explanation..."}],
-                      "keywordsMissing": [{"keyword": "string", "context": "Detailed explanation..."}],
+                      "foundSkills": [
+                        { "skill": "skill1", "score": 90 }
+                      ],
+                      "missingSkills": [
+                        { "skill": "skill1", "score": 95 }
+                      ],
+                      "keywordsDetected": [
+                        { "keyword": "string", "context": "Detailed explanation..." }
+                      ],
+                      "keywordsMissing": [
+                        { "keyword": "string", "context": "Detailed explanation..." }
+                      ],
                       "phasedCurriculum": [
                         { "id": 1, "title": "Topic 1 (e.g. Cloud Computing)", "primaryGoal": "Detailed expert advice...", "points": [] },
                         { "id": 2, "title": "Topic 2 (e.g. Containerization)", "primaryGoal": "Detailed expert advice...", "points": [] },
@@ -140,7 +182,7 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                 },
                 {
                     role: "user",
-                    content: `Analyze this document. If it is NOT a professional resume or CV, set 'isValidResume' to false. Also calculate the authenticity score: ${resumeText.substring(0, 7000)}`
+                    content: `Analyze this document. If it is NOT a professional resume or CV, set 'isValidResume' to false. Also calculate the authenticity score: ${resumeText.substring(0, 15000)}`
                 }
             ],
             model: "llama-3.3-70b-versatile",
@@ -269,6 +311,10 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
             console.error("⚠️ Failed to generate job portals:", jobErr.message);
             analysis.liveJobs = [];
         }
+
+        // Save to cache before returning
+        analysisCache[textHash] = analysis;
+        saveCache();
 
         res.json(analysis);
         console.log(`🚀 Strategic Scan Delivered. Domain: ${analysis.domain} | Score: ${analysis.score}%`);
