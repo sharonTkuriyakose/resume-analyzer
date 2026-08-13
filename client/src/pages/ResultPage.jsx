@@ -8,97 +8,13 @@ import {
   Twitter, Linkedin, Facebook, Link, X, MessageCircle, Mail, Send
 } from 'lucide-react';
 import PrintView from '../components/PrintView';
-import html2pdf from 'html2pdf.js';
 
 const ResultPage = ({ data }) => {
   const [activeCard, setActiveCard] = useState(null);
-  const [isSharing, setIsSharing] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-
-  const generatePDFBlob = async () => {
-    const originalContainer = document.getElementById('neural-print-view');
-    if (!originalContainer) throw new Error("Print container not found");
-
-    // Create a temporary clone to avoid messing with the live DOM layout
-    const clone = originalContainer.cloneNode(true);
-    clone.id = 'pdf-generation-clone';
-    // Remove 'hidden' and 'print:block' so it renders normally on screen
-    clone.className = 'w-full'; 
-    clone.style.position = 'absolute';
-    clone.style.left = '0';
-    clone.style.top = '-9999px';
-    clone.style.zIndex = '-9999';
-    
-    document.body.appendChild(clone);
-
-    try {
-      // CRITICAL: Wait for browser layout & paint cycle before capturing
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      const opt = {
-        margin:       0,
-        filename:     'NeuralPath_Analysis.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-      };
-
-      const pdfBlob = await html2pdf().set(opt).from(clone).output('blob');
-      return pdfBlob;
-    } finally {
-      // Cleanup the clone
-      if (document.body.contains(clone)) {
-        document.body.removeChild(clone);
-      }
-      
-      // Clean up any stray html2canvas iframes that might have been left on error
-      const strayIframes = document.querySelectorAll('.html2canvas-container');
-      strayIframes.forEach(iframe => iframe.remove());
-    }
-  };
 
   const handleExport = () => {
     window.print();
-  };
-
-  const handleShare = async () => {
-    try {
-      setIsSharing(true);
-      
-      // Step 1: Generate the PDF internally for the share sheet
-      const pdfBlob = await generatePDFBlob();
-      const file = new File([pdfBlob], 'NeuralPath_Analysis.pdf', { type: 'application/pdf' });
-      const shareData = {
-        title: 'My NeuralPath Career Analysis',
-        text: `Check out my NeuralPath Career Analysis!\n\nTarget Role: ${data.domain || 'Professional'}\nMarket Readiness: ${data.score || 0}%\n`,
-      };
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        shareData.files = [file];
-      }
-
-      // Step 2: Redirect to the "Export Progress" (native print/save dialog)
-      // This allows the user to save it according to their needs first
-      window.print();
-
-      // Step 3: Redirect to the Sharing Options right after saving
-      if (navigator.share) {
-        setTimeout(async () => {
-          try {
-            await navigator.share(shareData);
-          } catch (e) {
-            console.log('Share cancelled or blocked by browser:', e);
-          }
-        }, 300);
-      } else {
-        alert("Native sharing is not supported on this browser.");
-      }
-    } catch (error) {
-      console.log('Error in share flow:', error);
-      alert("Failed to process sharing.");
-    } finally {
-      setIsSharing(false);
-    }
   };
 
   // ---------------------------------------------------------
@@ -216,9 +132,6 @@ const ResultPage = ({ data }) => {
              </div>
            </div>
            <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-3 sm:gap-4 no-print mt-6 md:mt-0">
-              <button onClick={handleShare} disabled={isSharing} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-black uppercase text-white flex items-center gap-2 transition-all disabled:opacity-50">
-                <Share2 className="w-4 h-4 text-slate-400" /> {isSharing ? 'Generating PDF...' : 'Share Progress'}
-              </button>
               <button onClick={handleExport} className="w-full sm:w-auto justify-center px-5 py-2.5 bg-gradient-to-r from-[#10b981] to-[#FF8C00] hover:from-[#059669] hover:to-[#047857] text-black rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]">
                 <Download className="w-4 h-4" /> Export Report
               </button>
