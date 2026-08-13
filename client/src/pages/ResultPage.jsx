@@ -16,19 +16,22 @@ const ResultPage = ({ data }) => {
   const [isExporting, setIsExporting] = useState(false);
 
   const generatePDFBlob = async () => {
-    const printContainer = document.getElementById('neural-print-view');
-    if (!printContainer) throw new Error("Print container not found");
+    const originalContainer = document.getElementById('neural-print-view');
+    if (!originalContainer) throw new Error("Print container not found");
+
+    // Create a temporary clone to avoid messing with the live DOM layout
+    const clone = originalContainer.cloneNode(true);
+    clone.id = 'pdf-generation-clone';
+    // Remove 'hidden' and 'print:block' so it renders normally on screen
+    clone.className = 'w-full'; 
+    clone.style.position = 'absolute';
+    clone.style.left = '0';
+    clone.style.top = '-9999px';
+    clone.style.zIndex = '-9999';
+    
+    document.body.appendChild(clone);
 
     try {
-      printContainer.classList.remove('hidden');
-      printContainer.style.display = 'block';
-      printContainer.style.position = 'absolute';
-      printContainer.style.left = '0';
-      printContainer.style.top = '0';
-      printContainer.style.width = '1200px';
-      printContainer.style.zIndex = '-9999';
-      printContainer.style.backgroundColor = 'white';
-
       // CRITICAL: Wait for browser layout & paint cycle before capturing
       await new Promise(resolve => setTimeout(resolve, 300));
 
@@ -36,27 +39,17 @@ const ResultPage = ({ data }) => {
         margin:       0,
         filename:     'NeuralPath_Analysis.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { 
-          scale: 2, 
-          useCORS: true,
-          windowWidth: 1200,
-          scrollX: 0,
-          scrollY: 0
-        },
+        html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
 
-      const pdfBlob = await html2pdf().set(opt).from(printContainer).output('blob');
+      const pdfBlob = await html2pdf().set(opt).from(clone).output('blob');
       return pdfBlob;
     } finally {
-      printContainer.style.display = '';
-      printContainer.style.position = '';
-      printContainer.style.left = '';
-      printContainer.style.top = '';
-      printContainer.style.width = '';
-      printContainer.style.zIndex = '';
-      printContainer.style.backgroundColor = '';
-      printContainer.classList.add('hidden');
+      // Cleanup the clone
+      if (document.body.contains(clone)) {
+        document.body.removeChild(clone);
+      }
       
       // Clean up any stray html2canvas iframes that might have been left on error
       const strayIframes = document.querySelectorAll('.html2canvas-container');
