@@ -100,28 +100,28 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        className={`relative flex items-center justify-center gap-3 px-8 py-4 rounded-full cursor-pointer transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.3)]
-          ${dragActive ? 'bg-[#10b981]/20 border border-[#10b981] scale-105' : 'bg-[#10b981]/10 border border-[#10b981]/50 hover:bg-[#10b981]/20 hover:border-[#10b981] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]'}
+        className={`relative flex flex-col md:flex-row items-center justify-center gap-4 px-12 py-10 rounded-[2rem] cursor-pointer transition-all duration-300 shadow-2xl border-2 border-dashed
+          ${dragActive ? 'bg-[#222] border-[#60a5fa] scale-105' : 'bg-[#0f172a]/50 border-white/10 hover:bg-[#1e293b]/50 hover:border-[#3b82f6]/40 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]'}
         `}
       >
         {!file ? (
           <>
-            <Upload className={`w-5 h-5 ${dragActive ? 'text-white' : 'text-[#10b981]'}`} />
-            <span className="text-white text-sm font-bold uppercase tracking-wider">
+            <Upload className={`w-8 h-8 ${dragActive ? 'text-[#60a5fa]' : 'text-[#3b82f6]'}`} />
+            <span className="text-white text-lg font-bold tracking-wide">
               {dragActive ? "Drop Resume Here" : "Upload Resume"}
             </span>
           </>
         ) : (
           <div className="flex items-center gap-3 w-full justify-between">
             <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-[#10b981]" />
+              <FileText className="w-4 h-4 text-[#888]" />
               <span className="text-white text-sm font-bold truncate max-w-[150px]">
                 {file.name}
               </span>
             </div>
             <button 
               onClick={(e) => { e.stopPropagation(); setFile(null); }}
-              className="text-[#10b981] hover:text-white text-xs font-bold uppercase tracking-wider px-2 py-1 bg-black/30 rounded"
+              className="text-[#888] hover:text-white text-xs font-bold px-3 py-1 bg-white/5 rounded-md"
             >
               Clear
             </button>
@@ -133,7 +133,7 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
         <button
           onClick={handleUpload}
           disabled={loading}
-          className="mt-6 px-10 py-3 bg-[#10b981] hover:bg-[#059669] text-black rounded-full text-sm font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(16,185,129,0.5)] transition-all disabled:opacity-50 flex items-center gap-2"
+          className="mt-6 px-10 py-3 bg-white text-black hover:bg-slate-200 rounded-full text-sm font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all disabled:opacity-50 flex items-center gap-2"
         >
           {loading ? (
             <>
@@ -153,8 +153,8 @@ const ResumeUpload = ({ onResult, apiUrl }) => {
         </div>
       )}
 
-      <div className="mt-8 flex items-center justify-center gap-2 text-slate-500">
-          <CheckCircle2 className="w-3 h-3 text-[#10b981]/50" />
+      <div className="mt-8 flex items-center justify-center gap-2 text-[#555]">
+          <CheckCircle2 className="w-3 h-3 text-[#555]" />
           <span className="text-[9px] font-bold uppercase tracking-[0.3em]">
             Encrypted Verification
           </span>

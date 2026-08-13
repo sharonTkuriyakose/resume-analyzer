@@ -2,288 +2,347 @@ import React from 'react';
 import ResumeUpload from '../components/ResumeUpload';
 import { motion } from 'framer-motion';
 import { 
-  Search, Target, Map, Activity, 
-  Database, ShieldCheck, Zap, Server,
-  FileText, Cpu, BrainCircuit, LayoutDashboard
+  Search, ShieldCheck, Zap, Activity, BrainCircuit, LineChart, FileText, Cpu, LayoutDashboard
 } from 'lucide-react';
 
 const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
   return (
-    <div className="w-full bg-[#050505] font-sans selection:bg-[#10b981]/30">
+    <div className="w-full min-h-screen bg-[#020617] text-white font-sans selection:bg-[#3b82f6]/30 overflow-x-hidden relative">
       
-      {/* ========================================================
-          SECTION 1: HERO (Dark Theme with Glowing Curves)
-          ======================================================== */}
-      <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-20 pb-32 overflow-hidden">
-        
-        {/* Background Sweeping SVG Curves */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <svg viewBox="0 0 1200 800" className="w-full h-full opacity-60" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <filter id="glow-hero" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="8" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
-            <motion.path 
-              d="M -200,600 Q 600,300 1400,600" 
-              fill="none" stroke="#10b981" strokeWidth="2" filter="url(#glow-hero)"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 0.7 }}
-              transition={{ duration: 2.5, ease: "easeInOut" }}
-            />
-            <motion.path 
-              d="M -200,700 Q 600,400 1400,700" 
-              fill="none" stroke="#34d399" strokeWidth="1" filter="url(#glow-hero)"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 0.3 }}
-              transition={{ duration: 2.5, ease: "easeInOut", delay: 0.2 }}
-            />
-            <motion.path 
-              d="M 200,0 Q 600,300 1000,0" 
-              fill="none" stroke="#10b981" strokeWidth="1.5" filter="url(#glow-hero)"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 0.4 }}
-              transition={{ duration: 2.5, ease: "easeInOut", delay: 0.4 }}
-            />
-          </svg>
-        </div>
-
-        {/* Ambient Glows */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#10b981]/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
-
-        {/* Floating Background Nodes */}
-        <div className="absolute inset-0 pointer-events-none z-10">
-          <motion.div 
-            animate={{ 
-              y: [0, -40, 0],
-              x: [0, 20, -10, 0],
-              rotate: [0, 10, -5, 0],
-            }} 
-            transition={{ 
-              duration: 8, 
-              repeat: Infinity,
-              ease: "easeInOut" 
-            }} 
-            className="absolute top-[20%] left-4 md:left-[15%] w-12 h-12 md:w-16 md:h-16 bg-black/60 backdrop-blur-md border border-[#10b981]/40 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.3)]"
-          >
-            <Search className="w-6 h-6 md:w-8 md:h-8 text-[#10b981] drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
-          </motion.div>
-
-          <motion.div 
-            animate={{ 
-              y: [0, 30, -20, 0],
-              x: [0, -30, 15, 0],
-              rotate: [0, -10, 5, 0],
-            }} 
-            transition={{ 
-              duration: 10, 
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 1 
-            }} 
-            className="absolute top-[60%] right-4 md:right-[15%] w-12 h-12 md:w-16 md:h-16 bg-black/60 backdrop-blur-md border border-[#10b981]/40 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.3)]"
-          >
-            <Target className="w-6 h-6 md:w-8 md:h-8 text-[#10b981] drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
-          </motion.div>
-
-          <motion.div 
-            animate={{ 
-              y: [0, -50, 20, 0],
-              x: [0, 20, -20, 0],
-              rotate: [0, 15, -15, 0],
-            }} 
-            transition={{ 
-              duration: 12, 
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2 
-            }} 
-            className="absolute top-[15%] right-[10%] md:right-[30%] w-10 h-10 md:w-12 md:h-12 bg-black/60 backdrop-blur-md border border-[#10b981]/40 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.2)] hidden sm:flex"
-          >
-            <BrainCircuit className="w-5 h-5 md:w-6 md:h-6 text-[#10b981] drop-shadow-[0_0_10px_rgba(16,185,129,0.6)]" />
-          </motion.div>
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-20 flex flex-col items-center text-center px-4">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-8 relative"
-          >
-            {/* Center Graphic */}
-            <div className="w-24 h-24 bg-black border border-[#10b981]/50 rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.4)] overflow-hidden">
-               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 mix-blend-overlay"></div>
-               <Activity className="w-10 h-10 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
-               <div className="absolute top-0 w-[1px] h-4 bg-[#10b981]"></div>
-               <div className="absolute bottom-0 w-[1px] h-4 bg-[#10b981]"></div>
-               <div className="absolute left-0 h-[1px] w-4 bg-[#10b981]"></div>
-               <div className="absolute right-0 h-[1px] w-4 bg-[#10b981]"></div>
-            </div>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter mb-4 drop-shadow-lg"
-          >
-            Inference at the Edge.
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-slate-400 text-sm md:text-lg max-w-2xl mb-12 font-medium"
-          >
-            Instantly detect skill gaps in your profile and generate an automated, project-based learning roadmap to reach your career goals.
-          </motion.p>
-
-          {/* Upload Component styled as a sleek button */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            className="w-full max-w-sm mb-16"
-          >
-            <ResumeUpload onResult={onAnalysisComplete} apiUrl={apiUrl} />
-          </motion.div>
-
-          {/* Three small feature pills */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="flex flex-col sm:flex-row gap-4 md:gap-8 mt-8"
-          >
-            {[
-              { icon: <Search/>, title: "Deep Scan" },
-              { icon: <Target/>, title: "Gap Detection" },
-              { icon: <Map/>, title: "Live Roadmap" }
-            ].map((feat, i) => (
-              <div key={i} className="flex items-center gap-3 px-6 py-3 bg-black/50 border border-white/10 hover:border-[#10b981]/50 rounded-2xl backdrop-blur-md transition-colors cursor-default shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                <div className="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center border border-[#10b981]/20">
-                   {React.cloneElement(feat.icon, {className: "w-4 h-4 text-[#10b981]"})}
-                </div>
-                <span className="text-xs font-bold text-white uppercase tracking-widest">{feat.title}</span>
-              </div>
-            ))}
-          </motion.div>
-
-        </div>
-      </section>
+      {/* Deep Ambient Background Glows */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#3b82f6]/10 blur-[150px] rounded-full pointer-events-none z-0"></div>
 
       {/* ========================================================
-          SECTION 2: DARK THEME STATS & PROCESSING ENGINE
+          HERO SECTION (Light Blue Spotlight Theme)
           ======================================================== */}
-      <section id="performance" className="w-full bg-[#050505] text-white py-24 md:py-32 relative border-t border-emerald-500/10">
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <svg viewBox="0 0 100 100" className="w-full h-full opacity-10">
-             <circle cx="50" cy="50" r="40" fill="#10b981" filter="blur(40px)" />
-          </svg>
-        </div>
+      <section className="relative w-full min-h-screen flex flex-col items-center pt-32 pb-0 overflow-hidden z-10">
         
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 relative z-10">
-          
-          <div className="flex justify-center mb-6">
-            <span className="px-4 py-1.5 bg-[#10b981]/10 border border-[#10b981]/20 text-[#10b981] rounded-full text-[10px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-              Processing Pipeline
-            </span>
-          </div>
+        {/* Volumetric Spotlight Effect */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[600px] pointer-events-none z-0 flex flex-col items-center"
+        >
+          {/* Top bright bar */}
+          <div className="w-[300px] md:w-[400px] h-[4px] bg-[#60a5fa] rounded-full shadow-[0_0_30px_rgba(96,165,250,1)]"></div>
+          {/* Light cone */}
+          <div 
+            className="w-[800px] md:w-[1200px] h-[600px] opacity-50 blur-[50px] mix-blend-screen" 
+            style={{ 
+              background: 'linear-gradient(to bottom, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0) 100%)',
+              clipPath: 'polygon(35% 0%, 65% 0%, 100% 100%, 0% 100%)' 
+            }}
+          ></div>
+        </motion.div>
 
-          <h2 className="text-3xl md:text-5xl font-black text-center mb-16 tracking-tight text-white drop-shadow-lg">
-            How we analyze your profile
-          </h2>
+        {/* Glowing Eyes Icon */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0, duration: 1 }}
+          className="relative z-10 w-16 h-16 bg-[#0f172a] rounded-2xl border border-[#3b82f6]/30 shadow-[0_20px_40px_rgba(0,0,0,1)] flex items-center justify-center mb-8"
+        >
+           <div className="flex gap-2">
+             <div className="w-1.5 h-2 bg-[#93c5fd] rounded-full shadow-[0_0_12px_#93c5fd] animate-pulse"></div>
+             <div className="w-1.5 h-2 bg-[#93c5fd] rounded-full shadow-[0_0_12px_#93c5fd] animate-pulse"></div>
+           </div>
+        </motion.div>
 
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-stretch">
-            
-            {/* Left Card: Dark Green Visual */}
-            <div className="flex-1 bg-black/40 border border-emerald-500/20 rounded-[2rem] p-8 md:p-12 relative overflow-hidden flex flex-col justify-between shadow-[0_0_30px_rgba(16,185,129,0.15)] min-h-[400px]">
-              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-              <div className="absolute inset-0 pointer-events-none">
-                 <svg viewBox="0 0 100 100" className="w-full h-full opacity-20">
-                    <circle cx="20" cy="80" r="40" fill="#10b981" filter="blur(30px)" />
-                 </svg>
-              </div>
-              <div className="relative z-10">
-                <div className="w-12 h-12 bg-black/50 border border-[#10b981]/30 rounded-xl flex items-center justify-center mb-6 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                  <Server className="w-6 h-6 text-[#10b981]" />
+        {/* Main Headline */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5, duration: 1 }}
+          className="relative z-10 text-center max-w-4xl px-4 mb-6 mt-8"
+        >
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white leading-[1.1]">
+            Elevate Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#60a5fa] to-[#3b82f6] drop-shadow-[0_0_20px_rgba(59,130,246,0.3)]">Career</span>
+          </h1>
+        </motion.div>
+        
+        {/* Subtitle */}
+        <motion.p 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.0, duration: 1 }}
+          className="relative z-10 text-center text-blue-100/60 font-medium max-w-3xl px-4 text-sm md:text-lg leading-relaxed mb-12"
+        >
+          Instantly analyze your resume, identify critical skill gaps, and generate a personalized roadmap to land your dream job with AI precision.
+        </motion.p>
+
+        {/* Upload Action Area */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 2.5, duration: 0.8 }}
+          className="relative z-20 w-full max-w-2xl px-4"
+        >
+          <ResumeUpload onResult={onAnalysisComplete} apiUrl={apiUrl} />
+        </motion.div>
+
+        {/* Animated Resume Scanner Mockup */}
+        <motion.div
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 3.0, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10 w-full max-w-3xl mt-24 px-4 flex justify-center mb-24"
+        >
+          <div className="relative w-full aspect-[4/3] max-w-[600px] flex items-center justify-center">
+             
+             {/* The Resume Document */}
+             <motion.div 
+               animate={{ y: [-5, 5, -5] }}
+               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+               className="relative w-72 md:w-96 h-[400px] md:h-[480px] bg-[#0f172a] rounded-2xl border border-[#3b82f6]/30 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col p-6 z-20"
+             >
+                {/* Header (Name & Contact) */}
+                <div className="flex flex-col items-center mb-6">
+                  <div className="w-2/3 h-6 bg-[#3b82f6]/40 rounded-full mb-3"></div>
+                  <div className="flex gap-2">
+                    <div className="w-16 h-2 bg-[#1e293b] rounded-full"></div>
+                    <div className="w-16 h-2 bg-[#1e293b] rounded-full"></div>
+                    <div className="w-16 h-2 bg-[#1e293b] rounded-full"></div>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-black text-white tracking-tight uppercase">Analysis Engine</h3>
-              </div>
-              <div className="relative z-10 mt-12 text-[#34d399] font-medium text-sm">
-                 Explore the seamless workflow of our intelligent engine, designed to evaluate your current skills and provide actionable insights to elevate your career trajectory.
-              </div>
-            </div>
+                
+                {/* Section 1 */}
+                <div className="w-1/4 h-3 bg-[#3b82f6]/30 rounded-full mb-3"></div>
+                <div className="w-full h-2 bg-[#1e293b] rounded-full mb-2"></div>
+                <div className="w-5/6 h-2 bg-[#1e293b] rounded-full mb-2"></div>
+                <div className="w-4/6 h-2 bg-[#1e293b] rounded-full mb-6"></div>
 
-            {/* Right Side: List of Stats */}
-            <div className="flex-1 flex flex-col justify-center gap-6">
-              {[
-                { title: "Document Parsing", val: "Step 1", desc: "Extracts raw text and structure from your uploaded PDF." },
-                { title: "Skill Extraction", val: "Step 2", desc: "Identifies core competencies and technical skills using NLP." },
-                { title: "Gap Analysis", val: "Step 3", desc: "Evaluates your profile against target industry standards." },
-                { title: "Roadmap Generation", val: "Step 4", desc: "Creates a personalized, project-based learning path." }
-              ].map((stat, i) => (
+                {/* Section 2 */}
+                <div className="w-1/3 h-3 bg-[#3b82f6]/30 rounded-full mb-3"></div>
+                <div className="w-full h-2 bg-[#1e293b] rounded-full mb-2"></div>
+                <div className="w-full h-2 bg-[#1e293b] rounded-full mb-2"></div>
+                <div className="w-3/4 h-2 bg-[#1e293b] rounded-full mb-6"></div>
+
+                {/* Section 3 */}
+                <div className="w-1/4 h-3 bg-[#3b82f6]/30 rounded-full mb-3"></div>
+                <div className="flex flex-wrap gap-2">
+                   <div className="w-12 h-2 bg-[#1e293b] rounded-full"></div>
+                   <div className="w-20 h-2 bg-[#1e293b] rounded-full"></div>
+                   <div className="w-16 h-2 bg-[#1e293b] rounded-full"></div>
+                   <div className="w-14 h-2 bg-[#1e293b] rounded-full"></div>
+                   <div className="w-24 h-2 bg-[#1e293b] rounded-full"></div>
+                </div>
+                
+                {/* The Scanning Laser */}
                 <motion.div 
-                  key={i} 
-                  initial={{ opacity: 0, x: 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ delay: i * 0.15, duration: 0.6, type: "spring", stiffness: 100 }}
-                  whileHover={{ scale: 1.02, x: -5 }}
-                  className="flex items-start gap-4 p-6 bg-black/40 rounded-2xl border border-white/5 hover:border-[#10b981]/50 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-all cursor-default group"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#10b981]/10 border border-[#10b981]/20 flex items-center justify-center shrink-0 mt-1 group-hover:bg-[#10b981]/20 transition-colors">
-                    <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></div>
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-black tracking-tight text-white group-hover:text-emerald-400 transition-colors">{stat.title}</h4>
-                    <div className="flex items-center gap-3 mt-1">
-                       <span className="text-sm font-bold text-[#10b981]">{stat.val}</span>
-                       <span className="text-xs text-slate-400">{stat.desc}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  animate={{ top: ['0%', '100%', '0%'] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  className="absolute left-0 w-full h-[3px] bg-[#60a5fa] shadow-[0_0_30px_#60a5fa] z-30"
+                ></motion.div>
+                {/* Laser gradient tail */}
+                <motion.div 
+                  animate={{ top: ['0%', '100%', '0%'] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  className="absolute left-0 w-full h-32 bg-gradient-to-b from-transparent to-[#60a5fa]/30 z-10 -translate-y-full"
+                ></motion.div>
+                
+                {/* Grid Overlay for tech feel */}
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xOSAxOUwwIDE5SDBNMCAxOVYwIiBzdHJva2U9InJnYmEoNTksMTMwLDI0NiwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+')] z-0 pointer-events-none"></div>
+             </motion.div>
+
+             {/* Floating Data Chips */}
+             <motion.div 
+               animate={{ y: [0, -15, 0], opacity: [0.5, 1, 0.5] }}
+               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+               className="absolute top-1/4 -right-12 md:-right-24 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#3b82f6]/40 rounded-lg shadow-xl z-30"
+             >
+               <span className="text-[#60a5fa] text-xs font-bold font-mono">React.js detected</span>
+             </motion.div>
+
+             <motion.div 
+               animate={{ y: [0, 15, 0], opacity: [0.5, 1, 0.5] }}
+               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+               className="absolute bottom-1/4 -left-12 md:-left-28 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#ef4444]/40 rounded-lg shadow-xl z-30"
+             >
+               <span className="text-[#f87171] text-xs font-bold font-mono">Gap: Python</span>
+             </motion.div>
+             
+             <motion.div 
+               animate={{ y: [-10, 10, -10], opacity: [0.5, 1, 0.5] }}
+               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+               className="absolute top-1/2 -left-16 md:-left-32 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#10b981]/40 rounded-lg shadow-xl z-30"
+             >
+               <span className="text-[#34d399] text-xs font-bold font-mono">AWS Certified</span>
+             </motion.div>
+             
+             <motion.div 
+               animate={{ y: [10, -10, 10], opacity: [0.5, 1, 0.5] }}
+               transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+               className="absolute top-[15%] -left-4 md:-left-12 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#a855f7]/40 rounded-lg shadow-xl z-30 -translate-y-8"
+             >
+               <span className="text-[#c084fc] text-xs font-bold font-mono">ATS Score: 85</span>
+             </motion.div>
+
+             <motion.div 
+               animate={{ y: [-15, 0, -15], opacity: [0.5, 1, 0.5] }}
+               transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+               className="absolute bottom-1/3 -right-16 md:-right-32 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#f59e0b]/40 rounded-lg shadow-xl z-30"
+             >
+               <span className="text-[#fbbf24] text-xs font-bold font-mono">+ Action Verb</span>
+             </motion.div>
+
+             {/* Background Target Rings */}
+             <motion.div 
+               animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.5, 0.2] }}
+               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] border border-[#3b82f6]/30 rounded-full z-10 flex items-center justify-center pointer-events-none"
+             >
+                <div className="w-[400px] h-[400px] border border-[#3b82f6]/10 rounded-full"></div>
+             </motion.div>
 
           </div>
+        </motion.div>
+
+      </section>
+
+      {/* ========================================================
+          STATS ROW
+          ======================================================== */}
+      <section className="relative z-20 w-full max-w-4xl mx-auto px-4 mt-8 mb-32">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-1 p-1 bg-[#0f172a]/80 border border-[#3b82f6]/20 rounded-[2rem] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.3)]"
+        >
+          {[
+            { label: "Resumes Scanned", value: "10,000+" },
+            { label: "Parsing Accuracy", value: "95%" },
+            { label: "Roadmap Generation", value: "24/7" }
+          ].map((stat, i) => (
+            <div key={i} className="flex flex-col items-center justify-center py-8 px-4 bg-[#020617] rounded-[1.8rem] border border-[#3b82f6]/10 shadow-inner">
+              <span className="text-[10px] uppercase font-bold text-blue-300/50 tracking-widest mb-2">{stat.label}</span>
+              <span className="text-4xl font-black text-white tracking-tighter">{stat.value}</span>
+            </div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* ========================================================
+          FEATURES GRID
+          ======================================================== */}
+      <section id="features" className="relative z-20 w-full max-w-[1200px] mx-auto px-4 pb-32">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tighter drop-shadow-lg">What Is NeuralPath?</h2>
+          <p className="text-blue-100/60 font-medium text-sm md:text-base max-w-2xl mx-auto">
+            A Tactical Suite Of Tools That Extracts Data Signals And Behavioral
+            Patterns Before They Become Market Movements.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          {[
+            {
+              icon: FileText,
+              title: "Deep Document Parsing",
+              desc: "Identify core competencies and technical skills using advanced NLP before major technical interviews."
+            },
+            {
+              icon: Search,
+              title: "Intelligent Gap Detection",
+              desc: "Evaluates your profile against target industry standards to predict missing skills before they happen."
+            },
+            {
+              icon: LineChart,
+              title: "Behavioral Analysis",
+              desc: "Advanced AI pattern recognition dissects market trends to align your resume with active job postings."
+            },
+            {
+              icon: ShieldCheck,
+              title: "Privacy Protected",
+              desc: "All data undergoes heavy encryption, ensuring your personal information and career history remain intact."
+            },
+            {
+              icon: BrainCircuit,
+              title: "Live Learning Roadmap",
+              desc: "Provides real-time project suggestions and upskilling pathways based on dynamic industry demand."
+            },
+            {
+              icon: Zap,
+              title: "Secure The Profits",
+              desc: "Lock in high-paying roles and minimize application noise with data-driven strategy and timing."
+            }
+          ].map((feature, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: i * 0.1, duration: 0.6, type: "spring", stiffness: 100 }}
+              className="bg-[#0f172a]/50 border border-[#3b82f6]/20 rounded-3xl p-8 hover:bg-[#0f172a] hover:border-[#3b82f6]/50 hover:shadow-[0_0_40px_rgba(59,130,246,0.15)] transition-all group relative overflow-hidden backdrop-blur-sm"
+            >
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#60a5fa]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="flex justify-center mb-8 relative">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-[#3b82f6]/20 group-hover:scale-110 transition-transform duration-500"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border border-[#3b82f6]/10 group-hover:scale-110 transition-transform duration-500 delay-75"></div>
+                
+                <div className="relative w-12 h-12 bg-[#020617] border border-[#3b82f6]/30 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-[0_0_20px_rgba(96,165,250,0.3)] transition-all">
+                  <feature.icon className="w-5 h-5 text-[#60a5fa]/70 group-hover:text-[#93c5fd] transition-colors" />
+                </div>
+              </div>
+
+              <h3 className="text-lg font-bold text-white mb-3 text-center tracking-tight">{feature.title}</h3>
+              <p className="text-sm text-blue-100/50 font-medium text-center leading-relaxed group-hover:text-blue-100/70 transition-colors">
+                {feature.desc}
+              </p>
+            </motion.div>
+          ))}
+          
         </div>
       </section>
-      
+
       {/* ========================================================
-          NEW SECTION: ARCHITECTURE PIPELINE & LIMITATIONS
+          ARCHITECTURE PIPELINE (Flow Structure)
           ======================================================== */}
-      
-      {/* Architecture Section */}
-      <section id="architecture" className="w-full bg-[#050505] py-24 px-4 sm:px-8 xl:px-0 relative border-t border-white/5">
+      <section id="how-it-works" className="w-full bg-[#020617] py-24 px-4 sm:px-8 xl:px-0 relative border-t border-[#3b82f6]/10 overflow-hidden">
+        
+        {/* Faint spotlight in background */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] bg-gradient-to-b from-[#3b82f6]/10 to-transparent blur-[80px] pointer-events-none z-0"></div>
+
         <div className="max-w-[1200px] mx-auto relative z-10">
-          <div className="text-center mb-16">
-             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">System <span className="text-[#10b981]">Architecture</span></h2>
-             <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+             <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter">How It Works</h2>
+             <p className="text-blue-100/60 font-medium mt-4 max-w-2xl mx-auto text-sm md:text-base">
                A transparent, end-to-end pipeline from document parsing to actionable career roadmaps.
              </p>
-          </div>
+          </motion.div>
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 relative py-12">
              {/* Animated Connector Line (Horizontal for Desktop) */}
-             <div className="hidden md:block absolute top-1/2 left-[5%] w-[90%] h-1 bg-white/5 -translate-y-1/2 z-0 rounded-full overflow-hidden">
+             <div className="hidden md:block absolute top-1/2 left-[5%] w-[90%] h-[2px] bg-[#0f172a] -translate-y-1/2 z-0 overflow-hidden">
                <motion.div 
-                 className="h-full bg-gradient-to-r from-emerald-500/0 via-emerald-500 to-emerald-500/0 w-1/3"
-                 animate={{ x: ['-100%', '300%'] }}
-                 transition={{ repeat: Infinity, duration: 2.5, ease: 'linear' }}
+                 className="h-full bg-gradient-to-r from-transparent via-[#3b82f6] to-transparent w-1/2"
+                 animate={{ x: ['-100%', '200%'] }}
+                 transition={{ repeat: Infinity, duration: 3, ease: 'linear' }}
                />
              </div>
 
              {/* Animated Connector Line (Vertical for Mobile) */}
-             <div className="block md:hidden absolute top-[5%] left-1/2 w-1 h-[90%] bg-white/5 -translate-x-1/2 z-0 rounded-full overflow-hidden">
+             <div className="block md:hidden absolute top-[5%] left-1/2 w-[2px] h-[90%] bg-[#0f172a] -translate-x-1/2 z-0 overflow-hidden">
                <motion.div 
-                 className="w-full bg-gradient-to-b from-emerald-500/0 via-emerald-500 to-emerald-500/0 h-1/3"
-                 animate={{ y: ['-100%', '300%'] }}
-                 transition={{ repeat: Infinity, duration: 2.5, ease: 'linear' }}
+                 className="w-full bg-gradient-to-b from-transparent via-[#3b82f6] to-transparent h-1/2"
+                 animate={{ y: ['-100%', '200%'] }}
+                 transition={{ repeat: Infinity, duration: 3, ease: 'linear' }}
                />
              </div>
 
@@ -291,54 +350,30 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
                { icon: FileText, label: "Resume PDF" },
                { icon: Cpu, label: "Parsing Engine" },
                { icon: ShieldCheck, label: "Authenticator" },
-               { icon: Target, label: "Skill Extraction" },
+               { icon: Search, label: "Skill Extraction" },
                { icon: Activity, label: "Deductive Scoring" },
                { icon: BrainCircuit, label: "LLM Gap Analysis" },
                { icon: LayoutDashboard, label: "Dashboard" }
              ].map((step, idx) => (
                 <motion.div 
                   key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1, duration: 0.5 }}
-                  whileHover={{ scale: 1.1, y: -5 }}
-                  className="bg-[#111] border border-emerald-500/20 p-4 rounded-xl flex flex-col items-center justify-center gap-3 w-full md:w-[140px] h-32 relative z-10 shadow-[0_0_15px_rgba(16,185,129,0.1)] group hover:border-emerald-500 hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all cursor-default"
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: idx * 0.1, duration: 0.6, type: "spring" }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="bg-[#0f172a] border border-[#3b82f6]/20 p-4 rounded-2xl flex flex-col items-center justify-center gap-4 w-full md:w-[140px] h-36 relative z-10 shadow-lg group hover:bg-[#1e293b] hover:border-[#3b82f6]/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] transition-all cursor-default"
                 >
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
-                    <step.icon className="w-5 h-5 text-emerald-400 group-hover:text-emerald-300" />
+                  <div className="w-12 h-12 rounded-2xl bg-[#020617] border border-[#3b82f6]/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#3b82f6]/10 transition-all">
+                    <step.icon className="w-5 h-5 text-[#60a5fa]/70 group-hover:text-[#93c5fd] transition-colors" />
                   </div>
-                  <span className="text-[10px] font-black text-slate-300 text-center uppercase tracking-wider">{step.label}</span>
+                  <span className="text-[10px] font-bold text-blue-200/50 group-hover:text-blue-100/90 text-center uppercase tracking-widest transition-colors">{step.label}</span>
                 </motion.div>
              ))}
           </div>
         </div>
       </section>
 
-      {/* Limitations Section */}
-      <section id="scope" className="w-full bg-[#111] py-16 px-4 sm:px-8 xl:px-0 relative border-t border-emerald-500/10 shadow-[inset_0_10px_30px_rgba(0,0,0,0.5)]">
-        <div className="max-w-[1200px] mx-auto relative z-10 text-center">
-          <h3 className="text-sm font-black text-emerald-500 uppercase tracking-widest mb-8 flex items-center justify-center gap-3">
-             <ShieldCheck className="w-5 h-5" /> System Scope & Capabilities
-          </h3>
-          <div className="flex flex-wrap justify-center gap-4">
-             {["Multi-Domain Analysis", "Universal Role Detection", "LLM-Dependent Quality", "Requires Standard ATS Formats"].map((lim, i) => (
-               <motion.span 
-                 key={i}
-                 initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                 viewport={{ once: true }}
-                 whileHover={{ scale: 1.05, y: -2, boxShadow: "0 0 20px rgba(16,185,129,0.4)" }}
-                 transition={{ delay: i * 0.1, duration: 0.3 }}
-                 className="px-5 py-2.5 bg-black/50 border border-white/10 text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-full hover:border-emerald-500 hover:text-emerald-400 transition-all cursor-default shadow-[0_0_10px_rgba(0,0,0,0.3)]"
-               >
-                 {lim}
-               </motion.span>
-             ))}
-          </div>
-        </div>
-      </section>
-      
     </div>
   );
 };
