@@ -13,25 +13,20 @@ import html2pdf from 'html2pdf.js';
 const ResultPage = ({ data }) => {
   const [activeCard, setActiveCard] = useState(null);
   const [isSharing, setIsSharing] = useState(false);
-  const handleExport = () => window.print();
-  const handleShare = async () => {
-    if (!navigator.canShare) {
-      alert("Native sharing is not supported on this browser. Please use 'Export Report' to save your PDF!");
-      return;
-    }
+  const [isExporting, setIsExporting] = useState(false);
+
+  const generatePDFBlob = async () => {
+    const printContainer = document.getElementById('neural-print-view');
+    if (!printContainer) throw new Error("Print container not found");
 
     try {
-      setIsSharing(true);
-      const printContainer = document.getElementById('neural-print-view');
-      if (printContainer) {
-        printContainer.classList.remove('hidden');
-        printContainer.style.display = 'block';
-        printContainer.style.position = 'fixed';
-        printContainer.style.left = '0';
-        printContainer.style.top = '200vh';
-        printContainer.style.zIndex = '-9999';
-        printContainer.style.backgroundColor = 'white';
-      }
+      printContainer.classList.remove('hidden');
+      printContainer.style.display = 'block';
+      printContainer.style.position = 'fixed';
+      printContainer.style.left = '0';
+      printContainer.style.top = '200vh';
+      printContainer.style.zIndex = '-9999';
+      printContainer.style.backgroundColor = 'white';
 
       // CRITICAL: Wait for browser layout & paint cycle before capturing
       await new Promise(resolve => setTimeout(resolve, 300));
@@ -45,49 +40,63 @@ const ResultPage = ({ data }) => {
       };
 
       const pdfBlob = await html2pdf().set(opt).from(printContainer).output('blob');
+      return pdfBlob;
+    } finally {
+      printContainer.style.display = '';
+      printContainer.style.position = '';
+      printContainer.style.left = '';
+      printContainer.style.top = '';
+      printContainer.style.zIndex = '';
+      printContainer.style.backgroundColor = '';
+      printContainer.classList.add('hidden');
+      
+      // Clean up any stray html2canvas iframes that might have been left on error
+      const strayIframes = document.querySelectorAll('.html2canvas-container');
+      strayIframes.forEach(iframe => iframe.remove());
+    }
+  };
 
-      // EXPLICIT STEP: First, save/export the PDF to the device
-      const url = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'NeuralPath_Analysis.pdf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+  const handleExport = () => {
+    window.print();
+  };
 
-      // EXPLICIT STEP: Then, redirect to the share options
+  const handleShare = async () => {
+    try {
+      setIsSharing(true);
+      
+      // Step 1: Generate the PDF internally for the share sheet
+      const pdfBlob = await generatePDFBlob();
       const file = new File([pdfBlob], 'NeuralPath_Analysis.pdf', { type: 'application/pdf' });
+      const shareData = {
+        title: 'My NeuralPath Career Analysis',
+        text: `Check out my NeuralPath Career Analysis!\n\nTarget Role: ${data.domain || 'Professional'}\nMarket Readiness: ${data.score || 0}%\n`,
+      };
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        // Adding a slight delay so the download registers before the share sheet takes over the screen
+        shareData.files = [file];
+      }
+
+      // Step 2: Redirect to the "Export Progress" (native print/save dialog)
+      // This allows the user to save it according to their needs first
+      window.print();
+
+      // Step 3: Redirect to the Sharing Options right after saving
+      if (navigator.share) {
         setTimeout(async () => {
           try {
-            await navigator.share({
-              files: [file],
-              title: 'My NeuralPath Career Analysis',
-              text: `Check out my NeuralPath Career Analysis!\n\nTarget Role: ${data.domain || 'Professional'}\n`,
-            });
+            await navigator.share(shareData);
           } catch (e) {
-            console.log('User cancelled share or error:', e);
+            console.log('Share cancelled or blocked by browser:', e);
           }
-        }, 500);
+        }, 300);
+      } else {
+        alert("Native sharing is not supported on this browser.");
       }
     } catch (error) {
-      console.log('Error sharing PDF:', error);
-      alert("Failed to generate PDF for sharing. Please try exporting it instead.");
+      console.log('Error in share flow:', error);
+      alert("Failed to process sharing.");
     } finally {
       setIsSharing(false);
-      const printContainer = document.getElementById('neural-print-view');
-      if (printContainer) {
-        printContainer.style.display = '';
-        printContainer.style.position = '';
-        printContainer.style.left = '';
-        printContainer.style.top = '';
-        printContainer.style.zIndex = '';
-        printContainer.style.backgroundColor = '';
-        printContainer.classList.add('hidden');
-      }
     }
   };
 
@@ -170,7 +179,7 @@ const ResultPage = ({ data }) => {
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           .no-print { display: none !important; }
-          body { background: white !important; color: black !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           @page { size: auto; margin: 10mm; }
           .break-after-page { page-break-after: always; break-after: page; }
         }
@@ -444,9 +453,12 @@ const ResultPage = ({ data }) => {
                                   <span className="text-xs font-bold text-white uppercase tracking-wider">{skillName}</span>
                                   <span className="text-xs font-black text-[#10b981]">{skillScore}%</span>
                                 </div>
-                                <div className="h-2 w-full bg-black rounded-full overflow-hidden border border-white/5">
+                                <div className="h-2 w-full bg-black rounded-full overflow-hidden border border-white/5 mb-2">
                                   <motion.div initial={{ width: 0 }} animate={{ width: `${skillScore}%` }} transition={{ duration: 1, delay: i * 0.1 }} className="h-full bg-gradient-to-r from-[#10b981] to-[#34d399]"></motion.div>
                                 </div>
+                                {typeof item === 'object' && item.description && (
+                                  <p className="text-[10px] text-slate-400 leading-relaxed">{item.description}</p>
+                                )}
                               </div>
                               );
                             })}
@@ -464,9 +476,12 @@ const ResultPage = ({ data }) => {
                                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{skillName}</span>
                                   <span className="text-xs font-black text-emerald-500">{skillScore}%</span>
                                 </div>
-                                <div className="h-2 w-full bg-black rounded-full overflow-hidden border border-white/5">
+                                <div className="h-2 w-full bg-black rounded-full overflow-hidden border border-white/5 mb-2">
                                   <motion.div initial={{ width: 0 }} animate={{ width: `${skillScore}%` }} transition={{ duration: 1, delay: i * 0.1 }} className="h-full bg-emerald-500/50"></motion.div>
                                 </div>
+                                {typeof item === 'object' && item.description && (
+                                  <p className="text-[10px] text-slate-400 leading-relaxed">{item.description}</p>
+                                )}
                               </div>
                               );
                             })}
@@ -585,7 +600,7 @@ const ResultPage = ({ data }) => {
           </AnimatePresence>
         </div>
 
-        <div id="neural-print-view" className="hidden w-full bg-white">
+        <div id="neural-print-view" className="hidden print:block w-full bg-white">
           <PrintView data={data} projectStage={projectStage} />
         </div>
 
@@ -597,7 +612,6 @@ const ResultPage = ({ data }) => {
 
       </div>
 
-      {/* SHARE MODAL REMOVED - NOW USES DIRECT PDF GENERATION */}
     </div>
   );
 };

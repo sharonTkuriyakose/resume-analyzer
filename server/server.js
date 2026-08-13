@@ -32,17 +32,7 @@ function saveCache() {
 
 const numCPUs = os.cpus().length;
 
-if (cluster.isPrimary || cluster.isMaster) {
-  console.log(`[CLUSTER] Primary ${process.pid} is running. Forking ${numCPUs} workers...`);
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
-  cluster.on('exit', (worker, code, signal) => {
-    console.log(`[CLUSTER] Worker ${worker.process.pid} died. Forking a new one...`);
-    cluster.fork();
-  });
-} else {
-  const app = express();
+const app = express();
 
   // --- 1. MIDDLEWARE & SECURITY ---
   app.use(helmet());
@@ -116,19 +106,21 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                     STEP 2: EXPERT PANEL ANALYSIS (CHAIN OF THOUGHT)
                     - YOU MUST fill out the '_reasoning' field FIRST. Write a detailed paragraph analyzing the specific skills, experiences, and gaps you found in the text to ground your subsequent scores.
                     - CRITICAL: Ensure this analysis is strictly unique and tailored specifically to the text provided in the user prompt. Do not hallucinate or reuse previous analyses.
-                    - Act as a panel of Senior Technical Recruiters and Hiring Managers. Analyze the candidate's core competencies to identify their exact Target Job Role. Set 'domain' to this title. MUST BE a standard, highly-searchable industry job title (e.g., "Backend Developer", "Data Scientist", "DevOps Engineer"). Maximum 3 words. No commas or special characters.
-                    - 'scoringComponents': Generate rigorous, exact sub-scores (0-100) for five specific areas. CRITICAL: Base these scores STRICTLY on the provided text.
-                        1. "skills": Hard skills relevance and proficiency. Start at 0, add 10 points for each relevant hard skill found (up to 100).
-                        2. "projects": Quality, complexity, and relevance of projects/portfolio. Start at 0, add 25 points for each substantial project (up to 100).
-                        3. "experience": Relevance and impact of professional work experience. Start at 0, add 25 points per year of relevant experience (up to 100). (If no formal work experience exists, award partial points (e.g., 20-50) based on practical project implementation).
-                        4. "certifications": Value of degrees, certifications, and courses. Start at 0, add 25 for a degree, 15 for each relevant cert (up to 100).
+                    - Next, critically analyze the uploaded text to dynamically determine the candidate's actual Target Job Role based strictly on their skills and experience. Set 'domain' to this title. MUST BE a standard, highly-searchable industry job title (e.g., "DevOps Engineer", "Marketing Manager", "Financial Analyst", "Registered Nurse"). Maximum 3 words. Do NOT default to any specific role; it must be 100% accurate to the uploaded resume's content.
+                    - Next, fill out '_domain_reasoning', explicitly stating why you chose this domain based on their core projects and skills.
+                    - CRITICAL DOMAIN GUIDELINE: Do NOT hallucinate that the candidate belongs to an entirely different domain just because they used a single tool or API. Keep the Target Job Role grounded in their primary skillset. However, when identifying GAPS and building the CURRICULUM, you MUST include realistic, industry-standard requirements for whatever their specific role is. For example, if they are a Data Scientist, gaps might be MLOps; if they are a Marketing Manager, gaps might be CRM Automation or SEO Analytics; if they are a Financial Analyst, gaps might be Advanced Financial Modeling. You MUST dynamically generate a realistic, industry-standard assessment for THEIR specific domain, perfectly balancing their unique strengths with real-world industry expectations.
+                    - 'scoringComponents': Generate rigorous, exact sub-scores (0-100) for five specific areas. CRITICAL: Base these scores STRICTLY on the provided text AND their relevance to the identified 'domain'. You MUST ignore or exclude any projects, skills, and experience that are unrelated to the respective domain.
+                        1. "skills": Hard skills relevance and proficiency for the 'domain'. Start at 0, add 10 points for each relevant hard skill found (up to 100). Do not count unrelated skills.
+                        2. "projects": Quality, complexity, and relevance of projects/portfolio to the 'domain'. Start at 0, add 25 points for each substantial, domain-relevant project (up to 100). Strictly IGNORE unrelated projects.
+                        3. "experience": Relevance and impact of professional work experience to the 'domain'. Start at 0, add 25 points per year of relevant experience (up to 100). Do not count unrelated experience. (If no formal work experience exists, award partial points (e.g., 20-50) based on practical, domain-relevant project implementation).
+                        4. "certifications": Value of degrees, certifications, and courses to the 'domain'. Start at 0, add 25 for a degree, 15 for each relevant cert (up to 100). Ignore unrelated certs.
                         5. "atsFormatting": Resume structure, readability, and ATS parsing compatibility.
-                    - 'foundSkills': List EXACT hard skills found in the text. Provide an estimated proficiency 'score' (0-100).
-                    - 'missingSkills': Identify critical missing hard skills for the 'domain' that were NOT found in the text. Provide an importance 'score' (0-100).
-                    - 'keywordsDetected': Extract ATS-friendly keywords present. Provide a 'keyword' and a detailed 'context' explaining why it's valuable.
-                    - 'keywordsMissing': List essential ATS keywords they are missing. Provide a 'keyword' and a detailed 'context' on why it's a critical gap.
-                    - 'phasedCurriculum': 3 stages to bridge their specific gaps. For each phase, provide a simple, natural 'title' (e.g. "Cloud Computing Basics", "Containerization", without underscores or ALL CAPS) and a detailed 'primaryGoal' (2-3 sentences of expert advice).
-                    - 'projectList': EXACTLY 3 unique project simulations STRICTLY designed to bridge the user's MISSING skills (deficiencies). Do NOT suggest projects based on their existing strengths. Use realistic, industry-standard project ideas with a detailed 'desc' (2-3 sentences outlining the architecture).
+                    - 'foundSkills': List AT LEAST 8-12 EXACT hard skills found in the text (e.g., React, SEO, Financial Modeling, AutoCAD). Provide an estimated proficiency 'score' (0-100) and a medium-length 'description' (2-3 sentences) explaining their proficiency based on the resume.
+                    - 'missingSkills': Identify AT LEAST 8-12 critical missing hard skills that are realistically expected in the industry for their specific 'domain' (e.g., Docker, Salesforce, Advanced Excel, Public Speaking). Provide an importance 'score' (0-100) and a medium-length 'description' (2-3 sentences) explaining why this specific skill is a critical gap.
+                    - 'keywordsDetected': Extract AT LEAST 10-15 ATS-friendly keywords present. Provide a 'keyword' and a detailed, in-depth 'context' (2-3 sentences) explaining why it's valuable.
+                    - 'keywordsMissing': List AT LEAST 10-15 essential ATS keywords they are missing. Provide a 'keyword' and a detailed, in-depth 'context' (2-3 sentences) on why it's a critical gap. MUST be highly specific to the 'domain'.
+                    - 'phasedCurriculum': 3 stages designed to elevate them to industry readiness (e.g., Phase 1: Core Fundamentals, Phase 2: Advanced Tools/Cloud, Phase 3: Leadership/System Design). Focus heavily on the items in 'missingSkills'. For each phase, provide a simple 'title', a detailed 'primaryGoal' (2-3 sentences), and a 'points' array with AT LEAST 4-6 specific, actionable learning steps.
+                    - 'projectList': EXACTLY 3 unique project/portfolio simulations. CRITICAL RULE: These projects MUST be designed to force the candidate to learn their 'missingSkills' (e.g., "DevOps Deployment Platform" for Tech, or "B2B Marketing Campaign Simulation" for Marketing). They should combine what the candidate already knows with what they NEED to learn. Provide a detailed 'desc' (2-3 sentences) and a 'points' array listing the new, missing technologies, tools, or methodologies they will learn.
                     
                     STEP 3: DEEP AUTHENTICITY & PLAGIARISM CHECK
                     - Analyze the semantic structure and language patterns of the resume. 
@@ -142,6 +134,8 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                     REQUIRED JSON STRUCTURE (STRICTLY FOLLOW THIS):
                     {
                       "_reasoning": "REQUIRED: Write a detailed 1-paragraph analysis of the resume here BEFORE generating the rest of the JSON. Ground your scores in the text.",
+                      "domain": "string",
+                      "_domain_reasoning": "REQUIRED: Explain why you chose this specific domain, and explicitly vow to ignore all other domains for the rest of this JSON.",
                       "isValidResume": boolean,
                       "authenticity_score": number,
                       "authenticity_reasoning": "string",
@@ -152,12 +146,11 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                          "certifications": number,
                          "atsFormatting": number
                       },
-                      "domain": "string",
                       "foundSkills": [
-                        { "skill": "skill1", "score": 90 }
+                        { "skill": "string", "score": 90, "description": "Detailed 2-3 sentence explanation..." }
                       ],
                       "missingSkills": [
-                        { "skill": "skill1", "score": 95 }
+                        { "skill": "string", "score": 95, "description": "Detailed 2-3 sentence explanation..." }
                       ],
                       "keywordsDetected": [
                         { "keyword": "string", "context": "Detailed explanation..." }
@@ -326,5 +319,4 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Neural Lab Worker ${process.pid} listening on port ${PORT}`));
-}
+app.listen(PORT, () => console.log(`🚀 Neural Lab Server listening on port ${PORT}`));
