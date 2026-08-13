@@ -22,9 +22,10 @@ const ResultPage = ({ data }) => {
     try {
       printContainer.classList.remove('hidden');
       printContainer.style.display = 'block';
-      printContainer.style.position = 'fixed';
+      printContainer.style.position = 'absolute';
       printContainer.style.left = '0';
-      printContainer.style.top = '200vh';
+      printContainer.style.top = '0';
+      printContainer.style.width = '1200px';
       printContainer.style.zIndex = '-9999';
       printContainer.style.backgroundColor = 'white';
 
@@ -35,7 +36,13 @@ const ResultPage = ({ data }) => {
         margin:       0,
         filename:     'NeuralPath_Analysis.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
+        html2canvas:  { 
+          scale: 2, 
+          useCORS: true,
+          windowWidth: 1200,
+          scrollX: 0,
+          scrollY: 0
+        },
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
 
@@ -46,6 +53,7 @@ const ResultPage = ({ data }) => {
       printContainer.style.position = '';
       printContainer.style.left = '';
       printContainer.style.top = '';
+      printContainer.style.width = '';
       printContainer.style.zIndex = '';
       printContainer.style.backgroundColor = '';
       printContainer.classList.add('hidden');
