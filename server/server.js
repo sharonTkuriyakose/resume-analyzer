@@ -115,12 +115,13 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                         3. "experience": Relevance and impact of professional work experience to the 'domain'. Start at 0, add 25 points per year of relevant experience (up to 100). Do not count unrelated experience. (If no formal work experience exists, award partial points (e.g., 20-50) based on practical, domain-relevant project implementation).
                         4. "certifications": Value of degrees, certifications, and courses to the 'domain'. Start at 0, add 25 for a degree, 15 for each relevant cert (up to 100). Ignore unrelated certs.
                         5. "atsFormatting": Resume structure, readability, and ATS parsing compatibility.
-                    - 'foundSkills': List AT LEAST 8-12 EXACT hard skills found in the text (e.g., React, SEO, Financial Modeling, AutoCAD). Provide an estimated proficiency 'score' (0-100) and a medium-length 'description' (2-3 sentences) explaining their proficiency based on the resume.
-                    - 'missingSkills': Identify AT LEAST 8-12 critical missing hard skills that are realistically expected in the industry for their specific 'domain' (e.g., Docker, Salesforce, Advanced Excel, Public Speaking). Provide an importance 'score' (0-100) and a medium-length 'description' (2-3 sentences) explaining why this specific skill is a critical gap.
+                    - 'foundSkills': List AT LEAST 8-12 EXACT hard skills found in the text that are HIGHLY RELEVANT to the candidate's specific 'domain' job profile. Strictly ignore any skills that are unrelated to the target role. Provide an estimated proficiency 'score' (0-100) and a medium-length 'description' (2-3 sentences) explaining their proficiency based on the resume.
+                    - 'missingSkills': Identify AT LEAST 8-12 critical missing hard skills that are realistically expected in the industry for their specific 'domain' job profile but are missing from their resume. Analyze their profile deeply to find true gaps. Provide an importance 'score' (0-100) and a medium-length 'description' (2-3 sentences) explaining why this specific skill is a critical gap.
                     - 'keywordsDetected': Extract AT LEAST 10-15 ATS-friendly keywords present. Provide a 'keyword' and a detailed, in-depth 'context' (2-3 sentences) explaining why it's valuable.
                     - 'keywordsMissing': List AT LEAST 10-15 essential ATS keywords they are missing. Provide a 'keyword' and a detailed, in-depth 'context' (2-3 sentences) on why it's a critical gap. MUST be highly specific to the 'domain'.
+                    - 'relatedJobTitles': Provide EXACTLY 12 specific, distinct, real-world job titles closely related to the candidate's domain. Analyze the role and their skills externally to provide a broad range of related positions (e.g., if domain is "Backend Developer", output "Senior Backend Developer", "Java Backend Developer", "Backend Systems Engineer", "API Developer", etc.).
                     - 'phasedCurriculum': 3 stages designed to elevate them to industry readiness (e.g., Phase 1: Core Fundamentals, Phase 2: Advanced Tools/Cloud, Phase 3: Leadership/System Design). Focus heavily on the items in 'missingSkills'. For each phase, provide a simple 'title', a detailed 'primaryGoal' (2-3 sentences), and a 'points' array with AT LEAST 4-6 specific, actionable learning steps.
-                    - 'projectList': EXACTLY 3 unique project/portfolio simulations. CRITICAL RULE: These projects MUST be designed to force the candidate to learn their 'missingSkills' (e.g., "DevOps Deployment Platform" for Tech, or "B2B Marketing Campaign Simulation" for Marketing). They should combine what the candidate already knows with what they NEED to learn. Provide a detailed 'desc' (2-3 sentences) and a 'points' array listing the new, missing technologies, tools, or methodologies they will learn.
+                    - 'projectList': EXACTLY 3 unique project/portfolio simulations. CRITICAL RULE: These projects MUST ONLY focus on their 'missingSkills' / skill gaps. DO NOT generate projects based on skills they already know. Provide a detailed 'desc' (2-3 sentences) and a 'points' array listing the specific NEW, missing technologies or methodologies they will learn by doing this project.
                     
                     STEP 3: DEEP AUTHENTICITY & PLAGIARISM CHECK
                     - Analyze the semantic structure and language patterns of the resume. 
@@ -157,6 +158,10 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                       ],
                       "keywordsMissing": [
                         { "keyword": "string", "context": "Detailed explanation..." }
+                      ],
+                      "relatedJobTitles": [
+                        "string", "string", "string", "string", "string", "string",
+                        "string", "string", "string", "string", "string", "string"
                       ],
                       "phasedCurriculum": [
                         { "id": 1, "title": "Topic 1 (e.g. Cloud Computing)", "primaryGoal": "Detailed expert advice...", "points": [] },
@@ -233,69 +238,73 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
         try {
             console.log(`🌐 Generating portal searches for domain: ${analysis.domain}...`);
             const d = analysis.domain || 'Professional';
-            const q = encodeURIComponent(d);
-            const exactQ = encodeURIComponent(`"${d}"`);
+            const titles = analysis.relatedJobTitles && analysis.relatedJobTitles.length >= 12 
+                           ? analysis.relatedJobTitles 
+                           : Array(12).fill(d);
+            
+            const q = (title) => encodeURIComponent(title);
+            const exactQ = (title) => encodeURIComponent(`"${title}"`);
 
             analysis.liveJobs = [
                 {
-                    id: 'p1', title: `${d} Jobs on LinkedIn`, company: 'LinkedIn',
-                    url: `https://www.linkedin.com/jobs/search/?keywords=${exactQ}`,
-                    type: 'Portal Search', location: 'Global', description: `Explore thousands of ${d} opportunities and connect with recruiters directly on LinkedIn.`
+                    id: 'p1', title: `${titles[0]} Jobs on LinkedIn`, company: 'LinkedIn',
+                    url: `https://www.linkedin.com/jobs/search/?keywords=${exactQ(titles[0])}`,
+                    type: 'Portal Search', location: 'Global', description: `Explore thousands of ${titles[0]} opportunities and connect with recruiters directly on LinkedIn.`
                 },
                 {
-                    id: 'p2', title: `${d} Jobs on Indeed`, company: 'Indeed',
-                    url: `https://www.indeed.com/jobs?q=${exactQ}`,
-                    type: 'Portal Search', location: 'Global', description: `Browse aggregated job listings for ${d} roles from company career sites and job boards.`
+                    id: 'p2', title: `${titles[1]} Jobs on Indeed`, company: 'Indeed',
+                    url: `https://www.indeed.com/jobs?q=${exactQ(titles[1])}`,
+                    type: 'Portal Search', location: 'Global', description: `Browse aggregated job listings for ${titles[1]} roles from company career sites and job boards.`
                 },
                 {
-                    id: 'p3', title: `${d} Jobs on Glassdoor`, company: 'Glassdoor',
-                    url: `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${exactQ}`,
-                    type: 'Portal Search', location: 'Global', description: `Find ${d} jobs and access company reviews, salaries, and interview insights.`
+                    id: 'p3', title: `${titles[2]} Jobs on Glassdoor`, company: 'Glassdoor',
+                    url: `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${exactQ(titles[2])}`,
+                    type: 'Portal Search', location: 'Global', description: `Find ${titles[2]} jobs and access company reviews, salaries, and interview insights.`
                 },
                 {
-                    id: 'p4', title: `${d} Jobs on Wellfound`, company: 'Wellfound',
-                    url: `https://wellfound.com/role/${q.toLowerCase().replace(/%20/g, '-')}`, // Note: Wellfound uses hyphens for roles in URL
-                    type: 'Startup Search', location: 'Global', description: `Discover ${d} opportunities at top startups and tech companies.`
+                    id: 'p4', title: `${titles[3]} Jobs on Wellfound`, company: 'Wellfound',
+                    url: `https://wellfound.com/role/${q(titles[3]).toLowerCase().replace(/%20/g, '-')}`, // Note: Wellfound uses hyphens for roles in URL
+                    type: 'Startup Search', location: 'Global', description: `Discover ${titles[3]} opportunities at top startups and tech companies.`
                 },
                 {
-                    id: 'p5', title: `${d} Jobs on ZipRecruiter`, company: 'ZipRecruiter',
-                    url: `https://www.ziprecruiter.com/candidate/search?search=${exactQ}`,
-                    type: 'Portal Search', location: 'Global', description: `Apply to ${d} roles quickly with 1-Click Apply on ZipRecruiter.`
+                    id: 'p5', title: `${titles[4]} Jobs on ZipRecruiter`, company: 'ZipRecruiter',
+                    url: `https://www.ziprecruiter.com/candidate/search?search=${exactQ(titles[4])}`,
+                    type: 'Portal Search', location: 'Global', description: `Apply to ${titles[4]} roles quickly with 1-Click Apply on ZipRecruiter.`
                 },
                 {
-                    id: 'p6', title: `${d} Jobs on Monster`, company: 'Monster',
-                    url: `https://www.monster.com/jobs/search/?q=${exactQ}`,
-                    type: 'Portal Search', location: 'Global', description: `Search a vast database of ${d} jobs and get resume help.`
+                    id: 'p6', title: `${titles[5]} Jobs on Monster`, company: 'Monster',
+                    url: `https://www.monster.com/jobs/search/?q=${exactQ(titles[5])}`,
+                    type: 'Portal Search', location: 'Global', description: `Search a vast database of ${titles[5]} jobs and get resume help.`
                 },
                 {
-                    id: 'p7', title: `${d} Jobs on Dice`, company: 'Dice',
-                    url: `https://www.dice.com/jobs?q=${exactQ}`,
-                    type: 'Tech Search', location: 'Global', description: `The leading database for technology professionals and ${d} jobs.`
+                    id: 'p7', title: `${titles[6]} Jobs on Dice`, company: 'Dice',
+                    url: `https://www.dice.com/jobs?q=${exactQ(titles[6])}`,
+                    type: 'Tech Search', location: 'Global', description: `The leading database for technology professionals and ${titles[6]} jobs.`
                 },
                 {
-                    id: 'p8', title: `${d} Jobs on SimplyHired`, company: 'SimplyHired',
-                    url: `https://www.simplyhired.com/search?q=${exactQ}`,
-                    type: 'Portal Search', location: 'Global', description: `A robust job search engine for discovering local and remote ${d} positions.`
+                    id: 'p8', title: `${titles[7]} Jobs on SimplyHired`, company: 'SimplyHired',
+                    url: `https://www.simplyhired.com/search?q=${exactQ(titles[7])}`,
+                    type: 'Portal Search', location: 'Global', description: `A robust job search engine for discovering local and remote ${titles[7]} positions.`
                 },
                 {
-                    id: 'p9', title: `${d} Jobs on WeWorkRemotely`, company: 'WeWorkRemotely',
-                    url: `https://weworkremotely.com/remote-jobs/search?term=${exactQ}`,
-                    type: 'Remote Work', location: 'Global', description: `Find the best remote ${d} jobs from anywhere in the world.`
+                    id: 'p9', title: `${titles[8]} Jobs on WeWorkRemotely`, company: 'WeWorkRemotely',
+                    url: `https://weworkremotely.com/remote-jobs/search?term=${exactQ(titles[8])}`,
+                    type: 'Remote Work', location: 'Global', description: `Find the best remote ${titles[8]} jobs from anywhere in the world.`
                 },
                 {
-                    id: 'p10', title: `${d} Jobs on FlexJobs`, company: 'FlexJobs',
-                    url: `https://www.flexjobs.com/search?search=${exactQ}`,
-                    type: 'Remote/Flex Work', location: 'Global', description: `Discover hand-screened remote, part-time, freelance, and flexible ${d} jobs.`
+                    id: 'p10', title: `${titles[9]} Jobs on FlexJobs`, company: 'FlexJobs',
+                    url: `https://www.flexjobs.com/search?search=${exactQ(titles[9])}`,
+                    type: 'Remote/Flex Work', location: 'Global', description: `Discover hand-screened remote, part-time, freelance, and flexible ${titles[9]} jobs.`
                 },
                 {
-                    id: 'p11', title: `${d} Jobs on Upwork`, company: 'Upwork',
-                    url: `https://www.upwork.com/nx/jobs/search/?q=${exactQ}`,
-                    type: 'Freelance', location: 'Global', description: `Explore freelance ${d} projects and short-term contracts.`
+                    id: 'p11', title: `${titles[10]} Jobs on Upwork`, company: 'Upwork',
+                    url: `https://www.upwork.com/nx/jobs/search/?q=${exactQ(titles[10])}`,
+                    type: 'Freelance', location: 'Global', description: `Explore freelance ${titles[10]} projects and short-term contracts.`
                 },
                 {
-                    id: 'p12', title: `${d} Jobs on Remote.co`, company: 'Remote.co',
-                    url: `https://remote.co/remote-jobs/search/?search_keywords=${exactQ}`,
-                    type: 'Remote Work', location: 'Global', description: `Curated remote ${d} jobs from companies that embrace distributed work.`
+                    id: 'p12', title: `${titles[11]} Jobs on Remote.co`, company: 'Remote.co',
+                    url: `https://remote.co/remote-jobs/search/?search_keywords=${exactQ(titles[11])}`,
+                    type: 'Remote Work', location: 'Global', description: `Curated remote ${titles[11]} jobs from companies that embrace distributed work.`
                 }
             ];
 

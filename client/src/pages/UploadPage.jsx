@@ -41,12 +41,24 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0, duration: 1 }}
-          className="relative z-10 w-16 h-16 bg-[#0f172a] rounded-2xl border border-[#3b82f6]/30 shadow-[0_20px_40px_rgba(0,0,0,1)] flex items-center justify-center mb-8"
+          className="relative z-10 w-16 h-16 bg-[#0f172a] rounded-2xl border border-[#3b82f6]/30 shadow-[0_20px_40px_rgba(0,0,0,1)] flex items-center justify-center mb-8 overflow-hidden"
         >
-           <div className="flex gap-2">
-             <div className="w-1.5 h-2 bg-[#93c5fd] rounded-full shadow-[0_0_12px_#93c5fd] animate-pulse"></div>
-             <div className="w-1.5 h-2 bg-[#93c5fd] rounded-full shadow-[0_0_12px_#93c5fd] animate-pulse"></div>
-           </div>
+           <motion.div 
+             animate={{ x: [-6, 6, -6, 0] }}
+             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+             className="flex gap-3"
+           >
+             <motion.div 
+               animate={{ scaleY: [1, 0.1, 1, 1, 1, 0.1, 1] }}
+               transition={{ duration: 5, repeat: Infinity, times: [0, 0.05, 0.1, 0.5, 0.9, 0.95, 1] }}
+               className="w-2 h-4 bg-[#93c5fd] rounded-full shadow-[0_0_15px_#93c5fd]"
+             />
+             <motion.div 
+               animate={{ scaleY: [1, 0.1, 1, 1, 1, 0.1, 1] }}
+               transition={{ duration: 5, repeat: Infinity, times: [0, 0.05, 0.1, 0.5, 0.9, 0.95, 1] }}
+               className="w-2 h-4 bg-[#93c5fd] rounded-full shadow-[0_0_15px_#93c5fd]"
+             />
+           </motion.div>
         </motion.div>
 
         {/* Main Headline */}
@@ -167,7 +179,7 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                className="absolute top-1/2 -left-16 md:-left-32 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#10b981]/40 rounded-lg shadow-xl z-30"
              >
-               <span className="text-[#34d399] text-xs font-bold font-mono">AWS Certified</span>
+               <span className="text-[#34d399] text-xs font-bold font-mono">Strong Communication</span>
              </motion.div>
              
              <motion.div 
@@ -183,7 +195,15 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
                transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
                className="absolute bottom-1/3 -right-16 md:-right-32 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#f59e0b]/40 rounded-lg shadow-xl z-30"
              >
-               <span className="text-[#fbbf24] text-xs font-bold font-mono">+ Action Verb</span>
+               <span className="text-[#fbbf24] text-xs font-bold font-mono">+ Team Leadership</span>
+             </motion.div>
+
+             <motion.div 
+               animate={{ y: [15, -15, 15], opacity: [0.5, 1, 0.5] }}
+               transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+               className="absolute bottom-[10%] left-1/4 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#0ea5e9]/40 rounded-lg shadow-xl z-30"
+             >
+               <span className="text-[#38bdf8] text-xs font-bold font-mono">Agile Methodology</span>
              </motion.div>
 
              {/* Background Target Rings */}
@@ -212,12 +232,12 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
           className="grid grid-cols-1 md:grid-cols-3 gap-1 p-1 bg-[#0f172a]/80 border border-[#3b82f6]/20 rounded-[2rem] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.3)]"
         >
           {[
-            { label: "Resumes Scanned", value: "10,000+" },
+            { label: "Multidomain Purpose", value: "10,000+" },
             { label: "Parsing Accuracy", value: "95%" },
             { label: "Roadmap Generation", value: "24/7" }
           ].map((stat, i) => (
             <div key={i} className="flex flex-col items-center justify-center py-8 px-4 bg-[#020617] rounded-[1.8rem] border border-[#3b82f6]/10 shadow-inner">
-              <span className="text-[10px] uppercase font-bold text-blue-300/50 tracking-widest mb-2">{stat.label}</span>
+              <span className="text-[10px] uppercase font-bold text-white tracking-widest mb-2">{stat.label}</span>
               <span className="text-4xl font-black text-white tracking-tighter">{stat.value}</span>
             </div>
           ))}

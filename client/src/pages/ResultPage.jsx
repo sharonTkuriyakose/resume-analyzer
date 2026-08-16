@@ -13,6 +13,46 @@ const ResultPage = ({ data }) => {
   const [activeCard, setActiveCard] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
 
+  const cleanJobTitle = (title) => {
+    if (!title) return "";
+    return title.replace(/\s*jobs?\s*on\s*.*$/i, '').trim();
+  };
+
+  const getJobSearchUrl = (job) => {
+    const cleanTitle = cleanJobTitle(job.title);
+    const query = encodeURIComponent(`${cleanTitle} ${job.location || ''}`.trim());
+    const fullQuery = encodeURIComponent(`${cleanTitle} ${job.company || ''} ${job.location || ''}`.trim());
+    
+    if (!job.url) return `https://www.linkedin.com/jobs/search/?keywords=${fullQuery}`;
+
+    const urlLower = job.url.toLowerCase();
+    const titleLower = job.title ? job.title.toLowerCase() : '';
+    
+    if (urlLower.includes('linkedin') || titleLower.includes('linkedin')) {
+      return `https://www.linkedin.com/jobs/search/?keywords=${fullQuery}`;
+    } else if (urlLower.includes('indeed') || titleLower.includes('indeed')) {
+      return `https://www.indeed.com/jobs?q=${fullQuery}`;
+    } else if (urlLower.includes('glassdoor') || titleLower.includes('glassdoor')) {
+      return `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${fullQuery}`;
+    } else if (urlLower.includes('naukri') || titleLower.includes('naukri')) {
+      return `https://www.naukri.com/${cleanTitle.replace(/[^a-zA-Z0-9]/g, '-')}-jobs`;
+    } else if (urlLower.includes('wellfound') || urlLower.includes('angel.co') || titleLower.includes('wellfound')) {
+      return `https://wellfound.com/jobs?search=${query}`;
+    } else if (urlLower.includes('dice') || titleLower.includes('dice')) {
+      return `https://www.dice.com/jobs?q=${encodeURIComponent(cleanTitle)}`;
+    } else if (urlLower.includes('simplyhired') || titleLower.includes('simplyhired')) {
+      return `https://www.simplyhired.com/search?q=${encodeURIComponent(cleanTitle)}`;
+    } else if (urlLower.includes('weworkremotely') || titleLower.includes('weworkremotely')) {
+      return `https://weworkremotely.com/remote-jobs/search?term=${encodeURIComponent(cleanTitle)}`;
+    } else if (urlLower.includes('flexjobs') || titleLower.includes('flexjobs')) {
+      return `https://www.flexjobs.com/search?search=${encodeURIComponent(cleanTitle)}`;
+    } else if (urlLower.includes('upwork') || titleLower.includes('upwork')) {
+      return `https://www.upwork.com/nx/search/jobs/?q=${encodeURIComponent(cleanTitle)}`;
+    }
+    
+    return `https://www.google.com/search?q=${fullQuery}+jobs&ibp=htl;jobs`;
+  };
+
   const handleExport = () => {
     window.print();
   };
@@ -480,9 +520,9 @@ const ResultPage = ({ data }) => {
                           </h3>
                           <div className="space-y-4">
                             {data.liveJobs && data.liveJobs.length > 0 ? data.liveJobs.map((job, i) => (
-                              <a key={i} href={job.url} target="_blank" rel="noreferrer" className="block bg-[#020617]/40 border border-[#3b82f6]/20 hover:border-[#3b82f6]/50 rounded-xl p-5 transition-all group">
+                              <a key={i} href={getJobSearchUrl(job)} target="_blank" rel="noreferrer" className="block bg-[#020617]/40 border border-[#3b82f6]/20 hover:border-[#3b82f6]/50 rounded-xl p-5 transition-all group">
                                 <div className="flex justify-between items-start mb-2">
-                                  <h4 className="text-sm font-bold text-white group-hover:text-[#60a5fa] transition-colors">{job.title}</h4>
+                                  <h4 className="text-sm font-bold text-white group-hover:text-[#60a5fa] transition-colors">{cleanJobTitle(job.title)}</h4>
                                   <ArrowUpRight className="w-4 h-4 text-blue-100/50 group-hover:text-[#60a5fa] transition-colors" />
                                 </div>
                                 <div className="text-xs text-blue-100/60 font-medium mb-3">{job.company} • {job.location}</div>
