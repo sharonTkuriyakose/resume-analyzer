@@ -129,8 +129,8 @@ const ResultPage = ({ data }) => {
   return (
     <div className="min-h-screen print:min-h-0 w-full bg-[#020617] print:bg-white text-slate-200 print:text-black font-sans p-4 md:p-8 lg:p-12 print:p-0 selection:bg-[#3b82f6]/30 relative overflow-x-hidden print:overflow-visible">
       {/* Background Ambient Glows */}
-      <div className="fixed top-[-20%] left-[-10%] w-[800px] h-[800px] bg-[#3b82f6]/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0 print:hidden"></div>
-      <div className="fixed bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-[#3b82f6]/5 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0 print:hidden"></div>
+      <div className="fixed top-[-20%] left-[-10%] w-[150%] md:w-[800px] h-[150%] md:h-[800px] bg-[#3b82f6]/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0 print:hidden"></div>
+      <div className="fixed bottom-[-20%] right-[-10%] w-[150%] md:w-[600px] h-[150%] md:h-[600px] bg-[#3b82f6]/5 blur-[150px] rounded-full pointer-events-none mix-blend-screen z-0 print:hidden"></div>
 
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {

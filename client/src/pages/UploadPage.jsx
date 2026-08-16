@@ -10,7 +10,7 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
     <div className="w-full min-h-screen bg-[#020617] text-white font-sans selection:bg-[#3b82f6]/30 overflow-x-hidden relative">
       
       {/* Deep Ambient Background Glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#3b82f6]/10 blur-[150px] rounded-full pointer-events-none z-0"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200%] md:w-[800px] h-[600px] bg-[#3b82f6]/10 blur-[150px] rounded-full pointer-events-none z-0"></div>
 
       {/* ========================================================
           HERO SECTION (Light Blue Spotlight Theme)
@@ -25,10 +25,10 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
           className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[600px] pointer-events-none z-0 flex flex-col items-center"
         >
           {/* Top bright bar */}
-          <div className="w-[300px] md:w-[400px] h-[4px] bg-[#60a5fa] rounded-full shadow-[0_0_30px_rgba(96,165,250,1)]"></div>
+          <div className="w-full max-w-[300px] md:max-w-[400px] h-[4px] bg-[#60a5fa] rounded-full shadow-[0_0_30px_rgba(96,165,250,1)]"></div>
           {/* Light cone */}
           <div 
-            className="w-[800px] md:w-[1200px] h-[600px] opacity-50 blur-[50px] mix-blend-screen" 
+            className="w-[200%] md:w-[1200px] h-[600px] opacity-50 blur-[50px] mix-blend-screen" 
             style={{ 
               background: 'linear-gradient(to bottom, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0) 100%)',
               clipPath: 'polygon(35% 0%, 65% 0%, 100% 100%, 0% 100%)' 
@@ -161,7 +161,7 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
              <motion.div 
                animate={{ y: [0, -15, 0], opacity: [0.5, 1, 0.5] }}
                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-               className="absolute top-1/4 -right-12 md:-right-24 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#3b82f6]/40 rounded-lg shadow-xl z-30"
+               className="hidden md:flex absolute top-1/4 -right-24 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#3b82f6]/40 rounded-lg shadow-xl z-30"
              >
                <span className="text-[#60a5fa] text-xs font-bold font-mono">React.js detected</span>
              </motion.div>
@@ -169,7 +169,7 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
              <motion.div 
                animate={{ y: [0, 15, 0], opacity: [0.5, 1, 0.5] }}
                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-               className="absolute bottom-1/4 -left-12 md:-left-28 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#ef4444]/40 rounded-lg shadow-xl z-30"
+               className="hidden md:flex absolute bottom-1/4 -left-28 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#ef4444]/40 rounded-lg shadow-xl z-30"
              >
                <span className="text-[#f87171] text-xs font-bold font-mono">Gap: Python</span>
              </motion.div>
@@ -177,7 +177,7 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
              <motion.div 
                animate={{ y: [-10, 10, -10], opacity: [0.5, 1, 0.5] }}
                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-               className="absolute top-1/2 -left-16 md:-left-32 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#10b981]/40 rounded-lg shadow-xl z-30"
+               className="hidden md:flex absolute top-1/2 -left-32 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#10b981]/40 rounded-lg shadow-xl z-30"
              >
                <span className="text-[#34d399] text-xs font-bold font-mono">Strong Communication</span>
              </motion.div>
@@ -185,7 +185,7 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
              <motion.div 
                animate={{ y: [10, -10, 10], opacity: [0.5, 1, 0.5] }}
                transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-               className="absolute top-[15%] -left-4 md:-left-12 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#a855f7]/40 rounded-lg shadow-xl z-30 -translate-y-8"
+               className="hidden md:flex absolute top-[15%] -left-12 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#a855f7]/40 rounded-lg shadow-xl z-30 -translate-y-8"
              >
                <span className="text-[#c084fc] text-xs font-bold font-mono">ATS Score: 85</span>
              </motion.div>
@@ -193,7 +193,7 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
              <motion.div 
                animate={{ y: [-15, 0, -15], opacity: [0.5, 1, 0.5] }}
                transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-               className="absolute bottom-1/3 -right-16 md:-right-32 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#f59e0b]/40 rounded-lg shadow-xl z-30"
+               className="hidden md:flex absolute bottom-1/3 -right-32 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#f59e0b]/40 rounded-lg shadow-xl z-30"
              >
                <span className="text-[#fbbf24] text-xs font-bold font-mono">+ Team Leadership</span>
              </motion.div>
@@ -201,7 +201,7 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
              <motion.div 
                animate={{ y: [15, -15, 15], opacity: [0.5, 1, 0.5] }}
                transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
-               className="absolute bottom-[10%] left-1/4 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#0ea5e9]/40 rounded-lg shadow-xl z-30"
+               className="hidden md:flex absolute bottom-[10%] left-1/4 px-4 py-2 bg-[#020617]/80 backdrop-blur-md border border-[#0ea5e9]/40 rounded-lg shadow-xl z-30"
              >
                <span className="text-[#38bdf8] text-xs font-bold font-mono">Agile Methodology</span>
              </motion.div>
@@ -210,9 +210,9 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
              <motion.div 
                animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.5, 0.2] }}
                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] border border-[#3b82f6]/30 rounded-full z-10 flex items-center justify-center pointer-events-none"
+               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] md:w-[300px] md:h-[300px] border border-[#3b82f6]/30 rounded-full z-10 flex items-center justify-center pointer-events-none"
              >
-                <div className="w-[400px] h-[400px] border border-[#3b82f6]/10 rounded-full"></div>
+                <div className="w-[300px] h-[300px] md:w-[400px] md:h-[400px] border border-[#3b82f6]/10 rounded-full"></div>
              </motion.div>
 
           </div>
