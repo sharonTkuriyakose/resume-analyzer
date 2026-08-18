@@ -292,17 +292,21 @@ const ResultPage = ({ data }) => {
 
               <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                 {[
-                  { label: "Skills (S)", weight: "30%", val: data.scoringComponents?.skills || 0 },
-                  { label: "Projects (P)", weight: "25%", val: data.scoringComponents?.projects || 0 },
-                  { label: "Experience (E)", weight: "20%", val: data.scoringComponents?.experience || 0 },
-                  { label: "Certifications (C)", weight: "15%", val: data.scoringComponents?.certifications || 0 },
-                  { label: "ATS Formatting (A)", weight: "10%", val: data.scoringComponents?.atsFormatting || 0 }
+                  { label: "Skills (S)", weight: "30%", weightVal: 0.30, val: data.scoringComponents?.skills || 0 },
+                  { label: "Projects (P)", weight: "25%", weightVal: 0.25, val: data.scoringComponents?.projects || 0 },
+                  { label: "Experience (E)", weight: "20%", weightVal: 0.20, val: data.scoringComponents?.experience || 0 },
+                  { label: "Certifications (C)", weight: "15%", weightVal: 0.15, val: data.scoringComponents?.certifications || 0 },
+                  { label: "ATS Formatting (A)", weight: "10%", weightVal: 0.10, val: data.scoringComponents?.atsFormatting || 0 }
                 ].map((comp, idx) => (
                   <div key={idx} className="bg-[#020617]/40 border border-[#3b82f6]/20 rounded-xl p-4 flex flex-col items-center justify-center text-center relative group hover:border-[#3b82f6]/50 transition-colors">
                     <span className="text-[10px] font-bold text-blue-200/50 uppercase tracking-widest mb-1">{comp.label}</span>
                     <div className="text-2xl font-black text-white my-2">{comp.val}<span className="text-sm text-[#60a5fa]">%</span></div>
-                    <span className="text-[9px] font-black text-[#60a5fa] bg-[#3b82f6]/10 px-2 py-1 rounded-full uppercase tracking-wider">Weight: {comp.weight}</span>
+                    <span className="text-[9px] font-black text-[#60a5fa] bg-[#3b82f6]/10 px-2 py-1 rounded-full uppercase tracking-wider mb-2">Weight: {comp.weight}</span>
                     
+                    <div className="text-[10px] font-black text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded uppercase tracking-widest shadow-[0_0_10px_rgba(52,211,153,0.2)]">
+                       Contrib: +{(comp.val * comp.weightVal).toFixed(1)}%
+                    </div>
+
                     {/* Progress Bar inside the card */}
                     <div className="w-full h-1 bg-white/5 rounded-full mt-4 overflow-hidden">
                       <motion.div 

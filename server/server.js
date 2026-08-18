@@ -180,12 +180,13 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
                 },
                 {
                     role: "user",
-                    content: `Analyze this document. If it is NOT a professional resume or CV, set 'isValidResume' to false. Also calculate the authenticity score: ${resumeText.substring(0, 15000)}`
+                    content: `Analyze this document. If it is NOT a professional resume or CV, set 'isValidResume' to false. Also calculate the authenticity score: ${resumeText.substring(0, 12000)}`
                 }
             ],
-            model: "llama-3.3-70b-versatile",
+            model: "openai/gpt-oss-120b",
             response_format: { type: "json_object" },
             temperature: 0.0,
+            max_tokens: 3500,
             seed: 12345
         });
 
@@ -202,6 +203,28 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
             console.log("🚫 Authentication Failed: Invalid Document Type.");
             return res.status(422).json({
                 message: "INVALID DOCUMENT DETECTED. The system only accepts professional Resumes or CVs."
+            });
+        }
+
+        // FALLBACK: Ensure critical arrays exist even if AI truncated response
+        if (!analysis.phasedCurriculum) {
+            analysis.phasedCurriculum = [
+                { id: 1, title: "Core Foundations", primaryGoal: "Establish missing fundamental concepts.", points: ["Review core principles"] },
+                { id: 2, title: "Advanced Implementations", primaryGoal: "Apply skills to complex problems.", points: ["Build standard implementations"] },
+                { id: 3, title: "Industry Readiness", primaryGoal: "Prepare for production environments.", points: ["Learn best practices"] }
+            ];
+        }
+        
+        // Ensure Project Lab exists
+        const hasProjectStage = analysis.phasedCurriculum.some(step => step.id === 4 || step.isProject);
+        if (!hasProjectStage) {
+            analysis.phasedCurriculum.push({
+                id: 4,
+                title: "STRATEGIC PROJECT LAB",
+                isProject: true,
+                projectList: analysis.projectList || [
+                    { name: "Portfolio Accelerator", desc: "A complete end-to-end project to cover your skill gaps.", points: ["Setup environment", "Implement core features"] }
+                ]
             });
         }
 

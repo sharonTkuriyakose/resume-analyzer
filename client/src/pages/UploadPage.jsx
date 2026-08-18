@@ -1,9 +1,30 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import ResumeUpload from '../components/ResumeUpload';
-import { motion } from 'framer-motion';
+import { motion, useInView, animate } from 'framer-motion';
 import { 
   Search, ShieldCheck, Zap, Activity, BrainCircuit, LineChart, FileText, Cpu, LayoutDashboard
 } from 'lucide-react';
+
+const AnimatedCounter = ({ from = 0, to, suffix = "", duration = 2.5 }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [count, setCount] = useState(from);
+
+  useEffect(() => {
+    if (isInView) {
+      const controls = animate(from, to, {
+        duration: duration,
+        ease: "easeOut",
+        onUpdate(value) {
+          setCount(Math.round(value));
+        }
+      });
+      return () => controls.stop();
+    }
+  }, [isInView, from, to, duration]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
+};
 
 const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
   return (
@@ -232,13 +253,15 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
           className="grid grid-cols-1 md:grid-cols-3 gap-1 p-1 bg-[#0f172a]/80 border border-[#3b82f6]/20 rounded-[2rem] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.3)]"
         >
           {[
-            { label: "Multidomain Purpose", value: "10,000+" },
-            { label: "Parsing Accuracy", value: "95%" },
-            { label: "Roadmap Generation", value: "24/7" }
+            { label: "Supported Domains", to: 50, suffix: "+" },
+            { label: "Parsing Accuracy", to: 95, suffix: "%" },
+            { label: "Roadmap Generation", to: 24, suffix: "/7" }
           ].map((stat, i) => (
             <div key={i} className="flex flex-col items-center justify-center py-8 px-4 bg-[#020617] rounded-[1.8rem] border border-[#3b82f6]/10 shadow-inner">
               <span className="text-[10px] uppercase font-bold text-white tracking-widest mb-2">{stat.label}</span>
-              <span className="text-4xl font-black text-white tracking-tighter">{stat.value}</span>
+              <span className="text-4xl font-black text-white tracking-tighter">
+                <AnimatedCounter to={stat.to} suffix={stat.suffix} />
+              </span>
             </div>
           ))}
         </motion.div>
