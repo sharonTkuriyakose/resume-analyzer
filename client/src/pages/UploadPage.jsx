@@ -83,22 +83,12 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
           Instantly analyze your resume, identify critical skill gaps, and generate a personalized roadmap to land your dream job with AI precision.
         </motion.p>
 
-        {/* Upload Action Area */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 2.5, duration: 0.8 }}
-          className="relative z-20 w-full max-w-2xl px-4"
-        >
-          <ResumeUpload onResult={onAnalysisComplete} apiUrl={apiUrl} />
-        </motion.div>
-
         {/* Animated Resume Scanner Mockup */}
         <motion.div
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 3.0, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative z-10 w-full max-w-3xl mt-24 px-4 flex justify-center mb-24"
+          transition={{ delay: 2.5, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10 w-full max-w-3xl mt-12 px-4 flex justify-center mb-12"
         >
           <div className="relative w-full aspect-[4/3] max-w-[600px] flex items-center justify-center">
              
@@ -216,6 +206,16 @@ const UploadPage = ({ onAnalysisComplete, apiUrl }) => {
              </motion.div>
 
           </div>
+        </motion.div>
+
+        {/* Upload Action Area */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 3.0, duration: 0.8 }}
+          className="relative z-20 w-full max-w-2xl px-4"
+        >
+          <ResumeUpload onResult={onAnalysisComplete} apiUrl={apiUrl} />
         </motion.div>
 
       </section>
