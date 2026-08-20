@@ -46,35 +46,33 @@ function App() {
         </div>
 
         {/* Center links */}
-        <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-base font-medium text-slate-300">
-          {(!analysisData ? [
-            { name: "Home", href: "#" },
-            { name: "Features", href: "#features" },
-            { name: "How it Works", href: "#how-it-works" }
-          ] : [
-            { name: "Performance", href: "#performance" },
-            { name: "Architecture", href: "#architecture" },
-            { name: "Scope", href: "#scope" }
-          ]).map((item, idx) => (
-            <motion.a 
-              key={idx} 
-              href={item.href}
-              onClick={(e) => {
-                if (!analysisData && item.href.startsWith('#')) {
-                  const el = document.querySelector(item.href);
-                  if (el) {
-                    e.preventDefault();
-                    el.scrollIntoView({ behavior: 'smooth' });
+        {!analysisData && (
+          <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-base font-medium text-slate-300">
+            {[
+              { name: "Home", href: "#" },
+              { name: "Features", href: "#features" },
+              { name: "How it Works", href: "#how-it-works" }
+            ].map((item, idx) => (
+              <motion.a 
+                key={idx} 
+                href={item.href}
+                onClick={(e) => {
+                  if (item.href.startsWith('#')) {
+                    const el = document.querySelector(item.href);
+                    if (el) {
+                      e.preventDefault();
+                      el.scrollIntoView({ behavior: 'smooth' });
+                    }
                   }
-                }
-              }}
-              whileHover={{ color: '#ffffff' }}
-              className="hover:text-white transition-colors relative"
-            >
-              <span>{item.name}</span>
-            </motion.a>
-          ))}
-        </div>
+                }}
+                whileHover={{ color: '#ffffff' }}
+                className="hover:text-white transition-colors relative"
+              >
+                <span>{item.name}</span>
+              </motion.a>
+            ))}
+          </div>
+        )}
 
         <div className="flex items-center gap-3">
           {!analysisData ? (
