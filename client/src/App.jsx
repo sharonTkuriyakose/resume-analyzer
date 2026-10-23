@@ -27,6 +27,10 @@ function App() {
     setAnalysisData(null);
   };
 
+  if (analysisData) {
+    return <ResultPage data={analysisData} onReset={handleReset} apiUrl={API_URL} />;
+  }
+
   return (
     <div className="min-h-screen print:min-h-0 flex flex-col bg-[#020617] print:bg-white text-slate-200 print:text-black print:block selection:bg-white/30 overflow-x-hidden relative font-sans">
       
@@ -46,60 +50,43 @@ function App() {
         </div>
 
         {/* Center links */}
-        {!analysisData && (
-          <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-base font-medium text-slate-300">
-            {[
-              { name: "Home", href: "#" },
-              { name: "Features", href: "#features" },
-              { name: "How it Works", href: "#how-it-works" }
-            ].map((item, idx) => (
-              <motion.a 
-                key={idx} 
-                href={item.href}
-                onClick={(e) => {
-                  if (item.href.startsWith('#')) {
-                    const el = document.querySelector(item.href);
-                    if (el) {
-                      e.preventDefault();
-                      el.scrollIntoView({ behavior: 'smooth' });
-                    }
+        <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-base font-medium text-slate-300">
+          {[
+            { name: "Home", href: "#" },
+            { name: "Features", href: "#features" },
+            { name: "How it Works", href: "#how-it-works" }
+          ].map((item, idx) => (
+            <motion.a 
+              key={idx} 
+              href={item.href}
+              onClick={(e) => {
+                if (item.href.startsWith('#')) {
+                  const el = document.querySelector(item.href);
+                  if (el) {
+                    e.preventDefault();
+                    el.scrollIntoView({ behavior: 'smooth' });
                   }
-                }}
-                whileHover={{ color: '#ffffff' }}
-                className="hover:text-white transition-colors relative"
-              >
-                <span>{item.name}</span>
-              </motion.a>
-            ))}
-          </div>
-        )}
+                }
+              }}
+              whileHover={{ color: '#ffffff' }}
+              className="hover:text-white transition-colors relative"
+            >
+              <span>{item.name}</span>
+            </motion.a>
+          ))}
+        </div>
 
         <div className="flex items-center gap-3">
-          {!analysisData ? (
-            <button className="px-6 py-2.5 bg-white text-black hover:bg-slate-200 rounded-full text-sm font-bold transition-colors hidden sm:block">
-              Get Started
-            </button>
-          ) : (
-            <button 
-              onClick={handleReset}
-              className="flex items-center gap-2 text-[10px] md:text-xs font-black uppercase tracking-widest text-white bg-[#3b82f6] hover:bg-[#2563eb] px-4 py-2 md:py-2.5 rounded-full transition-all shadow-[0_0_15px_rgba(59,130,246,0.4)]"
-            >
-              <RotateCcw className="w-3 h-3 md:w-4 md:h-4" />
-              <span className="hidden sm:inline">Start New Analysis</span>
-              <span className="sm:hidden">Reset</span>
-            </button>
-          )}
+          <button className="px-6 py-2.5 bg-white text-black hover:bg-slate-200 rounded-full text-sm font-bold transition-colors hidden sm:block">
+            Get Started
+          </button>
         </div>
       </motion.nav>
 
       {/* 2. MAIN APPLICATION STAGE */}
       <main className="flex-grow flex flex-col print:block relative w-full pt-[80px] md:pt-[100px] print:pt-0">
         <div className="w-full">
-          {!analysisData ? (
-            <UploadPage onAnalysisComplete={handleAnalysisComplete} apiUrl={API_URL} />
-          ) : (
-            <ResultPage data={analysisData} apiUrl={API_URL} />
-          )}
+          <UploadPage onAnalysisComplete={handleAnalysisComplete} apiUrl={API_URL} />
         </div>
       </main>
 

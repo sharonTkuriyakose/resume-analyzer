@@ -275,7 +275,7 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
 
         if (genAI) {
             console.log("🤖 Authenticating Document with Google Gemini...");
-            const modelsToTry = ["gemini-flash-latest", "gemini-3.8-flash"];
+            const modelsToTry = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
             let lastGeminiError = null;
 
             for (const modelName of modelsToTry) {
