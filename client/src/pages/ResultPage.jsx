@@ -161,7 +161,7 @@ const renderPortalLogo = (portal, sizeClass = "w-4 h-4") => {
   }
 };
 
-// Real Official Tech Stack & Competency Brand SVGs (Zero generic AI placeholders)
+// Real Official Tech Stack & Competency Brand SVGs (Comprehensive Enterprise Suite)
 const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
   const t = (techName || "").toLowerCase();
 
@@ -177,7 +177,20 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 2. Node / Node.js
+  // 2. React Native
+  if (t.includes("react native")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="React Native">
+        <rect width="24" height="24" rx="4" fill="#20232A" />
+        <circle cx="12" cy="12" r="2" fill="#61DAFB" />
+        <ellipse cx="12" cy="12" rx="8" ry="3" stroke="#61DAFB" strokeWidth="1" fill="none" />
+        <ellipse cx="12" cy="12" rx="8" ry="3" stroke="#61DAFB" strokeWidth="1" fill="none" transform="rotate(60 12 12)" />
+        <ellipse cx="12" cy="12" rx="8" ry="3" stroke="#61DAFB" strokeWidth="1" fill="none" transform="rotate(120 12 12)" />
+      </svg>
+    );
+  }
+
+  // 3. Node / Node.js
   if (t.includes("node")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Node.js">
@@ -188,7 +201,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 3. Express / Express.js
+  // 4. Express / Express.js
   if (t.includes("express")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Express">
@@ -198,7 +211,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 4. MongoDB
+  // 5. MongoDB
   if (t.includes("mongo")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="MongoDB">
@@ -209,7 +222,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 5. TypeScript
+  // 6. TypeScript
   if (t.includes("typescript") || t === "ts") {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="TypeScript">
@@ -219,7 +232,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 6. JavaScript / MERN
+  // 7. JavaScript / MERN
   if (t.includes("javascript") || t === "js" || t.includes("mern")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="JavaScript">
@@ -229,7 +242,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 7. Python
+  // 8. Python
   if (t.includes("python")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Python">
@@ -241,7 +254,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 8. Java
+  // 9. Java
   if (t.includes("java") && !t.includes("javascript")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Java">
@@ -251,7 +264,205 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 9. Docker / Containerization
+  // 10. C++
+  if (t.includes("c++") || t.includes("cpp")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="C++">
+        <rect width="24" height="24" rx="4" fill="#00599C" />
+        <text x="12" y="15.5" fill="white" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">C++</text>
+      </svg>
+    );
+  }
+
+  // 11. C# / .NET
+  if (t.includes("c#") || t.includes("csharp") || t.includes(".net")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="C#">
+        <rect width="24" height="24" rx="4" fill="#239120" />
+        <text x="12" y="15.5" fill="white" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">C#</text>
+      </svg>
+    );
+  }
+
+  // 12. Go / Golang
+  if (t.includes("golang") || t === "go" || t.includes("go ")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Go">
+        <rect width="24" height="24" rx="4" fill="#00ADD8" />
+        <text x="12" y="15.5" fill="white" fontSize="8.5" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">GO</text>
+      </svg>
+    );
+  }
+
+  // 13. Rust
+  if (t.includes("rust")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Rust">
+        <rect width="24" height="24" rx="4" fill="#CE412B" />
+        <circle cx="12" cy="12" r="5" stroke="white" strokeWidth="2" fill="none" />
+        <text x="12" y="14.5" fill="white" fontSize="6.5" fontWeight="bold" textAnchor="middle">R</text>
+      </svg>
+    );
+  }
+
+  // 14. PHP / Laravel
+  if (t.includes("php") || t.includes("laravel")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="PHP">
+        <rect width="24" height="24" rx="4" fill="#777BB4" />
+        <text x="12" y="15" fill="white" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">php</text>
+      </svg>
+    );
+  }
+
+  // 15. Ruby / Rails
+  if (t.includes("ruby") || t.includes("rails")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Ruby">
+        <rect width="24" height="24" rx="4" fill="#CC342D" />
+        <polygon points="12,4 20,8 18,18 12,20 6,18 4,8" fill="white" />
+      </svg>
+    );
+  }
+
+  // 16. Spring / Spring Boot
+  if (t.includes("spring")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Spring">
+        <circle cx="12" cy="12" r="11" fill="#6DB33F" />
+        <path d="M12 5c-3.9 0-7 3.1-7 7 0 2.8 1.6 5.2 4 6.3V16c-1.2-.8-2-2.3-2-4 0-2.8 2.2-5 5-5s5 2.2 5 5c0 1.7-.8 3.2-2 4v2.3c2.4-1.1 4-3.5 4-6.3 0-3.9-3.1-7-7-7z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 17. Django / Flask / FastAPI
+  if (t.includes("django") || t.includes("flask") || t.includes("fastapi")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Backend Framework">
+        <rect width="24" height="24" rx="4" fill="#092E20" />
+        <text x="12" y="15" fill="#44B78B" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">API</text>
+      </svg>
+    );
+  }
+
+  // 18. Vue.js / Nuxt
+  if (t.includes("vue") || t.includes("nuxt")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Vue.js">
+        <polygon points="12,20 2,4 6.5,4 12,13 17.5,4 22,4" fill="#41B883" />
+        <polygon points="12,13 7.5,4 10.5,4 12,7 13.5,4 16.5,4" fill="#35495E" />
+      </svg>
+    );
+  }
+
+  // 19. Angular
+  if (t.includes("angular")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Angular">
+        <polygon points="12,2 21,5.5 19.5,17 12,22 4.5,17 3,5.5" fill="#DD0031" />
+        <polygon points="12,4 18.5,16 16,16 14.5,12.5 9.5,12.5 8,16 5.5,16" fill="white" />
+        <polygon points="12,7 10.5,10.5 13.5,10.5" fill="#DD0031" />
+      </svg>
+    );
+  }
+
+  // 20. Svelte
+  if (t.includes("svelte")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Svelte">
+        <rect width="24" height="24" rx="4" fill="#FF3E00" />
+        <path d="M16 6a3 3 0 0 0-3-1c-1.5 0-2.5 1-2.5 2 0 2.5 5 2.5 5 5 0 2-2 3.5-4.5 3.5-2 0-3-1-3.5-2l1.8-1.2c.3.7 1 1.2 1.7 1.2 1 0 1.8-.6 1.8-1.5 0-2.3-5-2.3-5-4.8 0-2 1.7-3.7 4.2-3.7 1.6 0 2.8.7 3.5 1.7L16 6z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 21. Next.js / SSR
+  if (t.includes("next") || t.includes("ssr")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Next.js">
+        <circle cx="12" cy="12" r="11" fill="black" stroke="#333" strokeWidth="1" />
+        <path d="M15.5 8h2v8h-2V8zm-1.8 0h-2L8 14.5V8H6v8h2l3.7-6.5V16h2V8z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 22. HTML5
+  if (t.includes("html")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="HTML5">
+        <polygon points="4,2 20,2 18.5,19 12,22 5.5,19" fill="#E34F26" />
+        <polygon points="12,4 18.2,4 17,17.5 12,19.8" fill="#EF652A" />
+        <path d="M8 8h8l-.5 4h-7l.3 3.5 3.2.9 3.2-.9.2-2h-2" stroke="white" strokeWidth="1.2" fill="none" />
+      </svg>
+    );
+  }
+
+  // 23. CSS3
+  if (t.includes("css") && !t.includes("tailwind")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="CSS3">
+        <polygon points="4,2 20,2 18.5,19 12,22 5.5,19" fill="#1572B6" />
+        <polygon points="12,4 18.2,4 17,17.5 12,19.8" fill="#33A9DC" />
+        <text x="12" y="15" fill="white" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">#3</text>
+      </svg>
+    );
+  }
+
+  // 24. Tailwind CSS
+  if (t.includes("tailwind")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Tailwind CSS">
+        <rect width="24" height="24" rx="4" fill="#0B1120" stroke="#06B6D4" strokeWidth="1" />
+        <path d="M12 5c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.9.2 1.6.9 2.3 1.6 1.1 1.2 2.5 2.6 5.5 2.6 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.9-.2-1.6-.9-2.3-1.6C16.4 6.4 15 5 12 5zm-6 7c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.9.2 1.6.9 2.3 1.6 1.1 1.2 2.5 2.6 5.5 2.6 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.9-.2-1.6-.9-2.3-1.6C10.4 13.4 9 12 6 12z" fill="#06B6D4" />
+      </svg>
+    );
+  }
+
+  // 25. Bootstrap / Sass
+  if (t.includes("bootstrap") || t.includes("sass") || t.includes("scss")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Styling">
+        <rect width="24" height="24" rx="4" fill="#7952B3" />
+        <text x="12" y="16" fill="white" fontSize="10" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">B</text>
+      </svg>
+    );
+  }
+
+  // 26. Flutter / Mobile
+  if (t.includes("flutter")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Flutter">
+        <rect width="24" height="24" rx="4" fill="#02569B" />
+        <polygon points="13,3 5,11 8,14 19,3" fill="#40C4FF" />
+        <polygon points="13,13 8,18 11,21 19,13" fill="#02569B" />
+      </svg>
+    );
+  }
+
+  // 27. Swift / iOS
+  if (t.includes("swift") || t.includes("ios")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Swift">
+        <rect width="24" height="24" rx="4" fill="#FA7343" />
+        <path d="M18 17c-3 2-8 1-10-3 2 1 4 1 6 0-3-1-5-4-5-6 1 1 2 1 3 1-3-2-4-5-2-7 1 3 4 5 7 6 0-1 0-2 .5-3 1 2 3 3 5 3-1-1-1-2-1-3 2 1 3 3 4 5-.5 2-2 5-7 7z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 28. Kotlin / Android
+  if (t.includes("kotlin") || t.includes("android")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Android/Kotlin">
+        <rect width="24" height="24" rx="4" fill="#3DDC84" />
+        <circle cx="8.5" cy="10" r="1" fill="#073042" />
+        <circle cx="15.5" cy="10" r="1" fill="#073042" />
+        <path d="M7 6l2 2m8-2l-2 2" stroke="#073042" strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M6 13h12v4a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-4z" fill="#073042" />
+      </svg>
+    );
+  }
+
+  // 29. Docker / Containerization
   if (t.includes("docker") || t.includes("container")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Docker">
@@ -265,7 +476,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 10. Kubernetes
+  // 30. Kubernetes
   if (t.includes("kubernetes") || t.includes("k8s")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Kubernetes">
@@ -276,7 +487,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 11. AWS / Cloud
+  // 31. AWS / Cloud
   if (t.includes("aws") || t.includes("cloud")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="AWS">
@@ -286,17 +497,91 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 12. Next.js / SSR
-  if (t.includes("next") || t.includes("ssr")) {
+  // 32. Google Cloud / GCP
+  if (t.includes("gcp") || t.includes("google cloud")) {
     return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Next.js">
-        <circle cx="12" cy="12" r="11" fill="black" stroke="#333" strokeWidth="1" />
-        <path d="M15.5 8h2v8h-2V8zm-1.8 0h-2L8 14.5V8H6v8h2l3.7-6.5V16h2V8z" fill="white" />
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="GCP">
+        <rect width="24" height="24" rx="4" fill="#1A73E8" />
+        <path d="M17 14.5a3.5 3.5 0 0 0-3-3.4 4.5 4.5 0 0 0-8 2.4 3.5 3.5 0 0 0 3 3.5h8z" fill="white" />
       </svg>
     );
   }
 
-  // 13. GraphQL
+  // 33. Microsoft Azure
+  if (t.includes("azure")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Azure">
+        <rect width="24" height="24" rx="4" fill="#0078D4" />
+        <polygon points="7,19 12,5 17,19 14,19 12,12 9,19" fill="white" />
+      </svg>
+    );
+  }
+
+  // 34. Terraform / Ansible
+  if (t.includes("terraform") || t.includes("ansible")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Terraform">
+        <rect width="24" height="24" rx="4" fill="#844FBA" />
+        <polygon points="6,6 11,9 11,15 6,12" fill="white" />
+        <polygon points="12,9 17,6 17,12 12,15" fill="white" fillOpacity="0.8" />
+        <polygon points="12,16 17,13 17,19 12,22" fill="white" fillOpacity="0.6" />
+      </svg>
+    );
+  }
+
+  // 35. Jenkins
+  if (t.includes("jenkins")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Jenkins">
+        <circle cx="12" cy="12" r="11" fill="#D33833" />
+        <circle cx="12" cy="9" r="3.5" fill="#F0D6B7" />
+        <path d="M7 19c1-4 4-6 5-6s4 2 5 6H7z" fill="#181717" />
+      </svg>
+    );
+  }
+
+  // 36. CI/CD / GitHub Actions / Pipelines
+  if (t.includes("ci/cd") || t.includes("pipeline") || t.includes("gitops") || t.includes("actions")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="CI/CD">
+        <circle cx="12" cy="12" r="11" fill="#2088FF" />
+        <path d="M12 6a6 6 0 0 0-4.2 10.3l1.4-1.4A4 4 0 1 1 16 12h-2l3 3.5 3-3.5h-2a6 6 0 0 0-6-6z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 37. Linux / Ubuntu
+  if (t.includes("linux") || t.includes("ubuntu") || t.includes("debian")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Linux">
+        <rect width="24" height="24" rx="4" fill="#E95420" />
+        <circle cx="12" cy="12" r="7" stroke="white" strokeWidth="2" fill="none" />
+        <circle cx="12" cy="12" r="2.5" fill="white" />
+      </svg>
+    );
+  }
+
+  // 38. Nginx / Apache
+  if (t.includes("nginx") || t.includes("apache")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Web Server">
+        <rect width="24" height="24" rx="4" fill="#009639" />
+        <text x="12" y="15.5" fill="white" fontSize="7.5" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">NGX</text>
+      </svg>
+    );
+  }
+
+  // 39. Prometheus / Grafana / Datadog
+  if (t.includes("prometheus") || t.includes("grafana") || t.includes("datadog")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Observability">
+        <rect width="24" height="24" rx="4" fill="#F46800" />
+        <path d="M6 18l3-8 4 5 5-9" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </svg>
+    );
+  }
+
+  // 40. GraphQL
   if (t.includes("graphql")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="GraphQL">
@@ -311,7 +596,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 14. Redis / Caching
+  // 41. Redis / Caching
   if (t.includes("redis") || t.includes("caching")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Redis">
@@ -321,7 +606,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 15. Postman
+  // 42. Postman
   if (t.includes("postman")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Postman">
@@ -331,8 +616,8 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 16. MySQL / Relational Database
-  if (t.includes("mysql") || (t.includes("sql") && !t.includes("postgre"))) {
+  // 43. MySQL / Relational Database
+  if (t.includes("mysql") || (t.includes("sql") && !t.includes("postgre") && !t.includes("nosql"))) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="MySQL">
         <rect width="24" height="24" rx="4" fill="#00758F" />
@@ -341,7 +626,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 17. PostgreSQL
+  // 44. PostgreSQL
   if (t.includes("postgres")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="PostgreSQL">
@@ -351,37 +636,41 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 18. Jest / Automated Testing
-  if (t.includes("jest") || t.includes("test")) {
+  // 45. Firebase / Supabase
+  if (t.includes("firebase") || t.includes("supabase")) {
     return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Testing">
-        <circle cx="12" cy="12" r="11" fill="#C21325" />
-        <path d="M8.5 15.5l7-7-1.5-1.5-5.5 5.5-2-2-1.5 1.5 3.5 3.5z" fill="#15C213" />
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="BaaS">
+        <rect width="24" height="24" rx="4" fill="#FFCA28" />
+        <polygon points="5,17 7,5 12,12 8,17" fill="#FFA000" />
+        <polygon points="12,12 14,3 19,17 12,17" fill="#F57C00" />
       </svg>
     );
   }
 
-  // 19. Tailwind CSS
-  if (t.includes("tailwind")) {
+  // 46. Snowflake / Databricks / BigQuery
+  if (t.includes("snowflake") || t.includes("databricks") || t.includes("bigquery")) {
     return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Tailwind CSS">
-        <rect width="24" height="24" rx="4" fill="#0B1120" stroke="#06B6D4" strokeWidth="1" />
-        <path d="M12 5c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.9.2 1.6.9 2.3 1.6 1.1 1.2 2.5 2.6 5.5 2.6 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.9-.2-1.6-.9-2.3-1.6C16.4 6.4 15 5 12 5zm-6 7c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.9.2 1.6.9 2.3 1.6 1.1 1.2 2.5 2.6 5.5 2.6 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.9-.2-1.6-.9-2.3-1.6C10.4 13.4 9 12 6 12z" fill="#06B6D4" />
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Data Warehouse">
+        <rect width="24" height="24" rx="4" fill="#29B5E8" />
+        <path d="M12 3v18M3 12h18M5.5 5.5l13 13M18.5 5.5l-13 13" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     );
   }
 
-  // 20. JWT / Authentication
-  if (t.includes("jwt") || t.includes("auth") || t.includes("token")) {
+  // 47. Kafka / RabbitMQ
+  if (t.includes("kafka") || t.includes("rabbitmq")) {
     return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="JWT">
-        <rect width="24" height="24" rx="4" fill="#D63AFF" />
-        <path d="M12 4.5l7 3.5v5c0 4.5-3 8-7 9.5-4-1.5-7-5-7-9.5v-5l7-3.5zm0 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 5c-1.5 0-3 .8-3 2v1h6v-1c0-1.2-1.5-2-3-2z" fill="white" />
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Message Queue">
+        <circle cx="12" cy="12" r="11" fill="#231F20" />
+        <circle cx="8" cy="8" r="2.5" fill="#FF6600" />
+        <circle cx="16" cy="16" r="2.5" fill="#FF6600" />
+        <circle cx="8" cy="16" r="2.5" fill="#FF6600" />
+        <path d="M8 8l8 8M8 16h8" stroke="#FF6600" strokeWidth="1.5" />
       </svg>
     );
   }
 
-  // 21. REST API
+  // 48. REST API
   if (t.includes("rest") || t.includes("api")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="REST API">
@@ -391,17 +680,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 22. CI/CD / GitHub Actions
-  if (t.includes("ci/cd") || t.includes("pipeline") || t.includes("gitops")) {
-    return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="CI/CD">
-        <circle cx="12" cy="12" r="11" fill="#2088FF" />
-        <path d="M12 6a6 6 0 0 0-4.2 10.3l1.4-1.4A4 4 0 1 1 16 12h-2l3 3.5 3-3.5h-2a6 6 0 0 0-6-6z" fill="white" />
-      </svg>
-    );
-  }
-
-  // 23. WebSockets / Socket.io
+  // 49. WebSockets / Socket.io
   if (t.includes("websocket") || t.includes("socket")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="WebSockets">
@@ -411,7 +690,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 24. Microservices / Distributed
+  // 50. Microservices / Distributed Architecture
   if (t.includes("microservice") || t.includes("distributed")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Microservices">
@@ -424,8 +703,28 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 25. Data Structures / Algorithms
-  if (t.includes("data structure") || t.includes("algorithm") || t.includes("dsa")) {
+  // 51. JWT / Authentication / OAuth
+  if (t.includes("jwt") || t.includes("auth") || t.includes("token") || t.includes("oauth")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="JWT">
+        <rect width="24" height="24" rx="4" fill="#D63AFF" />
+        <path d="M12 4.5l7 3.5v5c0 4.5-3 8-7 9.5-4-1.5-7-5-7-9.5v-5l7-3.5zm0 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0 5c-1.5 0-3 .8-3 2v1h6v-1c0-1.2-1.5-2-3-2z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 52. Security / Encryption / AES / Firewall
+  if (t.includes("encryption") || t.includes("aes") || t.includes("security") || t.includes("cyber")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Security">
+        <rect width="24" height="24" rx="4" fill="#D97706" />
+        <path d="M12 4L6 7v5c0 4.5 2.6 8.7 6 10 3.4-1.3 6-5.5 6-10V7l-6-3zm0 5a2 2 0 0 1 2 2c0 .7-.4 1.4-1 1.7V15h-2v-2.3c-.6-.3-1-1-1-1.7a2 2 0 0 1 2-2z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 53. Data Structures & Algorithms / LeetCode
+  if (t.includes("data structure") || t.includes("algorithm") || t.includes("dsa") || t.includes("leetcode")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Algorithms">
         <circle cx="12" cy="12" r="11" fill="#4F46E5" />
@@ -437,17 +736,316 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 26. Encryption / Security / AES
-  if (t.includes("encryption") || t.includes("aes") || t.includes("security")) {
+  // 54. Jest / Testing / Cypress / Playwright / QA
+  if (t.includes("jest") || t.includes("test") || t.includes("cypress") || t.includes("playwright") || t.includes("qa") || t.includes("qc")) {
     return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Security">
-        <rect width="24" height="24" rx="4" fill="#D97706" />
-        <path d="M12 4L6 7v5c0 4.5 2.6 8.7 6 10 3.4-1.3 6-5.5 6-10V7l-6-3zm0 5a2 2 0 0 1 2 2c0 .7-.4 1.4-1 1.7V15h-2v-2.3c-.6-.3-1-1-1-1.7a2 2 0 0 1 2-2z" fill="white" />
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Testing">
+        <circle cx="12" cy="12" r="11" fill="#C21325" />
+        <path d="M8.5 15.5l7-7-1.5-1.5-5.5 5.5-2-2-1.5 1.5 3.5 3.5z" fill="#15C213" />
       </svg>
     );
   }
 
-  // 27. MDN Web Docs / Documentation
+  // 55. PyTorch
+  if (t.includes("pytorch")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="PyTorch">
+        <rect width="24" height="24" rx="4" fill="#EE4C2C" />
+        <path d="M13.5 6a5.5 5.5 0 0 0-4.5 8.7l-1.5 1.5 1.4 1.4 1.5-1.5a5.5 5.5 0 1 0 3.1-10.1zm0 2a3.5 3.5 0 1 1-2.5 6 3.5 3.5 0 0 1 2.5-6z" fill="white" />
+        <circle cx="16" cy="7" r="1" fill="#FFD43B" />
+      </svg>
+    );
+  }
+
+  // 56. TensorFlow / Keras
+  if (t.includes("tensorflow") || t.includes("keras")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="TensorFlow">
+        <rect width="24" height="24" rx="4" fill="#FF6F00" />
+        <polygon points="12,3 19,7 19,17 12,13" fill="white" />
+        <polygon points="12,3 5,7 5,17 12,13" fill="white" fillOpacity="0.8" />
+        <polygon points="12,13 19,17 12,21 5,17" fill="white" fillOpacity="0.6" />
+      </svg>
+    );
+  }
+
+  // 57. Pandas / NumPy / Scikit-learn
+  if (t.includes("pandas") || t.includes("numpy") || t.includes("scikit") || t.includes("sklearn")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Data Science">
+        <rect width="24" height="24" rx="4" fill="#150458" />
+        <rect x="6" y="6" width="3" height="12" fill="#E70488" />
+        <rect x="11" y="10" width="3" height="8" fill="#FFD43B" />
+        <rect x="16" y="8" width="3" height="10" fill="#4B8BBE" />
+      </svg>
+    );
+  }
+
+  // 58. Apache Spark / PySpark
+  if (t.includes("spark")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Apache Spark">
+        <rect width="24" height="24" rx="4" fill="#E25A1C" />
+        <circle cx="12" cy="12" r="3" fill="white" />
+        <path d="M12 5l1.5 4 4-1.5-2.5 3.5 3.5 2.5-4 1.5 1.5 4-3.5-2.5-3.5 2.5 1.5-4-4-1.5 3.5-2.5-2.5-3.5 4 1.5z" fill="white" fillOpacity="0.8" />
+      </svg>
+    );
+  }
+
+  // 59. Tableau / Power BI
+  if (t.includes("tableau") || t.includes("power bi") || t.includes("powerbi")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Business Intelligence">
+        <rect width="24" height="24" rx="4" fill="#F2C811" />
+        <rect x="6" y="13" width="3" height="6" rx="1" fill="#000000" />
+        <rect x="11" y="9" width="3" height="10" rx="1" fill="#000000" />
+        <rect x="16" y="5" width="3" height="14" rx="1" fill="#000000" />
+      </svg>
+    );
+  }
+
+  // 60. Excel / Spreadsheets
+  if (t.includes("excel") || t.includes("spreadsheet")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Excel">
+        <rect width="24" height="24" rx="4" fill="#107C41" />
+        <text x="12" y="16" fill="white" fontSize="9" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">X</text>
+      </svg>
+    );
+  }
+
+  // 61. Google Gemini AI / Groq AI / OpenAI / LLM
+  if (t.includes("gemini") || t.includes("groq") || t.includes("openai") || t.includes("gpt") || t.includes("llm") || t.includes("rag")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Generative AI">
+        <rect width="24" height="24" rx="4" fill="#1E1B4B" stroke="#6366F1" strokeWidth="1" />
+        <path d="M12 4l2.5 5.5L20 12l-5.5 2.5L12 20l-2.5-5.5L4 12l5.5-2.5z" fill="url(#aiGrad)" />
+        <defs>
+          <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#818CF8" />
+            <stop offset="50%" stopColor="#38BDF8" />
+            <stop offset="100%" stopColor="#34D399" />
+          </linearGradient>
+        </defs>
+      </svg>
+    );
+  }
+
+  // 62. SolidWorks / CAD
+  if (t.includes("solidworks") || (t.includes("cad") && !t.includes("autocad"))) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="SolidWorks CAD">
+        <rect width="24" height="24" rx="4" fill="#DC2626" />
+        <path d="M12 4l7 4-7 4-7-4 7-4zm0 8l7-4v8l-7 4v-8zm0 8l-7-4v-8l7 4v8z" stroke="white" strokeWidth="1.2" fill="none" />
+      </svg>
+    );
+  }
+
+  // 63. Siemens NX / Teamcenter
+  if (t.includes("siemens") || t.includes("nx") || t.includes("teamcenter") || t.includes("plm")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Siemens NX">
+        <rect width="24" height="24" rx="4" fill="#00646E" />
+        <text x="12" y="15.5" fill="white" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">NX</text>
+      </svg>
+    );
+  }
+
+  // 64. AutoCAD / Inventor / CATIA / Creo
+  if (t.includes("autocad") || t.includes("inventor") || t.includes("catia") || t.includes("creo")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="AutoCAD">
+        <rect width="24" height="24" rx="4" fill="#E51937" />
+        <text x="12" y="16" fill="white" fontSize="9" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">A</text>
+      </svg>
+    );
+  }
+
+  // 65. Ansys Fluent / Mechanical / CFD
+  if (t.includes("ansys") || t.includes("fluent") || t.includes("cfd")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Ansys">
+        <rect width="24" height="24" rx="4" fill="#FFB71B" />
+        <polygon points="8,5 16,5 19,19 14,19 12,12 10,19 5,19" fill="#000000" />
+      </svg>
+    );
+  }
+
+  // 66. MATLAB / Simulink
+  if (t.includes("matlab") || t.includes("simulink")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="MATLAB">
+        <rect width="24" height="24" rx="4" fill="#0076A8" />
+        <path d="M5 16c2-4 4-8 7-4s4 6 7 2" stroke="#ED1C24" strokeWidth="2" fill="none" />
+      </svg>
+    );
+  }
+
+  // 67. GD&T (ASME Y14.5) / Tolerance Stack-up
+  if (t.includes("gd&t") || t.includes("asme") || t.includes("toleranc")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="GD&T">
+        <rect width="24" height="24" rx="4" fill="#1E293B" stroke="#F59E0B" strokeWidth="1" />
+        <circle cx="12" cy="12" r="5" stroke="#F59E0B" strokeWidth="1.5" fill="none" />
+        <path d="M12 4v4m0 8v4M4 12h4m8 0h4" stroke="#F59E0B" strokeWidth="1.2" />
+      </svg>
+    );
+  }
+
+  // 68. FEA (Finite Element Analysis)
+  if (t.includes("fea") || t.includes("finite element")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="FEA">
+        <rect width="24" height="24" rx="4" fill="#0F172A" stroke="#0EA5E9" strokeWidth="1" />
+        <polygon points="12,5 19,18 5,18" stroke="#0EA5E9" strokeWidth="1.5" fill="#0369A1" fillOpacity="0.3" />
+        <polygon points="12,11 16,18 8,18" stroke="#38BDF8" strokeWidth="1" fill="#0284C7" fillOpacity="0.5" />
+      </svg>
+    );
+  }
+
+  // 69. 3D Printing / CNC Machining / DFMA
+  if (t.includes("3d print") || t.includes("additive") || t.includes("cnc") || t.includes("machin") || t.includes("dfma") || t.includes("fmea")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Manufacturing">
+        <rect width="24" height="24" rx="4" fill="#334155" />
+        <path d="M6 8h12v3H6zm2 4h8v4H8zm2 5h4v2h-4z" fill="#94A3B8" />
+        <circle cx="12" cy="5" r="1.5" fill="#38BDF8" />
+      </svg>
+    );
+  }
+
+  // 70. Heat Exchanger / Thermal Systems / Battery Management
+  if (t.includes("heat exchanger") || t.includes("thermal") || t.includes("battery temperature")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Thermal Systems">
+        <rect width="24" height="24" rx="4" fill="#7C2D12" />
+        <path d="M8 6c0 3 4 5 4 8s-4 5-4 8" stroke="#FB923C" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M16 6c0 3-4 5-4 8s4 5 4 8" stroke="#38BDF8" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  // 71. Epic Systems (Healthcare EHR)
+  if (t.includes("epic")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Epic Systems EHR">
+        <rect width="24" height="24" rx="4" fill="#C41230" />
+        <text x="12" y="15.5" fill="white" fontSize="7.5" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">EPIC</text>
+      </svg>
+    );
+  }
+
+  // 72. Cerner / Meditech / EHR / EMR
+  if (t.includes("cerner") || t.includes("meditech") || t.includes("ehr") || t.includes("emr") || t.includes("charting")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Cerner EHR">
+        <rect width="24" height="24" rx="4" fill="#005A9C" />
+        <path d="M7 6h10v12H7z" fill="white" fillOpacity="0.2" stroke="white" strokeWidth="1.2" />
+        <path d="M9 10h6M9 13h4" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+        <circle cx="15" cy="15" r="2" fill="#10B981" />
+      </svg>
+    );
+  }
+
+  // 73. Telemetry / ECG / ACLS / BLS
+  if (t.includes("telemetry") || t.includes("acls") || t.includes("bls") || t.includes("cpr") || t.includes("ecg") || t.includes("cardiac")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="ECG Telemetry">
+        <rect width="24" height="24" rx="4" fill="#E11D48" />
+        <path d="M4 12h3l2-5 3 10 2-7 2 4 1-2h3" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </svg>
+    );
+  }
+
+  // 74. SBAR / NEWS 2 / Clinical Communication
+  if (t.includes("sbar") || t.includes("news 2") || t.includes("mews") || t.includes("early warning")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="SBAR Communication">
+        <rect width="24" height="24" rx="4" fill="#0284C7" />
+        <rect x="5" y="7" width="14" height="10" rx="2" fill="white" fillOpacity="0.2" stroke="white" strokeWidth="1" />
+        <path d="M8 11h8M8 14h5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  // 75. Clinical Nursing / Medical-Surgical / Patient Care
+  if (t.includes("nurse") || t.includes("patient") || t.includes("clinical") || t.includes("surgical") || t.includes("vital signs") || t.includes("triage") || t.includes("infection control") || t.includes("wound") || t.includes("narcotics") || t.includes("pharmacology") || t.includes("nmbi")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Clinical Care">
+        <rect width="24" height="24" rx="4" fill="#059669" />
+        <path d="M10 5h4v5h5v4h-5v5h-4v-5H5v-4h5V5z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 76. Figma
+  if (t.includes("figma")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Figma">
+        <circle cx="15.5" cy="8.5" r="3.5" fill="#FF7262" />
+        <path d="M5 5a3.5 3.5 0 0 1 3.5-3.5H12v7H8.5A3.5 3.5 0 0 1 5 5z" fill="#F24E1E" />
+        <path d="M5 12a3.5 3.5 0 0 1 3.5-3.5H12v7H8.5A3.5 3.5 0 0 1 5 12z" fill="#A259FF" />
+        <path d="M5 19a3.5 3.5 0 0 1 3.5-3.5H12v3.5a3.5 3.5 0 0 1-7 0z" fill="#0ACF83" />
+        <circle cx="15.5" cy="15.5" r="3.5" fill="#1ABCFE" />
+      </svg>
+    );
+  }
+
+  // 77. Adobe Photoshop / Illustrator / XD
+  if (t.includes("adobe") || t.includes("photoshop") || t.includes("illustrator")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Adobe">
+        <rect width="24" height="24" rx="4" fill="#001E36" stroke="#31A8FF" strokeWidth="1" />
+        <text x="12" y="15.5" fill="#31A8FF" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">Ps</text>
+      </svg>
+    );
+  }
+
+  // 78. Jira / Confluence
+  if (t.includes("jira") || t.includes("confluence")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Jira">
+        <rect width="24" height="24" rx="4" fill="#0052CC" />
+        <polygon points="12,5 17,10 12,15 7,10" fill="white" />
+        <polygon points="12,11 15,14 12,17 9,14" fill="#2684FF" />
+      </svg>
+    );
+  }
+
+  // 79. Trello / Asana / Notion / Linear / Slack
+  if (t.includes("trello") || t.includes("asana") || t.includes("notion") || t.includes("linear") || t.includes("slack")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Productivity Tool">
+        <rect width="24" height="24" rx="4" fill="#4A154B" />
+        <circle cx="8" cy="8" r="2" fill="#E01E5A" />
+        <circle cx="16" cy="8" r="2" fill="#36C5F0" />
+        <circle cx="8" cy="16" r="2" fill="#2EB67D" />
+        <circle cx="16" cy="16" r="2" fill="#ECB22E" />
+      </svg>
+    );
+  }
+
+  // 80. Agile / Scrum / Kanban
+  if (t.includes("agile") || t.includes("scrum") || t.includes("kanban") || t.includes("sprint")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Agile">
+        <rect width="24" height="24" rx="4" fill="#0F766E" />
+        <path d="M12 4a8 8 0 1 0 7.5 10.7l-2.3-.9A5.5 5.5 0 1 1 12 6.5V9l4-3.5L12 2v2z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 81. Salesforce / HubSpot / CRM / SAP
+  if (t.includes("salesforce") || t.includes("hubspot") || t.includes("sap") || t.includes("crm")) {
+    return (
+      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Enterprise CRM">
+        <rect width="24" height="24" rx="4" fill="#00A1E0" />
+        <path d="M16 14a3 3 0 0 0-2.6-4.5 4 4 0 0 0-7.3 2A3 3 0 0 0 8 17h8z" fill="white" />
+      </svg>
+    );
+  }
+
+  // 82. MDN Web Docs / Documentation
   if (t.includes("mdn") || t.includes("doc")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="MDN">
@@ -457,7 +1055,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 28. YouTube / Tutorials
+  // 83. YouTube / Video Tutorials
   if (t.includes("youtube") || t.includes("video") || t.includes("tutorial")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="YouTube">
@@ -467,7 +1065,7 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 29. GitHub
+  // 84. GitHub / Git
   if (t.includes("git") || t.includes("github")) {
     return (
       <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="GitHub">
@@ -477,53 +1075,44 @@ const renderTechLogo = (techName = "", sizeClass = "w-4 h-4") => {
     );
   }
 
-  // 30. Healthcare / Nursing Skills
-  if (t.includes("nurse") || t.includes("patient") || t.includes("clinical") || t.includes("surgical")) {
-    return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Clinical Care">
-        <rect width="24" height="24" rx="4" fill="#059669" />
-        <path d="M10 5h4v5h5v4h-5v5h-4v-5H5v-4h5V5z" fill="white" />
-      </svg>
-    );
+  // =========================================================================
+  // UNIVERSAL CORPORATE BRAND MONOGRAM GENERATOR FOR ANY OTHER DOMAIN PRODUCT
+  // (Produces a bespoke, polished metallic application badge - never generic)
+  // =========================================================================
+  const cleanStr = (techName || "TECH").replace(/[^a-zA-Z0-9 ]/g, '').trim();
+  const words = cleanStr.split(/\s+/).filter(Boolean);
+  let initials = "PR";
+  if (words.length >= 2) {
+    initials = (words[0][0] + words[1][0]).toUpperCase();
+  } else if (words.length === 1 && words[0].length >= 2) {
+    initials = words[0].slice(0, 2).toUpperCase();
+  } else if (words.length === 1 && words[0].length === 1) {
+    initials = words[0].toUpperCase();
   }
 
-  // 31. Telemetry / ECG / ACLS
-  if (t.includes("telemetry") || t.includes("acls") || t.includes("cardiac") || t.includes("ecg")) {
-    return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="ECG Telemetry">
-        <rect width="24" height="24" rx="4" fill="#E11D48" />
-        <path d="M4 12h3l2-5 3 10 2-7 2 4 1-2h3" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      </svg>
-    );
+  let hash = 0;
+  for (let i = 0; i < (techName || "").length; i++) {
+    hash = (hash << 5) - hash + techName.charCodeAt(i);
+    hash |= 0;
   }
+  const palettes = [
+    { bg: "#1E1B4B", border: "#6366F1", text: "#A5B4FC" }, // Indigo
+    { bg: "#064E3B", border: "#10B981", text: "#6EE7B7" }, // Emerald
+    { bg: "#0C4A6E", border: "#0284C7", text: "#7DD3FC" }, // Sky
+    { bg: "#451A03", border: "#D97706", text: "#FCD34D" }, // Amber
+    { bg: "#4C0519", border: "#E11D48", text: "#FDA4AF" }, // Rose
+    { bg: "#134E4A", border: "#14B8A6", text: "#5EEAD4" }, // Teal
+    { bg: "#3B0764", border: "#9333EA", text: "#D8B4FE" }, // Purple
+    { bg: "#1E293B", border: "#64748B", text: "#CBD5E1" }  // Slate
+  ];
+  const p = palettes[Math.abs(hash) % palettes.length];
 
-  // 32. SolidWorks / CAD
-  if (t.includes("solidworks") || t.includes("cad")) {
-    return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="CAD">
-        <rect width="24" height="24" rx="4" fill="#DC2626" />
-        <path d="M12 4l7 4-7 4-7-4 7-4zm0 8l7-4v8l-7 4v-8zm0 8l-7-4v-8l7 4v8z" stroke="white" strokeWidth="1.2" fill="none" />
-      </svg>
-    );
-  }
-
-  // 33. Siemens NX / Ansys
-  if (t.includes("siemens") || t.includes("nx") || t.includes("ansys")) {
-    return (
-      <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="CAE">
-        <rect width="24" height="24" rx="4" fill="#0D9488" />
-        <circle cx="12" cy="12" r="5" stroke="white" strokeWidth="1.5" fill="none" />
-        <path d="M12 4v4m0 8v4M4 12h4m8 0h4" stroke="white" strokeWidth="1.5" />
-      </svg>
-    );
-  }
-
-  // Default Fallback: Clean Logic Node Chip
   return (
-    <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Competency">
-      <rect width="24" height="24" rx="4" fill="#1E293B" stroke="#475569" strokeWidth="1" />
-      <path d="M7 12h10M12 7v10" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="12" cy="12" r="2" fill="#38BDF8" />
+    <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label={techName}>
+      <rect width="24" height="24" rx="4.5" fill={p.bg} stroke={p.border} strokeWidth="1.2" />
+      <text x="12" y="15.5" fill={p.text} fontSize="8.5" fontWeight="800" textAnchor="middle" fontFamily="ui-sans-serif, system-ui, -apple-system, sans-serif" letterSpacing="0.5">
+        {initials}
+      </text>
     </svg>
   );
 };
@@ -535,52 +1124,61 @@ const renderModuleIcon = (module = "", sizeClass = "w-4 h-4") => {
     case "main":
       return (
         <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Overview">
-          <rect x="3" y="3" width="8" height="8" rx="2" fill="#6366F1" fillOpacity="0.25" stroke="#818CF8" strokeWidth="1.5" />
-          <rect x="13" y="3" width="8" height="5" rx="2" fill="#0EA5E9" fillOpacity="0.25" stroke="#38BDF8" strokeWidth="1.5" />
-          <rect x="13" y="10" width="8" height="11" rx="2" fill="#10B981" fillOpacity="0.25" stroke="#34D399" strokeWidth="1.5" />
-          <rect x="3" y="13" width="8" height="8" rx="2" fill="#F59E0B" fillOpacity="0.25" stroke="#FBBF24" strokeWidth="1.5" />
+          <rect x="3" y="3" width="7.5" height="7.5" rx="2" fill="#4338CA" stroke="#6366F1" strokeWidth="1.4" />
+          <rect x="13.5" y="3" width="7.5" height="4.5" rx="2" fill="#0284C7" stroke="#38BDF8" strokeWidth="1.4" />
+          <rect x="13.5" y="10.5" width="7.5" height="10.5" rx="2" fill="#047857" stroke="#10B981" strokeWidth="1.4" />
+          <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" fill="#B45309" stroke="#F59E0B" strokeWidth="1.4" />
         </svg>
       );
     case "keywords":
     case "subtopic_keywords":
       return (
         <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="ATS Audit">
-          <rect x="4" y="2.5" width="16" height="19" rx="3" fill="#4338CA" fillOpacity="0.2" stroke="#6366F1" strokeWidth="1.5" />
-          <path d="M8 7h8M8 11h5" stroke="#A5B4FC" strokeWidth="1.5" strokeLinecap="round" />
-          <circle cx="16" cy="15" r="4.5" fill="#10B981" />
-          <path d="M14.5 15l1 1 2-2" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+          <rect x="3.5" y="2.5" width="17" height="19" rx="3" fill="#1E1B4B" stroke="#6366F1" strokeWidth="1.5" />
+          <rect x="6" y="5.5" width="6" height="2" rx="0.5" fill="#818CF8" />
+          <rect x="6" y="9.5" width="12" height="1.5" rx="0.5" fill="#4338CA" />
+          <rect x="6" y="12.5" width="9" height="1.5" rx="0.5" fill="#4338CA" />
+          <rect x="6" y="15.5" width="7" height="1.5" rx="0.5" fill="#4338CA" />
+          <line x1="4.5" y1="11" x2="19.5" y2="11" stroke="#A5B4FC" strokeWidth="1.2" strokeDasharray="1 1" />
+          <circle cx="16.5" cy="16.5" r="4" fill="#10B981" stroke="#064E3B" strokeWidth="0.8" />
+          <path d="M15 16.5l1 1 2-2" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case "skills":
     case "subtopic_skills":
       return (
         <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Skill Matrix">
-          <circle cx="12" cy="12" r="9" stroke="#F59E0B" strokeWidth="1.5" fill="#B45309" fillOpacity="0.15" />
-          <circle cx="12" cy="12" r="5.5" stroke="#FBBF24" strokeWidth="1.2" strokeDasharray="2 2" fill="none" />
-          <circle cx="12" cy="12" r="2.5" fill="#F59E0B" />
-          <path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke="#FDE68A" strokeWidth="1.5" strokeLinecap="round" />
+          <rect x="3" y="3" width="18" height="18" rx="4" fill="#291805" stroke="#F59E0B" strokeWidth="1.5" />
+          <rect x="5.5" y="5.5" width="5.5" height="5.5" rx="1.5" fill="#F59E0B" fillOpacity="0.85" />
+          <rect x="13" y="5.5" width="5.5" height="5.5" rx="1.5" fill="#D97706" fillOpacity="0.5" />
+          <rect x="5.5" y="13" width="5.5" height="5.5" rx="1.5" fill="#FBBF24" fillOpacity="0.7" />
+          <rect x="13" y="13" width="5.5" height="5.5" rx="1.5" fill="#F59E0B" stroke="#FDE68A" strokeWidth="1" strokeDasharray="1 1" fillOpacity="0.25" />
+          <circle cx="12" cy="12" r="1.8" fill="#FFFFFF" stroke="#D97706" strokeWidth="0.8" />
         </svg>
       );
     case "roadmap":
     case "subtopic_roadmap":
       return (
         <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Roadmap">
-          <circle cx="5" cy="6" r="3" fill="#10B981" />
-          <circle cx="19" cy="18" r="3" fill="#14B8A6" />
-          <circle cx="12" cy="12" r="3" fill="#059669" />
-          <path d="M7.5 7.5L10 10.5M14 13.5l3 3" stroke="#34D399" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M19 6h-6a4 4 0 0 0-4 4v2" stroke="#6EE7B7" strokeWidth="1.5" strokeDasharray="2 2" />
+          <rect x="3" y="3" width="18" height="18" rx="4" fill="#022C22" stroke="#10B981" strokeWidth="1.5" />
+          <circle cx="7" cy="17" r="2.2" fill="#10B981" />
+          <circle cx="12" cy="12" r="2.2" fill="#34D399" />
+          <circle cx="17" cy="7" r="2.5" fill="#6EE7B7" stroke="#047857" strokeWidth="0.8" />
+          <path d="M8.5 15.5l2-2m3-3l2-2" stroke="#A7F3D0" strokeWidth="1.6" strokeLinecap="round" />
+          <path d="M17 5v4m0 0l-2-1 2-1" stroke="#022C22" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6 7l1.5 1.5L6 10" stroke="#34D399" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case "jobs":
     case "subtopic_jobs":
       return (
         <svg className={`${sizeClass} shrink-0`} viewBox="0 0 24 24" fill="none" aria-label="Matched Jobs">
-          <circle cx="12" cy="12" r="9" stroke="#0284C7" strokeWidth="1.5" fill="#0369A1" fillOpacity="0.2" />
-          <ellipse cx="12" cy="12" rx="4" ry="9" stroke="#38BDF8" strokeWidth="1.2" fill="none" />
-          <path d="M3 12h18" stroke="#38BDF8" strokeWidth="1.2" />
-          <circle cx="15" cy="8" r="2" fill="#38BDF8" />
-          <circle cx="15" cy="8" r="3.5" stroke="#38BDF8" strokeWidth="1" strokeDasharray="1.5 1.5" fill="none" />
+          <rect x="3" y="7" width="18" height="13.5" rx="3" fill="#0C4A6E" stroke="#0284C7" strokeWidth="1.5" />
+          <path d="M8.5 7V4.5a1.5 1.5 0 0 1 1.5-1.5h4a1.5 1.5 0 0 1 1.5 1.5V7" stroke="#38BDF8" strokeWidth="1.5" strokeLinecap="round" />
+          <rect x="10.5" y="10" width="3" height="3.5" rx="0.8" fill="#38BDF8" />
+          <line x1="3" y1="11.5" x2="21" y2="11.5" stroke="#0369A1" strokeWidth="1.2" />
+          <circle cx="17.5" cy="16" r="1.8" fill="#10B981" />
+          <circle cx="17.5" cy="16" r="3" stroke="#34D399" strokeWidth="0.8" strokeDasharray="1 1" />
         </svg>
       );
     default:
@@ -1264,6 +1862,23 @@ export default function ResultPage({ data, onReset, apiUrl }) {
 
   // LIVE RECOMMENDATION JOBS ON THE CURRENT JOB MARKET ACROSS PORTALS
   const liveMarketJobs = useMemo(() => {
+    // 1. If backend has liveJobs matching the candidate's target role, prioritize it!
+    const isMatchingDomain = !data?.domain || data.domain.toLowerCase() === customRole.toLowerCase();
+    if (isMatchingDomain && data?.liveJobs && Array.isArray(data.liveJobs) && data.liveJobs.length > 0) {
+      return data.liveJobs.map((item, idx) => ({
+        id: item.id || `live-job-${idx}`,
+        title: item.title,
+        company: item.company || item.portal,
+        portal: item.company || item.portal,
+        url: item.url || item.liveUrl || `https://www.google.com/search?q=${encodeURIComponent((item.title || customRole) + " jobs")}&ibp=htl;jobs`,
+        liveUrl: item.url || item.liveUrl || `https://www.google.com/search?q=${encodeURIComponent((item.title || customRole) + " jobs")}&ibp=htl;jobs`,
+        type: item.type || "Full-Time",
+        location: item.location || "Global Search",
+        desc: item.description || item.desc,
+        description: item.description || item.desc
+      }));
+    }
+
     let roleTitles = [];
 
     if (isHealthcare) {
@@ -1393,7 +2008,7 @@ export default function ResultPage({ data, onReset, apiUrl }) {
         description: item.desc
       };
     });
-  }, [customRole, isHealthcare, isSoftware, isData]);
+  }, [data, customRole, isHealthcare, isSoftware, isData]);
 
   // Framer Motion Page Transition Variant (Micro-blur + Directional Slide)
   const pageVariants = {
