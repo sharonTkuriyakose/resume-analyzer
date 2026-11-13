@@ -1247,6 +1247,47 @@ export default function ResultPage({ data, onReset, apiUrl }) {
     if (inferredRole) setCustomRole(inferredRole);
   }, [inferredRole]);
 
+  // Exact Live Job Opportunities State (Powered by RapidAPI JSearch)
+  const [liveJobsList, setLiveJobsList] = useState(data?.liveJobs || []);
+  const [isLoadingLiveJobs, setIsLoadingLiveJobs] = useState(false);
+
+  useEffect(() => {
+    if (data?.liveJobs && Array.isArray(data.liveJobs) && data.liveJobs.length > 0) {
+      setLiveJobsList(data.liveJobs);
+    }
+  }, [data]);
+
+  // Fetch real-time exact live job listings when customRole changes
+  useEffect(() => {
+    const isMatchingDomain = data?.domain && data.domain.toLowerCase() === customRole.toLowerCase();
+    // If the role matches initial data and we already have exact listings, no need to refetch
+    if (isMatchingDomain && data?.liveJobs && data.liveJobs.some(j => j.isExactListing)) {
+      return;
+    }
+
+    let isMounted = true;
+    const fetchExactLiveJobs = async () => {
+      try {
+        setIsLoadingLiveJobs(true);
+        const endpoint = `${apiUrl || 'http://localhost:5000'}/api/live-jobs?role=${encodeURIComponent(customRole)}&location=${encodeURIComponent(data?.candidate?.location || '')}`;
+        const res = await fetch(endpoint);
+        if (res.ok) {
+          const json = await res.json();
+          if (isMounted && json.jobs && json.jobs.length > 0) {
+            setLiveJobsList(json.jobs);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch real-time jobs from API:", err);
+      } finally {
+        if (isMounted) setIsLoadingLiveJobs(false);
+      }
+    };
+
+    fetchExactLiveJobs();
+    return () => { isMounted = false; };
+  }, [customRole, apiUrl, data]);
+
   // Domain Categorization Flags
   const isHealthcare = useMemo(() => /nurse|nursing|health|medical|clinical|patient|hospital|physician|doctor|pharmac/i.test(customRole), [customRole]);
   const isSoftware = useMemo(() => /developer|software|frontend|backend|full stack|web|react|node|python|java|engineer/i.test(customRole) && !/mechanical|civil|electrical|chemical|nurse|health/i.test(customRole), [customRole]);
@@ -1862,20 +1903,21 @@ export default function ResultPage({ data, onReset, apiUrl }) {
 
   // LIVE RECOMMENDATION JOBS ON THE CURRENT JOB MARKET ACROSS PORTALS
   const liveMarketJobs = useMemo(() => {
-    // 1. If backend has liveJobs matching the candidate's target role, prioritize it!
-    const isMatchingDomain = !data?.domain || data.domain.toLowerCase() === customRole.toLowerCase();
-    if (isMatchingDomain && data?.liveJobs && Array.isArray(data.liveJobs) && data.liveJobs.length > 0) {
-      return data.liveJobs.map((item, idx) => ({
+    // 1. If we have live exact job opportunities from RapidAPI, use them directly!
+    if (liveJobsList && Array.isArray(liveJobsList) && liveJobsList.length > 0) {
+      return liveJobsList.map((item, idx) => ({
         id: item.id || `live-job-${idx}`,
         title: item.title,
         company: item.company || item.portal,
-        portal: item.company || item.portal,
+        portal: item.portal || item.company || 'LinkedIn',
         url: item.url || item.liveUrl || `https://www.google.com/search?q=${encodeURIComponent((item.title || customRole) + " jobs")}&ibp=htl;jobs`,
         liveUrl: item.url || item.liveUrl || `https://www.google.com/search?q=${encodeURIComponent((item.title || customRole) + " jobs")}&ibp=htl;jobs`,
         type: item.type || "Full-Time",
-        location: item.location || "Global Search",
-        desc: item.description || item.desc,
-        description: item.description || item.desc
+        location: item.location || "Live Global Search",
+        desc: item.desc || item.description,
+        description: item.description || item.desc,
+        salary: item.salary || null,
+        isExactListing: item.isExactListing || false
       }));
     }
 

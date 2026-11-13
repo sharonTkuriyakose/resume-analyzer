@@ -144,6 +144,106 @@ function extractCandidateDetails(resumeText, aiCandidate, reasoning) {
     return details;
 }
 
+// --- 2.5 EXACT LIVE JOBS ENGINE (RapidAPI JSearch Integration) ---
+const dns = require('dns');
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  // Ignore if custom dns set is restricted on current platform
+}
+
+async function fetchLiveJobsFromRapidAPI(role, location = "") {
+  const rapidApiKey = process.env.RAPIDAPI_KEY;
+  if (!rapidApiKey) {
+    console.warn("⚠️ No RAPIDAPI_KEY found in environment. Skipping live API fetch.");
+    return null;
+  }
+
+  const query = location ? `${role} in ${location}` : role;
+  console.log(`📡 Fetching exact live job opportunities via RapidAPI for: "${query}"...`);
+
+  return new Promise((resolve) => {
+    const https = require('https');
+    const options = {
+      method: 'GET',
+      hostname: 'jsearch.p.rapidapi.com',
+      path: `/search-v2?query=${encodeURIComponent(query)}&num_pages=1`,
+      headers: {
+        'X-RapidAPI-Key': rapidApiKey,
+        'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
+        'Accept': 'application/json'
+      },
+      timeout: 10000
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode !== 200) {
+          console.warn(`⚠️ RapidAPI responded with HTTP ${res.statusCode}: ${data.slice(0, 160)}`);
+          return resolve(null);
+        }
+
+        try {
+          const json = JSON.parse(data);
+          const rawJobs = (json.data && json.data.jobs) || [];
+          if (!rawJobs.length) {
+            console.log(`ℹ️ No listings returned from RapidAPI for "${query}".`);
+            return resolve(null);
+          }
+
+          const formattedJobs = rawJobs.map((job, idx) => {
+            const loc = [job.job_city, job.job_state, job.job_country].filter(Boolean).join(', ') || (job.job_is_remote ? 'Remote' : 'Live Global');
+            const publisher = job.job_publisher || (job.apply_options && job.apply_options[0]?.publisher) || 'LinkedIn';
+            const applyLink = job.job_apply_link || (job.apply_options && job.apply_options[0]?.apply_link);
+
+            let salaryStr = null;
+            if (job.job_min_salary && job.job_max_salary) {
+              const cur = job.job_salary_currency || '$';
+              salaryStr = `${cur}${Math.round(job.job_min_salary).toLocaleString()} - ${cur}${Math.round(job.job_max_salary).toLocaleString()} / ${job.job_salary_period ? job.job_salary_period.toLowerCase() : 'year'}`;
+            }
+
+            return {
+              id: job.job_id || `live-job-${idx}`,
+              title: job.job_title || `${role} Specialist`,
+              company: job.employer_name || publisher,
+              portal: publisher,
+              url: applyLink,
+              liveUrl: applyLink,
+              type: job.job_employment_type || (job.job_is_remote ? 'Remote • Full-Time' : 'Full-Time'),
+              location: loc,
+              desc: job.job_description ? (job.job_description.slice(0, 220).replace(/\s+/g, ' ').trim() + '...') : `Live open position for ${job.job_title} at ${job.employer_name}.`,
+              description: job.job_description ? (job.job_description.slice(0, 220).replace(/\s+/g, ' ').trim() + '...') : `Live open position for ${job.job_title} at ${job.employer_name}.`,
+              salary: salaryStr,
+              isExactListing: true
+            };
+          });
+
+          console.log(`✅ Successfully extracted ${formattedJobs.length} EXACT LIVE JOBS from RapidAPI for "${role}"!`);
+          resolve(formattedJobs);
+        } catch (parseErr) {
+          console.error("⚠️ Failed to parse RapidAPI JSON:", parseErr.message);
+          resolve(null);
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      console.warn("⚠️ RapidAPI connection error:", err.message);
+      resolve(null);
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      console.warn("⚠️ RapidAPI request timed out (10s).");
+      resolve(null);
+    });
+
+    req.end();
+  });
+}
+
 // --- 3. THE ANALYSIS ROUTE ---
 app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) => {
     try {
@@ -375,81 +475,88 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
             }));
         }
 
-        // E. GENERATE JOB PORTAL SEARCH LINKS
+        // E. FETCH EXACT LIVE JOB OPPORTUNITIES VIA RAPIDAPI (Or Fallback to Search Links)
         try {
-            console.log(`🌐 Generating portal searches for domain: ${analysis.domain}...`);
-            const d = analysis.domain || 'Professional';
-            const titles = analysis.relatedJobTitles && analysis.relatedJobTitles.length >= 12 
-                           ? analysis.relatedJobTitles 
-                           : Array(12).fill(d);
+            console.log(`🌐 Sourcing exact live job opportunities for domain: ${analysis.domain}...`);
+            const liveApiJobs = await fetchLiveJobsFromRapidAPI(analysis.domain, analysis.candidate?.location);
             
-            const q = (title) => encodeURIComponent(title);
-            const exactQ = (title) => encodeURIComponent(`"${title}"`);
+            if (liveApiJobs && liveApiJobs.length > 0) {
+                analysis.liveJobs = liveApiJobs;
+                console.log(`✅ Integrated ${liveApiJobs.length} EXACT LIVE JOB OPPORTUNITIES via RapidAPI.`);
+            } else {
+                console.log(`ℹ️ Falling back to verified portal links for domain: ${analysis.domain}...`);
+                const d = analysis.domain || 'Professional';
+                const titles = analysis.relatedJobTitles && analysis.relatedJobTitles.length >= 12 
+                               ? analysis.relatedJobTitles 
+                               : Array(12).fill(d);
+                
+                const q = (title) => encodeURIComponent(title);
+                const exactQ = (title) => encodeURIComponent(`"${title}"`);
 
-            analysis.liveJobs = [
-                {
-                    id: 'p1', title: `${titles[0]} Jobs on LinkedIn`, company: 'LinkedIn',
-                    url: `https://www.linkedin.com/jobs/search/?keywords=${exactQ(titles[0])}`,
-                    type: 'Portal Search', location: 'Global', description: `Explore thousands of ${titles[0]} opportunities and connect with recruiters directly on LinkedIn.`
-                },
-                {
-                    id: 'p2', title: `${titles[1]} Jobs on Indeed`, company: 'Indeed',
-                    url: `https://www.indeed.com/jobs?q=${exactQ(titles[1])}`,
-                    type: 'Portal Search', location: 'Global', description: `Browse aggregated job listings for ${titles[1]} roles from company career sites and job boards.`
-                },
-                {
-                    id: 'p3', title: `${titles[2]} Jobs on Glassdoor`, company: 'Glassdoor',
-                    url: `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${exactQ(titles[2])}`,
-                    type: 'Portal Search', location: 'Global', description: `Find ${titles[2]} jobs and access company reviews, salaries, and interview insights.`
-                },
-                {
-                    id: 'p4', title: `${titles[3]} Jobs on Wellfound`, company: 'Wellfound',
-                    url: `https://wellfound.com/role/${q(titles[3]).toLowerCase().replace(/%20/g, '-')}`, // Note: Wellfound uses hyphens for roles in URL
-                    type: 'Startup Search', location: 'Global', description: `Discover ${titles[3]} opportunities at top startups and tech companies.`
-                },
-                {
-                    id: 'p5', title: `${titles[4]} Jobs on ZipRecruiter`, company: 'ZipRecruiter',
-                    url: `https://www.ziprecruiter.com/candidate/search?search=${exactQ(titles[4])}`,
-                    type: 'Portal Search', location: 'Global', description: `Apply to ${titles[4]} roles quickly with 1-Click Apply on ZipRecruiter.`
-                },
-                {
-                    id: 'p6', title: `${titles[5]} Jobs on Monster`, company: 'Monster',
-                    url: `https://www.monster.com/jobs/search/?q=${exactQ(titles[5])}`,
-                    type: 'Portal Search', location: 'Global', description: `Search a vast database of ${titles[5]} jobs and get resume help.`
-                },
-                {
-                    id: 'p7', title: `${titles[6]} Jobs on Dice`, company: 'Dice',
-                    url: `https://www.dice.com/jobs?q=${exactQ(titles[6])}`,
-                    type: 'Tech Search', location: 'Global', description: `The leading database for technology professionals and ${titles[6]} jobs.`
-                },
-                {
-                    id: 'p8', title: `${titles[7]} Jobs on SimplyHired`, company: 'SimplyHired',
-                    url: `https://www.simplyhired.com/search?q=${exactQ(titles[7])}`,
-                    type: 'Portal Search', location: 'Global', description: `A robust job search engine for discovering local and remote ${titles[7]} positions.`
-                },
-                {
-                    id: 'p9', title: `${titles[8]} Jobs on WeWorkRemotely`, company: 'WeWorkRemotely',
-                    url: `https://weworkremotely.com/remote-jobs/search?term=${exactQ(titles[8])}`,
-                    type: 'Remote Work', location: 'Global', description: `Find the best remote ${titles[8]} jobs from anywhere in the world.`
-                },
-                {
-                    id: 'p10', title: `${titles[9]} Jobs on FlexJobs`, company: 'FlexJobs',
-                    url: `https://www.flexjobs.com/search?search=${exactQ(titles[9])}`,
-                    type: 'Remote/Flex Work', location: 'Global', description: `Discover hand-screened remote, part-time, freelance, and flexible ${titles[9]} jobs.`
-                },
-                {
-                    id: 'p11', title: `${titles[10]} Jobs on Upwork`, company: 'Upwork',
-                    url: `https://www.upwork.com/nx/jobs/search/?q=${exactQ(titles[10])}`,
-                    type: 'Freelance', location: 'Global', description: `Explore freelance ${titles[10]} projects and short-term contracts.`
-                },
-                {
-                    id: 'p12', title: `${titles[11]} Jobs on Remote.co`, company: 'Remote.co',
-                    url: `https://remote.co/remote-jobs/search/?search_keywords=${exactQ(titles[11])}`,
-                    type: 'Remote Work', location: 'Global', description: `Curated remote ${titles[11]} jobs from companies that embrace distributed work.`
-                }
-            ];
-
-            console.log(`✅ Generated ${analysis.liveJobs.length} job portal links.`);
+                analysis.liveJobs = [
+                    {
+                        id: 'p1', title: `${titles[0]} Jobs on LinkedIn`, company: 'LinkedIn',
+                        url: `https://www.linkedin.com/jobs/search/?keywords=${exactQ(titles[0])}`,
+                        type: 'Portal Search', location: 'Global', description: `Explore thousands of ${titles[0]} opportunities and connect with recruiters directly on LinkedIn.`
+                    },
+                    {
+                        id: 'p2', title: `${titles[1]} Jobs on Indeed`, company: 'Indeed',
+                        url: `https://www.indeed.com/jobs?q=${exactQ(titles[1])}`,
+                        type: 'Portal Search', location: 'Global', description: `Browse aggregated job listings for ${titles[1]} roles from company career sites and job boards.`
+                    },
+                    {
+                        id: 'p3', title: `${titles[2]} Jobs on Glassdoor`, company: 'Glassdoor',
+                        url: `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${exactQ(titles[2])}`,
+                        type: 'Portal Search', location: 'Global', description: `Find ${titles[2]} jobs and access company reviews, salaries, and interview insights.`
+                    },
+                    {
+                        id: 'p4', title: `${titles[3]} Jobs on Wellfound`, company: 'Wellfound',
+                        url: `https://wellfound.com/role/${q(titles[3]).toLowerCase().replace(/%20/g, '-')}`,
+                        type: 'Startup Search', location: 'Global', description: `Discover ${titles[3]} opportunities at top startups and tech companies.`
+                    },
+                    {
+                        id: 'p5', title: `${titles[4]} Jobs on ZipRecruiter`, company: 'ZipRecruiter',
+                        url: `https://www.ziprecruiter.com/candidate/search?search=${exactQ(titles[4])}`,
+                        type: 'Portal Search', location: 'Global', description: `Apply to ${titles[4]} roles quickly with 1-Click Apply on ZipRecruiter.`
+                    },
+                    {
+                        id: 'p6', title: `${titles[5]} Jobs on Monster`, company: 'Monster',
+                        url: `https://www.monster.com/jobs/search/?q=${exactQ(titles[5])}`,
+                        type: 'Portal Search', location: 'Global', description: `Search a vast database of ${titles[5]} jobs and get resume help.`
+                    },
+                    {
+                        id: 'p7', title: `${titles[6]} Jobs on Dice`, company: 'Dice',
+                        url: `https://www.dice.com/jobs?q=${exactQ(titles[6])}`,
+                        type: 'Tech Search', location: 'Global', description: `The leading database for technology professionals and ${titles[6]} jobs.`
+                    },
+                    {
+                        id: 'p8', title: `${titles[7]} Jobs on SimplyHired`, company: 'SimplyHired',
+                        url: `https://www.simplyhired.com/search?q=${exactQ(titles[7])}`,
+                        type: 'Portal Search', location: 'Global', description: `A robust job search engine for discovering local and remote ${titles[7]} positions.`
+                    },
+                    {
+                        id: 'p9', title: `${titles[8]} Jobs on WeWorkRemotely`, company: 'WeWorkRemotely',
+                        url: `https://weworkremotely.com/remote-jobs/search?term=${exactQ(titles[8])}`,
+                        type: 'Remote Work', location: 'Global', description: `Find the best remote ${titles[8]} jobs from anywhere in the world.`
+                    },
+                    {
+                        id: 'p10', title: `${titles[9]} Jobs on FlexJobs`, company: 'FlexJobs',
+                        url: `https://www.flexjobs.com/search?search=${exactQ(titles[9])}`,
+                        type: 'Remote/Flex Work', location: 'Global', description: `Discover hand-screened remote, part-time, freelance, and flexible ${titles[9]} jobs.`
+                    },
+                    {
+                        id: 'p11', title: `${titles[10]} Jobs on Upwork`, company: 'Upwork',
+                        url: `https://www.upwork.com/nx/jobs/search/?q=${exactQ(titles[10])}`,
+                        type: 'Freelance', location: 'Global', description: `Explore freelance ${titles[10]} projects and short-term contracts.`
+                    },
+                    {
+                        id: 'p12', title: `${titles[11]} Jobs on Remote.co`, company: 'Remote.co',
+                        url: `https://remote.co/remote-jobs/search/?search_keywords=${exactQ(titles[11])}`,
+                        type: 'Remote Work', location: 'Global', description: `Curated remote ${titles[11]} jobs from companies that embrace distributed work.`
+                    }
+                ];
+                console.log(`✅ Generated ${analysis.liveJobs.length} job portal links.`);
+            }
         } catch (jobErr) {
             console.error("⚠️ Failed to generate job portals:", jobErr.message);
             analysis.liveJobs = [];
@@ -466,6 +573,25 @@ app.post('/api/analyze', apiLimiter, upload.single('resume'), async (req, res) =
         console.error("🔥 SERVER ERROR:", error.message);
         res.status(500).json({ message: "Internal Server Error" });
     }
+});
+
+// --- 4. REAL-TIME LIVE JOBS QUERY ROUTE ---
+app.get('/api/live-jobs', async (req, res) => {
+    const role = req.query.role || 'Full Stack Developer';
+    const location = req.query.location || '';
+    
+    try {
+        console.log(`🔍 Received live jobs query for: "${role}" (Location: "${location || 'Any'}")`);
+        const jobs = await fetchLiveJobsFromRapidAPI(role, location);
+        if (jobs && jobs.length > 0) {
+            return res.json({ success: true, count: jobs.length, jobs, source: 'rapidapi_live' });
+        }
+    } catch (err) {
+        console.error("⚠️ /api/live-jobs error:", err.message);
+    }
+    
+    // Return empty so client falls back gracefully
+    return res.json({ success: false, count: 0, jobs: [], source: 'none' });
 });
 
 const PORT = process.env.PORT || 5000;
