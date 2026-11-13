@@ -1,3 +1,5 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -11,7 +13,6 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const crypto = require('crypto');
 const fs = require('fs');
-const path = require('path');
 
 const CACHE_FILE = path.join(__dirname, 'analysis_cache.json');
 let analysisCache = {};
@@ -152,22 +153,13 @@ try {
   // Ignore if custom dns set is restricted on current platform
 }
 
-async function fetchLiveJobsFromRapidAPI(role, location = "") {
-  const rapidApiKey = process.env.RAPIDAPI_KEY;
-  if (!rapidApiKey) {
-    console.warn("⚠️ No RAPIDAPI_KEY found in environment. Skipping live API fetch.");
-    return null;
-  }
-
-  const query = location ? `${role} in ${location}` : role;
-  console.log(`📡 Fetching exact live job opportunities via RapidAPI for: "${query}"...`);
-
+function queryJSearch(q, rapidApiKey) {
   return new Promise((resolve) => {
     const https = require('https');
     const options = {
       method: 'GET',
       hostname: 'jsearch.p.rapidapi.com',
-      path: `/search-v2?query=${encodeURIComponent(query)}&num_pages=1`,
+      path: `/search-v2?query=${encodeURIComponent(q)}&num_pages=1`,
       headers: {
         'X-RapidAPI-Key': rapidApiKey,
         'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
@@ -184,46 +176,12 @@ async function fetchLiveJobsFromRapidAPI(role, location = "") {
           console.warn(`⚠️ RapidAPI responded with HTTP ${res.statusCode}: ${data.slice(0, 160)}`);
           return resolve(null);
         }
-
         try {
           const json = JSON.parse(data);
           const rawJobs = (json.data && json.data.jobs) || [];
-          if (!rawJobs.length) {
-            console.log(`ℹ️ No listings returned from RapidAPI for "${query}".`);
-            return resolve(null);
-          }
-
-          const formattedJobs = rawJobs.map((job, idx) => {
-            const loc = [job.job_city, job.job_state, job.job_country].filter(Boolean).join(', ') || (job.job_is_remote ? 'Remote' : 'Live Global');
-            const publisher = job.job_publisher || (job.apply_options && job.apply_options[0]?.publisher) || 'LinkedIn';
-            const applyLink = job.job_apply_link || (job.apply_options && job.apply_options[0]?.apply_link);
-
-            let salaryStr = null;
-            if (job.job_min_salary && job.job_max_salary) {
-              const cur = job.job_salary_currency || '$';
-              salaryStr = `${cur}${Math.round(job.job_min_salary).toLocaleString()} - ${cur}${Math.round(job.job_max_salary).toLocaleString()} / ${job.job_salary_period ? job.job_salary_period.toLowerCase() : 'year'}`;
-            }
-
-            return {
-              id: job.job_id || `live-job-${idx}`,
-              title: job.job_title || `${role} Specialist`,
-              company: job.employer_name || publisher,
-              portal: publisher,
-              url: applyLink,
-              liveUrl: applyLink,
-              type: job.job_employment_type || (job.job_is_remote ? 'Remote • Full-Time' : 'Full-Time'),
-              location: loc,
-              desc: job.job_description ? (job.job_description.slice(0, 220).replace(/\s+/g, ' ').trim() + '...') : `Live open position for ${job.job_title} at ${job.employer_name}.`,
-              description: job.job_description ? (job.job_description.slice(0, 220).replace(/\s+/g, ' ').trim() + '...') : `Live open position for ${job.job_title} at ${job.employer_name}.`,
-              salary: salaryStr,
-              isExactListing: true
-            };
-          });
-
-          console.log(`✅ Successfully extracted ${formattedJobs.length} EXACT LIVE JOBS from RapidAPI for "${role}"!`);
-          resolve(formattedJobs);
-        } catch (parseErr) {
-          console.error("⚠️ Failed to parse RapidAPI JSON:", parseErr.message);
+          resolve(rawJobs);
+        } catch (err) {
+          console.warn("⚠️ Failed to parse RapidAPI response:", err.message);
           resolve(null);
         }
       });
@@ -236,12 +194,78 @@ async function fetchLiveJobsFromRapidAPI(role, location = "") {
 
     req.on('timeout', () => {
       req.destroy();
-      console.warn("⚠️ RapidAPI request timed out (10s).");
+      console.warn("⚠️ RapidAPI request timed out (10s)");
       resolve(null);
     });
 
     req.end();
   });
+}
+
+async function fetchLiveJobsFromRapidAPI(role, location = "") {
+  const rapidApiKey = process.env.RAPIDAPI_KEY;
+  if (!rapidApiKey) {
+    console.warn("⚠️ No RAPIDAPI_KEY found in environment. Skipping live API fetch.");
+    return null;
+  }
+
+  let rawJobs = [];
+  if (location && location !== 'Not specified') {
+    const locQuery = `${role} in ${location}`;
+    console.log(`📡 Fetching exact live job opportunities via RapidAPI for: "${locQuery}"...`);
+    const locJobs = await queryJSearch(locQuery, rapidApiKey);
+    if (locJobs && locJobs.length > 0) {
+      rawJobs = locJobs;
+    }
+  }
+
+  if (rawJobs.length < 5) {
+    console.log(`📡 Fetching broad exact live job opportunities via RapidAPI for: "${role}"...`);
+    const broadJobs = await queryJSearch(role, rapidApiKey);
+    if (broadJobs && broadJobs.length > 0) {
+      const existingIds = new Set(rawJobs.map(j => j.job_id));
+      for (const bj of broadJobs) {
+        if (!existingIds.has(bj.job_id)) {
+          rawJobs.push(bj);
+        }
+      }
+    }
+  }
+
+  if (!rawJobs.length) {
+    console.log(`ℹ️ No listings returned from RapidAPI for "${role}".`);
+    return null;
+  }
+
+  const formattedJobs = rawJobs.map((job, idx) => {
+    const loc = [job.job_city, job.job_state, job.job_country].filter(Boolean).join(', ') || (job.job_is_remote ? 'Remote' : 'Live Global');
+    const publisher = job.job_publisher || (job.apply_options && job.apply_options[0]?.publisher) || 'LinkedIn';
+    const applyLink = job.job_apply_link || (job.apply_options && job.apply_options[0]?.apply_link);
+
+    let salaryStr = null;
+    if (job.job_min_salary && job.job_max_salary) {
+      const cur = job.job_salary_currency || '$';
+      salaryStr = `${cur}${Math.round(job.job_min_salary).toLocaleString()} - ${cur}${Math.round(job.job_max_salary).toLocaleString()} / ${job.job_salary_period ? job.job_salary_period.toLowerCase() : 'year'}`;
+    }
+
+    return {
+      id: job.job_id || `live-job-${idx}`,
+      title: job.job_title || `${role} Specialist`,
+      company: job.employer_name || publisher,
+      portal: publisher,
+      url: applyLink,
+      liveUrl: applyLink,
+      type: job.job_employment_type || (job.job_is_remote ? 'Remote • Full-Time' : 'Full-Time'),
+      location: loc,
+      desc: job.job_description ? (job.job_description.slice(0, 220).replace(/\s+/g, ' ').trim() + '...') : `Live open position for ${job.job_title} at ${job.employer_name}.`,
+      description: job.job_description ? (job.job_description.slice(0, 220).replace(/\s+/g, ' ').trim() + '...') : `Live open position for ${job.job_title} at ${job.employer_name}.`,
+      salary: salaryStr,
+      isExactListing: true
+    };
+  });
+
+  console.log(`✅ Successfully extracted ${formattedJobs.length} EXACT LIVE JOBS from RapidAPI for "${role}"!`);
+  return formattedJobs;
 }
 
 // --- 3. THE ANALYSIS ROUTE ---

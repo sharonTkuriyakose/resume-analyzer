@@ -2114,9 +2114,9 @@ export default function ResultPage({ data, onReset, apiUrl }) {
       accentStrip: 'bg-sky-500',
       iconBgActive: 'bg-sky-500/20 text-sky-300',
       badgeStyleActive: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-      count: '12 Portals'
+      count: `${liveMarketJobs.length} Live`
     }
-  ], [score, a, allMissingSkills.length]);
+  ], [score, a, allMissingSkills.length, liveMarketJobs.length]);
 
   return (
     <div className="w-full h-screen bg-[#070B14] text-slate-100 font-sans antialiased flex flex-row selection:bg-slate-700 relative overflow-hidden">
@@ -2746,7 +2746,7 @@ export default function ResultPage({ data, onReset, apiUrl }) {
                         </div>
 
                         <div className="text-2xl xl:text-3xl font-extrabold text-white font-mono tracking-tight mb-0.5">
-                          12 <span className="text-xs font-normal text-slate-400">Portals</span>
+                          {liveMarketJobs.length} <span className="text-xs font-normal text-slate-400">Openings</span>
                         </div>
                         <h3 className="text-sm font-bold text-slate-200 mb-2 group-hover:text-sky-300 transition-colors flex items-center justify-between">
                           <span>4. Matched Jobs</span>
@@ -2754,29 +2754,28 @@ export default function ResultPage({ data, onReset, apiUrl }) {
                         </h3>
 
                         <p className="text-[11px] xl:text-xs text-slate-300 leading-relaxed mb-2.5">
-                          {isHealthcare 
-                            ? "Active live search links tailored to your verified clinical credentials on LinkedIn, Indeed, Glassdoor & Nurse.com."
-                            : isSoftware 
-                            ? "Active live search links tailored to your verified technical stack on LinkedIn, Indeed, Glassdoor & Wellfound."
-                            : isData 
-                            ? "Active live search links tailored to your data science stack on LinkedIn, Indeed, Glassdoor & Google Careers."
-                            : `Active live search links tailored to your verified credentials on LinkedIn, Indeed, Glassdoor & ZipRecruiter.`}
+                          Real-time verified job postings with direct 1-click requisition apply links on LinkedIn, Indeed, Monster, and top career portals.
                         </p>
 
+                        <div className="flex items-center gap-1.5 flex-wrap text-[10px] font-mono mb-2">
+                          <span className="bg-[#121829] text-sky-300 px-2 py-0.5 rounded border border-sky-500/20 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+                            <span>{liveMarketJobs.length} Live Openings</span>
+                          </span>
+                          <span className="bg-[#121829] text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
+                            <Check className="w-3 h-3 text-emerald-400" />
+                            <span>Direct Requisition Apply</span>
+                          </span>
+                        </div>
+
                         {/* Real Portal Corporate SVG Logos */}
-                        <div className="flex items-center gap-2.5 mt-2 py-1">
-                          <span title="LinkedIn">{renderPortalLogo("LinkedIn", "w-4 h-4")}</span>
-                          <span title="Indeed">{renderPortalLogo("Indeed", "w-4 h-4")}</span>
-                          <span title="Glassdoor">{renderPortalLogo("Glassdoor", "w-4 h-4")}</span>
-                          <span title="Google Careers">{renderPortalLogo("Google Careers", "w-4 h-4")}</span>
-                          {isHealthcare ? (
-                            <span title="Nurse.com">{renderPortalLogo("Nurse.com", "w-4 h-4")}</span>
-                          ) : isSoftware ? (
-                            <span title="Wellfound">{renderPortalLogo("Wellfound", "w-4 h-4")}</span>
-                          ) : (
-                            <span title="ZipRecruiter">{renderPortalLogo("ZipRecruiter", "w-4 h-4")}</span>
-                          )}
-                          <span className="text-[10px] text-slate-400 font-mono">+7 portals</span>
+                        <div className="flex items-center gap-2 mt-2 py-1">
+                          {["LinkedIn", "Indeed", "Glassdoor", "Google Careers", "Monster"].map((p, idx) => (
+                            <span key={idx} title={p} className="p-1 rounded bg-[#121829] border border-slate-700/80 inline-flex items-center justify-center">
+                              {renderPortalLogo(p, "w-3.5 h-3.5")}
+                            </span>
+                          ))}
+                          <span className="text-[10px] text-slate-400 font-mono">1-click apply</span>
                         </div>
                       </div>
 
@@ -3349,79 +3348,112 @@ export default function ResultPage({ data, onReset, apiUrl }) {
             {/* Header */}
             <div className="bg-[#0B101E]/95 border border-sky-500/20 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl backdrop-blur-md">
               <div>
-                <span className="text-xs font-bold text-sky-400 uppercase tracking-wider font-mono">
-                  MODULE 04 • ACTIVE MARKET OPPORTUNITIES
-                </span>
-                <h2 className="text-xl md:text-2xl font-bold text-white mt-1">
-                  Matched Job Openings for {customRole}
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-bold text-sky-400 uppercase tracking-wider font-mono">
+                    MODULE 04 • ACTIVE MARKET OPPORTUNITIES
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    RapidAPI JSearch Connected
+                  </span>
+                </div>
+                <h2 className="text-xl md:text-2xl font-bold text-white">
+                  Matched Live Opportunities for {customRole}
                 </h2>
                 <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
-                  Direct search links to open roles across LinkedIn, Indeed, Glassdoor, and Wellfound tailored to your verified credentials.
+                  Real-time exact job openings with direct 1-click requisition application links across LinkedIn, Indeed, Monster & premier platforms.
                 </p>
               </div>
 
               {/* Filter Input */}
-              <div className="relative w-full md:w-60">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input 
-                  type="text"
-                  placeholder="Filter roles..."
-                  value={jobSearch}
-                  onChange={(e) => setJobSearch(e.target.value)}
-                  className="w-full bg-[#121829] border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
-                />
+              <div className="flex items-center gap-3">
+                <div className="relative w-full md:w-64">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input 
+                    type="text"
+                    placeholder="Search titles, companies, locations..."
+                    value={jobSearch}
+                    onChange={(e) => setJobSearch(e.target.value)}
+                    className="w-full bg-[#121829] border border-slate-700 rounded-lg pl-8 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* 12 Portals Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+            {/* Live Jobs Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {liveMarketJobs.filter(job => {
                 if (!jobSearch) return true;
-                return job.title.toLowerCase().includes(jobSearch.toLowerCase()) || 
-                       job.portal.toLowerCase().includes(jobSearch.toLowerCase()) ||
-                       job.desc.toLowerCase().includes(jobSearch.toLowerCase());
+                const s = jobSearch.toLowerCase();
+                return (job.title && job.title.toLowerCase().includes(s)) || 
+                       (job.company && job.company.toLowerCase().includes(s)) ||
+                       (job.portal && job.portal.toLowerCase().includes(s)) ||
+                       (job.location && job.location.toLowerCase().includes(s)) ||
+                       (job.desc && job.desc.toLowerCase().includes(s));
               }).map((job, idx) => (
                 <div 
-                  key={idx} 
-                  className="bg-[#0B101E]/95 p-4 rounded-xl border border-slate-800 hover:border-sky-500/40 flex flex-col justify-between shadow-sm transition-all group backdrop-blur-md"
+                  key={job.id || idx} 
+                  className="bg-[#0B101E]/95 p-4 rounded-2xl border border-slate-800 hover:border-sky-500/50 flex flex-col justify-between shadow-lg transition-all duration-200 group backdrop-blur-md relative overflow-hidden"
                 >
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-sky-500/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+
                   <div>
+                    {/* Top Row: Portal Logo & Hiring Status */}
                     <div className="flex items-center justify-between text-[11px] mb-2.5">
-                      <span className="font-semibold text-slate-200 bg-[#121829] px-2.5 py-1 rounded-md border border-slate-700/80 flex items-center gap-2">
-                        {renderPortalLogo(job.portal || job.company)}
-                        <span>{job.portal || job.company}</span>
+                      <span className="font-semibold text-sky-400 bg-[#121829] px-2.5 py-1 rounded-lg border border-slate-700/80 flex items-center gap-2 max-w-[70%]">
+                        {renderPortalLogo(job.portal || job.company, "w-3.5 h-3.5")}
+                        <span className="truncate">{job.company || job.portal}</span>
                       </span>
-                      <span className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-mono">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                        <span>Live Hiring</span>
+                      <span className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-mono shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>Active</span>
                       </span>
                     </div>
 
-                    <h4 className="text-xs font-bold text-white mb-1 line-clamp-1 group-hover:text-sky-300 transition-colors">
+                    {/* Exact Job Title */}
+                    <h4 className="text-xs md:text-sm font-bold text-white mb-1.5 line-clamp-2 group-hover:text-sky-300 transition-colors leading-snug">
                       {job.title}
                     </h4>
 
-                    <div className="text-[10px] text-slate-400 font-mono mb-2">
-                      {job.type}
+                    {/* Location & Employment Type */}
+                    <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-400 mb-2">
+                      <span className="flex items-center gap-1 text-slate-300">
+                        <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                        <span className="truncate max-w-[140px]">{job.location || 'Global'}</span>
+                      </span>
+                      <span className="text-slate-600">•</span>
+                      <span className="font-mono text-[10px] text-slate-400 bg-[#121829] px-1.5 py-0.5 rounded border border-slate-800">
+                        {job.type}
+                      </span>
                     </div>
 
-                    <p className="text-[11px] text-slate-300 line-clamp-2 mb-3 leading-relaxed">
-                      {job.desc}
+                    {/* Salary badge (if available) */}
+                    {job.salary && (
+                      <div className="mb-2.5">
+                        <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
+                          <span>💰</span>
+                          <span>{job.salary}</span>
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Description excerpt */}
+                    <p className="text-[11px] text-slate-300 line-clamp-3 mb-3 leading-relaxed">
+                      {job.desc || job.description}
                     </p>
                   </div>
 
+                  {/* Direct 1-Click Apply Button */}
                   <a 
                     href={job.url || job.liveUrl}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    className="w-full bg-[#121829] hover:bg-sky-600 text-slate-200 hover:text-white rounded-lg py-2 px-3 text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm border border-slate-700/80 hover:border-sky-500/40 active:scale-95 cursor-pointer z-10"
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full bg-[#121829] hover:bg-sky-600 text-slate-200 hover:text-white rounded-xl py-2 px-3 text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm border border-slate-700/80 hover:border-sky-500/40 active:scale-95 cursor-pointer z-10 group/btn mt-1"
                   >
-                    <span className="shrink-0">{renderPortalLogo(job.portal || job.company)}</span>
-                    <span>Apply on {job.portal || job.company}</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-white ml-auto" />
+                    <span className="shrink-0">{renderPortalLogo(job.portal || job.company, "w-4 h-4")}</span>
+                    <span className="truncate">Apply on {job.portal || "Portal"}</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/btn:text-white ml-auto shrink-0 transition-colors" />
                   </a>
                 </div>
               ))}
